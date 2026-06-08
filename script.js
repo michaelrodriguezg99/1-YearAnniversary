@@ -68,7 +68,7 @@ yesBtn.addEventListener("click", () => {
         phase = "runaway";
         resetYesBtn();
         noBtn.style.transform = "";          // make sure No starts centered
-        title.textContent = "Wait... are you SURE?";
+        title.textContent = "¿Esperaa... estas SEGURA?";
         return;
     }
  
