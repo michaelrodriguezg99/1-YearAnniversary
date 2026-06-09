@@ -90,9 +90,20 @@ body {
   max-width: none;
 }
 #captcha-screen .win-body { padding: 0; }
-.cap-head { background: var(--frame); color: #fff; padding: 12px 14px; }
+.cap-head { background: var(--frame); color: #fff; padding: 12px 48px 12px 14px; position: relative; }
 .cap-head .small { font-size: 13px; opacity: 0.9; display: block; margin-top: 2px; }
 .cap-prompt { font-size: 19px; line-height: 1.15; }
+.cap-refresh {
+  position: absolute; top: 10px; right: 10px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Pixelify Sans", sans-serif; font-size: 20px; line-height: 1;
+  background: rgba(255, 255, 255, 0.18); color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 50%;
+  cursor: pointer; transition: transform 0.3s ease, background 0.15s ease;
+}
+.cap-refresh:hover  { background: rgba(255, 255, 255, 0.35); }
+.cap-refresh:active { transform: rotate(180deg); }
  
 .cap-grid {
   display: grid;
@@ -118,14 +129,35 @@ body {
 .cap-tile.has-img img { display: block; }
 .cap-tile.has-img .tile-ph { display: none; }
  
-.tile-ph {                       /* labeled placeholder (test mode) */
+.tile-ph {                       /* avatar placeholder (shown until a real photo loads) */
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 4px; color: #fff; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
-  font-size: 14px; text-align: center; padding: 4px;
+  gap: 8px; padding: 6px; color: #fff;
+  background: radial-gradient(circle at 50% 36%,
+              hsl(var(--ph-h) 55% 70%), hsl(var(--ph-h) 42% 54%));
 }
-.tile-ph .ico { font-size: 26px; }
+.ph-avatar {
+  width: 46%; aspect-ratio: 1 / 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  font-size: 22px; font-weight: 700;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
+}
+.ph-name {
+  max-width: 96%;
+  font-size: 12px; line-height: 1.05; text-align: center;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.cap-tile[data-correct="true"] .tile-ph::after {   /* tiny heart marks YOUR tiles (test mode) */
+  content: "♥";
+  position: absolute; top: 4px; right: 6px;
+  font-size: 14px; opacity: 0.85;
+}
  
 .cap-tile::after {               /* Google-style selection check */
   content: "✓";
