@@ -82,6 +82,13 @@ body {
 /* =====================================================================
    SCREEN 2 — CAPTCHA MODULE  (self-contained)
    ===================================================================== */
+/* Size the whole captcha window to fit the viewport so all 9 tiles AND
+   the Verify button stay on screen. On short windows the tiles shrink
+   (they stay square); on tall screens it caps at 420px. */
+#captcha-screen .win {
+  width: min(420px, calc(100vw - 24px), calc(100vh - 250px));
+  max-width: none;
+}
 #captcha-screen .win-body { padding: 0; }
 .cap-head { background: var(--frame); color: #fff; padding: 12px 14px; }
 .cap-head .small { font-size: 13px; opacity: 0.9; display: block; margin-top: 2px; }
