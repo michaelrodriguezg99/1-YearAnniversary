@@ -54,14 +54,18 @@ const CAPTCHA_POOL = [
  
   // ----- Book boyfriends / decoys (each picked => its own funny error) -----
   // REPLACE these with Alondra's actual favorites + your own captions.
+  // Add  effect: "thunder"  to any entry to trigger the lightning effect.
   { src: "rhysand.jpg", label: "Rhysand",
     caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
-  { src: "xaden.jpg", label: "Xaden",
-    caption: "Xaden can't even text back — he's fictional. I reply in 4 seconds. Try again 😌" },
+  { src: "xaden.jpg", label: "Xaden", effect: "thunder",
+    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
+  { src: "violet.jpg", label: "Violet", effect: "thunder",
+    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
 ];
  
-const CAPTCHA_VISIBLE     = 9;  // tiles shown at once
-const CAPTCHA_CORRECT_MIN = 1;  // guarantee at least this many of YOUR photos appear
+const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
+const CAPTCHA_CORRECT_MIN = 1;     // guarantee at least this many of YOUR photos appear
+const THUNDER_SOUND       = true;  // set false to mute the lightning rumble
  
 const CAPTCHA_NUDGES = [
   "Pick at least one. He's right there 👀",
@@ -75,6 +79,45 @@ function initCaptcha() {
   const verify = document.getElementById("cap-verify");
   const win    = document.querySelector("#captcha-screen .win");
   let nudgeIdx = 0;
+ 
+  // ----- Lightning effect (overlay created once, reused) -----
+  let flash = document.querySelector(".thunder-flash");
+  if (!flash) {
+    flash = document.createElement("div");
+    flash.className = "thunder-flash";
+    flash.innerHTML =
+      '<svg class="thunder-bolt" viewBox="0 0 100 200" preserveAspectRatio="xMidYMin meet">' +
+      '<path d="M52 0 L30 96 L48 96 L26 200 L74 86 L54 86 L70 0 Z"/></svg>';
+    document.body.appendChild(flash);
+  }
+  let actx;
+  function thunderSound() {
+    if (!THUNDER_SOUND) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === "suspended") actx.resume();
+      const ctx = actx, dur = 1.3;
+      const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) {
+        const t = i / d.length;
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 1.7);  // noise that decays = rumble
+      }
+      const src = ctx.createBufferSource(); src.buffer = buf;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass";
+      lp.frequency.setValueAtTime(900, ctx.currentTime);
+      lp.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + dur);
+      const g = ctx.createGain(); g.gain.value = 0.55;
+      src.connect(lp); lp.connect(g); g.connect(ctx.destination);
+      src.start();
+    } catch (e) { /* audio not available — visual still fires */ }
+  }
+  function triggerThunder() {
+    const bolt = flash.querySelector(".thunder-bolt");
+    if (bolt) bolt.style.left = (20 + Math.random() * 60) + "%";   // strike a random spot
+    flash.classList.remove("go"); void flash.offsetWidth; flash.classList.add("go");
+    thunderSound();
+  }
  
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
@@ -100,6 +143,7 @@ function initCaptcha() {
       tile.className = "cap-tile";
       tile.dataset.correct = item.correct ? "true" : "false";
       if (item.caption) tile.dataset.caption = item.caption;
+      if (item.effect)  tile.dataset.effect  = item.effect;
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -110,7 +154,10 @@ function initCaptcha() {
       const img = tile.querySelector("img");
       img.onload = () => tile.classList.add("has-img");
       if (item.src) img.src = item.src;
-      tile.addEventListener("click", () => tile.classList.toggle("selected"));
+      tile.addEventListener("click", () => {
+        const on = tile.classList.toggle("selected");
+        if (on && tile.dataset.effect === "thunder") triggerThunder();
+      });
       grid.appendChild(tile);
     });
   }
