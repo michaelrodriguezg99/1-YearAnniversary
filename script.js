@@ -525,7 +525,8 @@ const QUIZ = [
       { src: "me2.jpg", label: "Michael", correct: true },
       { src: "me3.jpg", label: "Michael", correct: true },
       { src: "her.jpg", label: "You", vanish: true,
-        vanishMsg: "Absolutely not. *poof* 💨 You don't open doors on my watch." },
+        vanishGif: "CardTrick.gif",
+        vanishMsg: "✨ Poof! Nice try — door duty is mine 🎩" },
     ],
   },
  
@@ -611,13 +612,17 @@ function initQuiz() {
   }
  
   function handlePick(q, opt, tile) {
-    // vanishing option (the door question)
+    // vanishing option (the door question): spiral away, then a card-trick gif
     if (opt.vanish) {
-      tile.style.transition = "opacity .4s ease, transform .4s ease";
-      tile.style.opacity = "0";
-      tile.style.transform = "scale(0.55)";
       setMsg(opt.vanishMsg || "Nope 💨", "bad");
-      setTimeout(() => tile.remove(), 400);
+      const a = tile.animate([
+        { transform: "rotate(0deg) scale(1)",  opacity: 1 },
+        { transform: "rotate(720deg) scale(0)", opacity: 0 }
+      ], { duration: 1400, easing: "ease-in", fill: "forwards" });
+      a.onfinish = () => {
+        tile.remove();
+        if (opt.vanishGif) popGif(opt.vanishGif, 2800);
+      };
       return;
     }
     // denial question: the correct pick is denied a few times, then admitted
