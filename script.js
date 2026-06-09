@@ -64,7 +64,7 @@ const CAPTCHA_POOL = [
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
   { src: "violet.jpg", label: "Violet", effect: "thunder",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-  { src: "BadBunny.jpg", label: "BadBunny", gif: "cat_dance.gif",
+  { src: "BadBunny.jpg", label: "BadBunny",
     caption: "Bad Bunny is selling out stadiums, not showing up at your door. I bring snacks 🐰" },
   { src: "BabyMiko.jpg", label: "BabyMiko", effect: "thunder",
     caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
