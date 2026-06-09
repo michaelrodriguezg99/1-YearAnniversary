@@ -196,6 +196,15 @@ function initCaptcha() {
  
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+  // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
+  const prettify = s => (s || "")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .trim();
+  const initials = s => {
+    const w = prettify(s).split(/\s+/).filter(Boolean);
+    return ((w[0] ? w[0][0] : "") + (w[1] ? w[1][0] : "")).toUpperCase() || "?";
+  };
  
   function pickVisible() {
     const correct = CAPTCHA_POOL.filter(p => p.correct);
@@ -223,9 +232,9 @@ function initCaptcha() {
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
-        <div class="tile-ph" style="background:hsl(${h} 45% 62%)">
-          <span class="ico">${item.correct ? "💛" : "📖"}</span>
-          <span>${item.label || ""}</span>
+        <div class="tile-ph" style="--ph-h:${h}">
+          <span class="ph-avatar">${initials(item.label)}</span>
+          <span class="ph-name">${prettify(item.label)}</span>
         </div>`;
       const img = tile.querySelector("img");
       img.onload = () => tile.classList.add("has-img");
@@ -268,6 +277,10 @@ function initCaptcha() {
     verify.disabled = true;
     setTimeout(nextScreen, 1200);
   });
+ 
+  // shuffle button: re-pick a fresh random set of 9 (clears selection + message)
+  const refreshBtn = document.getElementById("cap-refresh");
+  if (refreshBtn) refreshBtn.addEventListener("click", render);
  
   render();
 }
