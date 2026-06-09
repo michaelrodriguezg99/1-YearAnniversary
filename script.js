@@ -101,7 +101,7 @@ const CAPTCHA_POOL = [
     caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
   { src: "JakeSully.jpg", label: "JakeSully",
     caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
-  { src: "Lola.png", label: "Lola", swim: true,
+  { src: "Lola.jpg", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor",
     caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
@@ -382,13 +382,14 @@ const LOGIN_PASSWORDS = [
   "9/11/2025", "9/11/2025",       // DD/MM/YYYY  (just in case she thinks day-first with out 09)
 ];
  
-// Silly wrong-password errors (shown in order, then sticks on the last one)
+// Wrong-date errors escalate in drama; the LAST one is the final warning.
+// One more wrong answer AFTER the warning resets (reloads) the whole page.
 const LOGIN_ERRORS = [
   "ERROR 404 — boyfriend feelings not found. Try again 💔",
-  "ERROR 403 — access denied: too cute to let in this easily 😌",
-  "ERROR 418 — I'm a teapot, and that's still wrong ☕",
-  "ERROR 401 — unauthorized. Think about the day everything changed 💕",
-  "ERROR 429 — too many attempts. Just kidding, keep going mi vida.",
+  "ERROR 403 — wrong again. The system is… mildly concerned 😕",
+  "ERROR 401 — seriously? Do you even remember me 🥲",
+  "ERROR 500 — CRITICAL: the relationship server is sweating. This is THE date 😰",
+  "⚠️ FINAL WARNING — one more wrong answer and I wipe this ENTIRE thing and start over 💣",
 ];
  
 function focusLoginPass() {
@@ -402,6 +403,7 @@ function initLogin() {
   const btn    = document.getElementById("login-btn");
   const msg    = document.getElementById("login-msg");
   const hint   = document.getElementById("login-hint");
+  const win    = document.querySelector("#login-screen .win");
   let tries = 0;
  
   const norm = s => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -420,7 +422,16 @@ function initLogin() {
       return;
     }
     if (!LOGIN_PASSWORDS.includes(p)) {
-      show(LOGIN_ERRORS[Math.min(tries, LOGIN_ERRORS.length - 1)], "bad");
+      // already got the FINAL WARNING and STILL wrong -> wipe the page
+      if (tries >= LOGIN_ERRORS.length) {
+        show("💥 SYSTEM WIPED. Starting over…", "bad");
+        passEl.disabled = true; btn.disabled = true;
+        win.classList.add("shake");
+        setTimeout(() => location.reload(), 1500);
+        return;
+      }
+      show(LOGIN_ERRORS[tries], "bad");
+      win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake");
       tries++;
       if (tries === 2) hint.textContent = "💡 Hint: the day we made it official 💕 (MM/DD/YYYY)";
       return;
