@@ -293,7 +293,7 @@ function initLogin() {
       return;
     }
     if (!LOGIN_USERS.includes(u)) {
-      show("ERROR 404 — user not found. There's only one girlfriend here 💁", "bad");
+      show("ERROR 404 — user not found. Your are my GF but only she knows her nickname 🤔", "bad");
       return;
     }
     if (!LOGIN_PASSWORDS.includes(p)) {
