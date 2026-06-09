@@ -73,6 +73,8 @@ const CAPTCHA_POOL = [
     caption: "Allie Hayes is a drama-major sweetheart… who only exists in Elle Kennedy's head. I'm in your contacts 🎭" },
   { src: "Dean.jpg", label: "Dean", gif: "Dean.gif",
     caption: "Dean Di Laurentis — trust-fund charmer who flirts with anything that moves. I only flirt with you 😏⚡" },
+      { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif",
+    caption: "Hannah Wells — mysterious and alluring, but I'm the one who's always here for you 😏⚡" },
   { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "thunder",
     caption: "Alastor is a literal demon who HATES being touched. I'm a softie who gives free hugs 📻⚡" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman",
