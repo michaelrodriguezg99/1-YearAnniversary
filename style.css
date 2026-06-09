@@ -130,7 +130,7 @@ body {
 .cap-tile.has-img .tile-ph { display: none; }
 
 .gif-pop img.cropped-allie {
-  clip-path: inset(0px 25px 22px 40px);
+  clip-path: inset(0px 20px 25px 40px);
   /* top right bottom left */
 }
  
