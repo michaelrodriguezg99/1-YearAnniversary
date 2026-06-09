@@ -252,7 +252,7 @@ function initCaptcha() {
      so "11/09/2025", "11-9-2025", "11092025" all match. Add/remove forms
      here to control exactly what counts as correct.
    ===================================================================== */
-const LOGIN_USERS = ["girlfriend", "alondra"];
+const LOGIN_USERS = ["caramelo"];
 const LOGIN_PASSWORDS = [
   "11092025", "1192025",       // MM/DD/YYYY  (11/09 and 11/9)
   "09112025", "9112025",       // DD/MM/YYYY  (just in case she thinks day-first)
