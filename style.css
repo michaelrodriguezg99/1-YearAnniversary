@@ -8,6 +8,7 @@
   --panel: #f4d9dd;       /* light pink panel */
   --panel-2: #e9c4cb;     /* mid pink */
   --ink: #7d2f2a;         /* dark red text */
+  --ink-soft: #b06a64;    /* muted red (hints) */
   --good: #3f8f5e;        /* success green */
 }
  
@@ -157,20 +158,11 @@ body {
 }
 .shake { animation: capShake 0.4s ease; }
  
-/* --- Lightning storm (fires on Verify when Xaden + Violet are both picked) --- */
+/* --- Lightning storm (animation is driven from script.js via element.animate) --- */
 .thunder-flash {
   position: fixed; inset: 0; z-index: 9999;
   pointer-events: none; opacity: 0;
   background: #fff;
-}
-.thunder-flash.strike { animation: thunderFlash 0.55s ease; }
-@keyframes thunderFlash {
-  0%   { opacity: 0; }
-  10%  { opacity: 0.95; }
-  20%  { opacity: 0.2; }
-  35%  { opacity: 0.85; }
-  55%  { opacity: 0; }
-  100% { opacity: 0; }
 }
 .thunder-bolt {
   position: absolute;
@@ -179,16 +171,41 @@ body {
   fill: #fff;
   filter: drop-shadow(0 0 8px #b07cff) drop-shadow(0 0 18px #7c4dff);
   opacity: 0;
-  /* transform is set per-strike by JS (random angle/position) */
+  /* position + transform are set per-strike by JS (random angle/position) */
 }
-.thunder-flash.strike .thunder-bolt { animation: boltFlicker 0.55s ease; }
-@keyframes boltFlicker {
-  0%, 100% { opacity: 0; }
-  8%  { opacity: 1; }
-  18% { opacity: 0.25; }
-  30% { opacity: 1; }
-  50% { opacity: 0; }
+ 
+/* =====================================================================
+   SCREEN 3 — LOGIN MODULE
+   ===================================================================== */
+.login-body { text-align: center; }
+.login-logo { font-size: 24px; color: var(--frame-dark); margin-bottom: 2px; }
+.login-sub  { font-size: 14px; color: var(--ink); margin: 0 0 14px; }
+.login-label {
+  display: block; text-align: left;
+  font-size: 14px; color: var(--ink); margin: 8px 0 3px;
 }
+.login-input {
+  width: 100%; box-sizing: border-box;
+  font-family: "Pixelify Sans", sans-serif; font-size: 17px;
+  padding: 9px 10px; color: var(--ink);
+  background: #fff; border: 3px solid var(--frame); outline: none;
+}
+.login-input:focus { border-color: var(--frame-dark); box-shadow: 0 0 0 2px var(--panel-2); }
+.login-input:disabled { background: var(--panel); }
+.login-hint { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0; text-align: left; cursor: help; }
+.login-btn {
+  width: 100%; margin-top: 14px;
+  font-family: "Pixelify Sans", sans-serif; font-size: 18px;
+  background: var(--frame-dark); color: #fff; border: none;
+  padding: 11px; cursor: pointer;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
+}
+.login-btn:hover  { background: var(--frame); }
+.login-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2); }
+.login-btn:disabled { opacity: 0.6; cursor: default; }
+.login-msg { min-height: 20px; margin-top: 10px; font-size: 14px; line-height: 1.2; }
+.login-msg.bad { color: var(--frame-dark); }
+.login-msg.ok  { color: var(--good); }
  
 /* =====================================================================
    SCREEN 3 — LETTER (renewal finale)  — your original styling, verbatim
