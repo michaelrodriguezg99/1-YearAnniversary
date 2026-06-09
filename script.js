@@ -95,6 +95,20 @@ const CAPTCHA_POOL = [
     caption: "The Hitachiin twins are a 2-for-1 cartoon deal. You already have your favorite duo: us 👯⚡" },
   { src: "Tamaki.jpg", label: "Tamaki", effect: "thunder",
     caption: "Tamaki would spin you through a rose garden, then trip over himself. Charming, but fictional 🌹⚡" },
+  { src: "Kovu.jpg", label: "Kovu",
+    caption: "Kovu was literally raised to assassinate his girlfriend's dad. I just want to renew our subscription — no betrayal arc 🦁" },
+  { src: "Neytiri.jpg", label: "Neytiri",
+    caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
+  { src: "JakeSully.jpg", label: "JakeSully",
+    caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
+  { src: "Lola.jpg", label: "Lola",
+    caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
+  { src: "LenaLuthor.jpg", label: "LenaLuthor",
+    caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
+  { src: "LoveQuinn.jpg", label: "LoveQuinn",
+    caption: "Love Quinn is devoted… to a concerning, body-count kind of degree. I'm devoted AND legally free 🔪❤️" },
+  { src: "RheaRipley.jpg", label: "RheaRipley",
+    caption: "Rhea Ripley would suplex me for looking at you wrong. Massive respect — but she's on TV, I'm on your couch 💪" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
