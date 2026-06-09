@@ -80,7 +80,7 @@ function initCaptcha() {
   const win    = document.querySelector("#captcha-screen .win");
   let nudgeIdx = 0;
  
-  // ----- Lightning effect (overlay created once, reused) -----
+  // ----- Lightning storm (overlay created once, reused) -----
   let flash = document.querySelector(".thunder-flash");
   if (!flash) {
     flash = document.createElement("div");
@@ -90,33 +90,67 @@ function initCaptcha() {
       '<path d="M52 0 L30 96 L48 96 L26 200 L74 86 L54 86 L70 0 Z"/></svg>';
     document.body.appendChild(flash);
   }
+  const bolt = flash.querySelector(".thunder-bolt");
+ 
   let actx;
-  function thunderSound() {
+  function audioCtx() {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    return actx;
+  }
+  function rumble(dur) {            // long, rolling low rumble across the whole storm
     if (!THUNDER_SOUND) return;
     try {
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      if (actx.state === "suspended") actx.resume();
-      const ctx = actx, dur = 1.3;
-      const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+      const ctx = audioCtx();
+      const len = Math.floor(ctx.sampleRate * dur);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
       const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) {
-        const t = i / d.length;
-        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 1.7);  // noise that decays = rumble
+      for (let i = 0; i < len; i++) {
+        const t = i / len;
+        const env = (1 - t) * (0.6 + 0.4 * Math.sin(t * 9));   // a couple of swells, fading out
+        d[i] = (Math.random() * 2 - 1) * Math.max(env, 0);
       }
       const src = ctx.createBufferSource(); src.buffer = buf;
-      const lp = ctx.createBiquadFilter(); lp.type = "lowpass";
-      lp.frequency.setValueAtTime(900, ctx.currentTime);
-      lp.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + dur);
-      const g = ctx.createGain(); g.gain.value = 0.55;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 220;
+      const g = ctx.createGain(); g.gain.value = 0.5;
       src.connect(lp); lp.connect(g); g.connect(ctx.destination);
       src.start();
-    } catch (e) { /* audio not available — visual still fires */ }
+    } catch (e) { /* audio unavailable — visuals still fire */ }
   }
-  function triggerThunder() {
-    const bolt = flash.querySelector(".thunder-bolt");
-    if (bolt) bolt.style.left = (20 + Math.random() * 60) + "%";   // strike a random spot
-    flash.classList.remove("go"); void flash.offsetWidth; flash.classList.add("go");
-    thunderSound();
+  function crack() {               // sharp per-strike crack
+    if (!THUNDER_SOUND) return;
+    try {
+      const ctx = audioCtx();
+      const dur = 0.3, len = Math.floor(ctx.sampleRate * dur);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        const t = i / len;
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 3);
+      }
+      const src = ctx.createBufferSource(); src.buffer = buf;
+      const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 700;
+      const g = ctx.createGain(); g.gain.value = 0.3;
+      src.connect(hp); hp.connect(g); g.connect(ctx.destination);
+      src.start();
+    } catch (e) {}
+  }
+  function strike() {              // one bolt from a random angle + position
+    const angle = Math.random() * 110 - 55;        // -55° .. 55°
+    const left  = 8 + Math.random() * 84;          // anywhere across the screen
+    const scale = 0.7 + Math.random() * 0.9;
+    bolt.style.left = left + "%";
+    bolt.style.transformOrigin = "top center";
+    bolt.style.transform = `translateX(-50%) rotate(${angle}deg) scale(${scale})`;
+    flash.classList.remove("strike"); void flash.offsetWidth; flash.classList.add("strike");
+    crack();
+  }
+  function triggerThunder() {       // a 3.5–5s storm of strikes from different angles
+    const total = 3500 + Math.random() * 1500;     // milliseconds
+    const n = 6 + Math.floor(Math.random() * 4);    // 6–9 strikes
+    strike();                                       // first strike immediately
+    for (let k = 1; k < n; k++) setTimeout(strike, 200 + Math.random() * (total - 200));
+    rumble(total / 1000);
   }
  
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
@@ -144,6 +178,7 @@ function initCaptcha() {
       tile.dataset.correct = item.correct ? "true" : "false";
       if (item.caption) tile.dataset.caption = item.caption;
       if (item.effect)  tile.dataset.effect  = item.effect;
+      if (item.label)   tile.dataset.label   = item.label;
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -154,10 +189,7 @@ function initCaptcha() {
       const img = tile.querySelector("img");
       img.onload = () => tile.classList.add("has-img");
       if (item.src) img.src = item.src;
-      tile.addEventListener("click", () => {
-        const on = tile.classList.toggle("selected");
-        if (on && tile.dataset.effect === "thunder") triggerThunder();
-      });
+      tile.addEventListener("click", () => tile.classList.toggle("selected"));
       grid.appendChild(tile);
     });
   }
@@ -174,6 +206,15 @@ function initCaptcha() {
  
     if (!selected.length) {
       fail(CAPTCHA_NUDGES[Math.min(nudgeIdx++, CAPTCHA_NUDGES.length - 1)]);
+      return;
+    }
+    // both Xaden AND Violet (two different thunder characters) selected => storm
+    const thunderPicked = new Set(
+      selected.filter(t => t.dataset.effect === "thunder").map(t => t.dataset.label)
+    );
+    if (thunderPicked.size >= 2) {
+      triggerThunder();
+      fail("Xaden AND Violet?! You summoned a whole storm. Both fictional, both taken — by each other. Pick me ⚡⚡");
       return;
     }
     const wrong = selected.find(t => t.dataset.correct !== "true");
