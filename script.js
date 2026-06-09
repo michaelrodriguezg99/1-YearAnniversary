@@ -61,6 +61,20 @@ const CAPTCHA_POOL = [
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
   { src: "violet.jpg", label: "Violet", effect: "thunder",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
+     // ----- YOU (the ONLY correct answers) -----
+  { src: "me1.jpg", label: "Michael", correct: true },
+  { src: "me2.jpg", label: "Michael", correct: true },
+  { src: "me3.jpg", label: "Michael", correct: true },
+ 
+  // ----- Book boyfriends / decoys (each picked => its own funny error) -----
+  // REPLACE these with Alondra's actual favorites + your own captions.
+  // Add  effect: "thunder"  to any entry to trigger the lightning effect.
+  { src: "rhysand.jpg", label: "Rhysand",
+    caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
+  { src: "xaden.jpg", label: "Xaden", effect: "thunder",
+    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
+  { src: "violet.jpg", label: "Violet", effect: "thunder",
+    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
