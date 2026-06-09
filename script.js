@@ -209,17 +209,17 @@ function initCaptcha() {
   function showGif(src) {
     const img = gifPop.querySelector("img");
     img.src = src;
-  
+ 
     img.classList.remove("cropped-allie");
-
     if (src.includes("AllieAndDean.gif")) {
       img.classList.add("cropped-allie");
     }
-  
+ 
     gifPop.classList.add("show");
     clearTimeout(gifTimer);
     gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
   }
+ 
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
@@ -295,6 +295,13 @@ function initCaptcha() {
     if (thunderPicked.size >= 2) {
       triggerThunder();
       fail("Xaden AND Violet?! You summoned a whole storm. Both fictional, both taken — by each other. Pick me ⚡⚡");
+      return;
+    }
+    // Allie + Dean (and ONLY those two) selected => their couple gif
+    const picked = selected.map(t => t.dataset.label);
+    if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
+      showGif("AllieAndDean.gif");
+      fail("Allie AND Dean? They're endgame with each OTHER (read The Score 😉). Hands off — pick me 💛");
       return;
     }
     const wrong = selected.find(t => t.dataset.correct !== "true");
