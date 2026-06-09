@@ -210,7 +210,7 @@ function initCaptcha() {
     gifPop.querySelector("img").src = src;
     gifPop.classList.add("show");
     clearTimeout(gifTimer);
-    gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
+    gifTimer = setTimeout(() => gifPop.classList.remove("show"), 4000);
   }
  
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
