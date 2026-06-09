@@ -58,7 +58,7 @@ function startRunawayRound() {
 // ----- Final celebration -----
 function showFinal() {
     title.textContent = "Yippeeee!";
-    catImg.src = "cat_dance.gif";
+    catImg.src = "cameo_and_candy_dancing.gif";
     document.querySelector(".letter-window").classList.add("final");
     buttons.style.display = "none";
     finalText.style.display = "block";
