@@ -244,7 +244,7 @@ body {
 .swim-fish {
   position: absolute; left: 0;
   width: 160px; height: auto;
-  transform: translateX(120vw);
+  transform: translateX(120vw) rotate(-90deg);
   filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
 }
  

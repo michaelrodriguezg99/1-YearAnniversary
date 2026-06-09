@@ -101,7 +101,7 @@ const CAPTCHA_POOL = [
     caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
   { src: "JakeSully.jpg", label: "JakeSully",
     caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
-  { src: "Lola.png", label: "Lola", swim: true,
+  { src: "Lola.jpg", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor",
     caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
@@ -249,10 +249,10 @@ function initCaptcha() {
     const vw = window.innerWidth;
     fish.style.top = (15 + Math.random() * 45) + "vh";   // random lane each time
     const anim = fish.animate([
-      { transform: `translateX(${vw + 240}px) rotate(3deg)` },
-      { transform: `translateX(${vw * 0.6}px) translateY(-18px) rotate(-4deg)`, offset: 0.35 },
-      { transform: `translateX(${vw * 0.35}px) translateY(16px) rotate(4deg)`, offset: 0.65 },
-      { transform: `translateX(-280px) translateY(0) rotate(-3deg)` }
+      { transform: `translateX(${vw + 240}px) rotate(-87deg)` },
+      { transform: `translateX(${vw * 0.6}px) translateY(-18px) rotate(-94deg)`, offset: 0.35 },
+      { transform: `translateX(${vw * 0.35}px) translateY(16px) rotate(-86deg)`, offset: 0.65 },
+      { transform: `translateX(-280px) translateY(0) rotate(-93deg)` }
     ], { duration: 3400, easing: "linear" });
     anim.onfinish = () => fish.remove();
   }
