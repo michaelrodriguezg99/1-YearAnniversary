@@ -1,139 +1,206 @@
-body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-image: url("heart-bg.jpg");
-    font-family: "Pixelify Sans", sans-serif;
+/* =====================================================================
+   SHARED THEME — new variables used by the screen-manager + new modules.
+   Your existing letter styling is untouched; these only feed new screens.
+   ===================================================================== */
+:root {
+  --frame: #c75c52;       /* salmon window border (matches window.png) */
+  --frame-dark: #a8443b;  /* darker red accents */
+  --panel: #f4d9dd;       /* light pink panel */
+  --panel-2: #e9c4cb;     /* mid pink */
+  --ink: #7d2f2a;         /* dark red text */
+  --good: #3f8f5e;        /* success green */
 }
 
-/* Envelope Screen */
-#envelope-container {
-    text-align: center;
-    cursor:pointer;
+body {
+  margin: 0;
+  min-height: 100vh;            /* was 100vh; min- lets tall screens (captcha) scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("heart-bg.jpg");
+  background-size: cover;
+  font-family: "Pixelify Sans", sans-serif;
 }
+
+/* =====================================================================
+   SCREEN MANAGER (shared) — one screen visible at a time.
+   ===================================================================== */
+#app {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.screen { display: none; width: 100%; padding: 12px; box-sizing: border-box; }
+.screen.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* generic pixel window frame (used by the captcha + future modules) */
+.win {
+  width: 100%;
+  max-width: 420px;
+  background: var(--panel);
+  border: 4px solid var(--frame);
+  box-shadow: 0 0 0 4px var(--panel-2), 6px 6px 0 0 rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+.win-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel-2);
+  border-bottom: 4px solid var(--frame);
+  padding: 6px 10px;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--frame-dark);
+}
+.win-body { padding: 14px; }
+
+/* =====================================================================
+   SCREEN 1 — ENVELOPE  (your original styling, re-scoped)
+   ===================================================================== */
+#envelope-screen { cursor: pointer; }
+.env { text-align: center; }
+#envelope-screen p { font-size: 40px; }   /* was a global p{} rule — scoped here */
 
 @keyframes pulse {
-    0% {
-        transform:scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+#envelope {
+  width: 200px;
+  animation: pulse 1.5s infinite;
+  cursor: pointer;
 }
 
-#envelope{
-    width: 200px;
-    animation: pulse 1.5s infinite;
-    cursor: pointer;
+/* =====================================================================
+   SCREEN 2 — CAPTCHA MODULE  (self-contained)
+   ===================================================================== */
+#captcha-screen .win-body { padding: 0; }
+.cap-head { background: var(--frame); color: #fff; padding: 12px 14px; }
+.cap-head .small { font-size: 13px; opacity: 0.9; display: block; margin-top: 2px; }
+.cap-prompt { font-size: 19px; line-height: 1.15; }
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  padding: 5px;
+  background: var(--frame);
 }
-
-#letter-container{
-    display: none;
-    position:fixed;
-    inset: 0;
-    justify-content: center;
-    align-items: center;
+.cap-tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0; margin: 0; border: none;
+  cursor: pointer; overflow: hidden;
+  background: #d9b7bd;
+  font-family: "Pixelify Sans", sans-serif;
 }
-
-.letter-window{
-    width: 90vw;
-    max-width: 800px;
-    aspect-ratio: 3/2;
-    padding: 20px 20px 0 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background-image: url("window.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    border-radius: 12px;
-    gap: 1px;
-    padding-top: 180px;
-
-    transform: scale(1.2);
-    opacity: 0;
-    transition: transform 0.6s ease, opacity 0.6s ease;
+.cap-tile img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;                 /* shown only once a real photo loads */
 }
+.cap-tile.has-img img { display: block; }
+.cap-tile.has-img .tile-ph { display: none; }
 
-.letter-window.open {
-    transform: scale(1);
-    opacity: 1;
+.tile-ph {                       /* labeled placeholder (test mode) */
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; color: #fff; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+  font-size: 14px; text-align: center; padding: 4px;
 }
+.tile-ph .ico { font-size: 26px; }
 
-h1 {
-    font-size: 30px;
-    margin:0;
+.cap-tile::after {               /* Google-style selection check */
+  content: "✓";
+  position: absolute; top: 5px; left: 5px;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--frame-dark); color: #fff; font-size: 16px;
+  border-radius: 50%;
+  transform: scale(0); transition: transform 0.12s ease;
 }
+.cap-tile.selected::after { transform: scale(1); }
+.cap-tile.selected img,
+.cap-tile.selected .tile-ph { filter: brightness(0.7); }
 
-p {
-    font-size: 40px;
+.cap-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--panel);
 }
-
-/* Cat */
-
-.cat {
-    width: 250px;
-    margin: 10px 0;
-    transition: width 0.4s ease;
+.cap-msg { font-size: 14px; min-height: 20px; max-width: 62%; line-height: 1.1; color: var(--ink); }
+.cap-msg.bad { color: var(--frame-dark); }
+.cap-msg.ok  { color: var(--good); }
+.cap-verify {
+  font-family: "Pixelify Sans", sans-serif; font-size: 17px;
+  background: var(--frame-dark); color: #fff;
+  border: none; padding: 9px 16px; cursor: pointer;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
 }
+.cap-verify:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2); }
+.cap-verify:disabled { opacity: 0.6; cursor: default; }
 
-.letter-window.final .cat {
-    width: 180px;
+@keyframes capShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
 }
+.shake { animation: capShake 0.4s ease; }
 
-/* buttons */
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    position: relative;
+/* =====================================================================
+   SCREEN 3 — LETTER (renewal finale)  — your original styling, verbatim
+   ===================================================================== */
+.letter-window {
+  width: 90vw;
+  max-width: 800px;
+  aspect-ratio: 3/2;
+  padding: 20px 20px 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-image: url("window.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 12px;
+  gap: 1px;
+  padding-top: 180px;
+  transform: scale(1.2);
+  opacity: 0;
+  transition: transform 0.6s ease, opacity 0.6s ease;
 }
+.letter-window.open { transform: scale(1); opacity: 1; }
 
-.no-wrapper{
-    position:relative;
-}
+.letter-window h1 { font-size: 30px; margin: 0; }   /* was global h1{} — scoped */
 
-.btn {
-    width: 120px;
-    cursor: pointer;
-    user-select: none;
-}
+.cat { width: 250px; margin: 10px 0; transition: width 0.4s ease; }
+.letter-window.final .cat { width: 180px; }
 
-.yes-btn,
-.no-btn {
-width: 120px;
-height: auto;
-display: inline-block;
-}
+.buttons { display: flex; justify-content: center; gap: 30px; position: relative; }
+.no-wrapper { position: relative; }
+.btn { width: 120px; cursor: pointer; user-select: none; }
+.yes-btn, .no-btn { width: 120px; height: auto; display: inline-block; }
+.yes-btn { position: relative; z-index: 2; transform-origin: center center; transition: transform 0.3s ease; }
+.no-btn  { z-index: 1; position: relative; transition: transform 0.15s ease; cursor: default; }
 
-.yes-btn {
-    position: relative;
-    z-index: 2;
-    transform-origin: center center;
-    transition: transform 0.3s ease;
-}
-
-.no-btn {
-    z-index: 1;
-    position: relative;
-    transition: transform 0.15s ease;
-    cursor: default;
-}
-
-.final-text{
-    font-size: 22px;
-    line-height: 1.4;
-    text-align: center;
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: rgba(255,240,240,0.5);
-    border-radius: 12px;
+.final-text {
+  font-size: 22px;
+  line-height: 1.4;
+  text-align: center;
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: rgba(255, 240, 240, 0.5);
+  border-radius: 12px;
 }
