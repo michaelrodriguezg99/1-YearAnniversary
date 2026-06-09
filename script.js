@@ -56,13 +56,14 @@ const CAPTCHA_POOL = [
   // ----- Book boyfriends / celebrity crushes / decoys (each picked => its own funny error) -----
   // Any entry with  effect: "thunder"  joins the lightning storm when
   // two different thunder picks are selected together.
+  // Any entry with  gif: "file.gif"  pops that gif up when the tile is picked.
   { src: "rhysand.jpg", label: "Rhysand",
     caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
   { src: "xaden.jpg", label: "Xaden", effect: "thunder",
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
   { src: "violet.jpg", label: "Violet", effect: "thunder",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-  { src: "BadBunny.jpg", label: "BadBunny",
+  { src: "BadBunny.jpg", label: "BadBunny", gif: "cat_dance.gif",
     caption: "Bad Bunny is selling out stadiums, not showing up at your door. I bring snacks 🐰" },
   { src: "BabyMiko.jpg", label: "BabyMiko", effect: "thunder",
     caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
@@ -70,7 +71,7 @@ const CAPTCHA_POOL = [
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒⚡" },
   { src: "Allie.jpg", label: "Allie",
     caption: "Allie Hayes is a drama-major sweetheart… who only exists in Elle Kennedy's head. I'm in your contacts 🎭" },
-  { src: "Dean.jpg", label: "Dean", effect: "thunder",
+  { src: "Dean.jpg", label: "Dean", gif: "Dean.gif",
     caption: "Dean Di Laurentis — trust-fund charmer who flirts with anything that moves. I only flirt with you 😏⚡" },
   { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "thunder",
     caption: "Alastor is a literal demon who HATES being touched. I'm a softie who gives free hugs 📻⚡" },
@@ -194,6 +195,22 @@ function initCaptcha() {
     rumble(total / 1000);
   }
  
+  // ----- Reaction GIF popup (overlay created once, reused) -----
+  let gifPop = document.querySelector(".gif-pop");
+  if (!gifPop) {
+    gifPop = document.createElement("div");
+    gifPop.className = "gif-pop";
+    gifPop.innerHTML = '<img alt="">';
+    document.body.appendChild(gifPop);
+  }
+  let gifTimer;
+  function showGif(src) {
+    gifPop.querySelector("img").src = src;
+    gifPop.classList.add("show");
+    clearTimeout(gifTimer);
+    gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
+  }
+ 
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
@@ -229,6 +246,7 @@ function initCaptcha() {
       if (item.caption) tile.dataset.caption = item.caption;
       if (item.effect)  tile.dataset.effect  = item.effect;
       if (item.label)   tile.dataset.label   = item.label;
+      if (item.gif)     tile.dataset.gif      = item.gif;
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -239,7 +257,10 @@ function initCaptcha() {
       const img = tile.querySelector("img");
       img.onload = () => tile.classList.add("has-img");
       if (item.src) img.src = item.src;
-      tile.addEventListener("click", () => tile.classList.toggle("selected"));
+      tile.addEventListener("click", () => {
+        const on = tile.classList.toggle("selected");
+        if (on && tile.dataset.gif) showGif(tile.dataset.gif);
+      });
       grid.appendChild(tile);
     });
   }
