@@ -122,6 +122,14 @@ const CAPTCHA_NUDGES = [
   "Bestie. Select the boyfriend.",
 ];
  
+// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
+const DUET = {
+  line: `Baby, qué afrenta'
+Tú quieres con do' y no sé si va' a aguantar (Ey)`,
+  song:   "Party",
+  artist: "Rauw Alejandro & Bad Bunny",
+};
+ 
 function initCaptcha() {
   const grid   = document.getElementById("cap-grid");
   const msgEl  = document.getElementById("cap-msg");
@@ -258,6 +266,25 @@ function initCaptcha() {
     anim.onfinish = () => fish.remove();
   }
  
+  // ----- Lyric flash (e.g. the Rauw × Bad Bunny duet line) -----
+  let lyricBox = document.querySelector(".lyric-pop");
+  if (!lyricBox) {
+    lyricBox = document.createElement("div");
+    lyricBox.className = "lyric-pop";
+    lyricBox.innerHTML = '<div class="lyric-card"><span class="lyric-note">🎵</span>' +
+      '<span class="lyric-text"></span><span class="lyric-meta"></span></div>';
+    document.body.appendChild(lyricBox);
+  }
+  let lyricTimer;
+  function showLyric(duet) {
+    lyricBox.querySelector(".lyric-text").textContent = duet.line || "";
+    lyricBox.querySelector(".lyric-meta").textContent =
+      [duet.song, duet.artist].filter(Boolean).join(" — ");
+    lyricBox.classList.add("show");
+    clearTimeout(lyricTimer);
+    lyricTimer = setTimeout(() => lyricBox.classList.remove("show"), 4200);
+  }
+ 
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
@@ -342,6 +369,12 @@ function initCaptcha() {
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
       showGif("AllieAndDean.gif");
       fail("Allie AND Dean? They're endgame with each OTHER (read The Score 😉). Hands off — pick me 💛");
+      return;
+    }
+    // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
+    if (picked.length === 2 && picked.includes("RauwAlejandro") && picked.includes("BadBunny")) {
+      showLyric(DUET);
+      fail("A whole duet?? 🎶 Iconic taste — but they don't know your name. I do 🎤");
       return;
     }
     const wrong = selected.find(t => t.dataset.correct !== "true");
