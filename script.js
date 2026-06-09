@@ -101,7 +101,7 @@ const CAPTCHA_POOL = [
     caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
   { src: "JakeSully.jpg", label: "JakeSully",
     caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
-  { src: "Lola.jpg", label: "Lola",
+  { src: "Lola.jpg", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor",
     caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
@@ -234,6 +234,29 @@ function initCaptcha() {
     gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
   }
  
+  // ----- Swim-across effect (an image glides over the screen with a bob) -----
+  let swimLayer = document.querySelector(".swim-layer");
+  if (!swimLayer) {
+    swimLayer = document.createElement("div");
+    swimLayer.className = "swim-layer";
+    document.body.appendChild(swimLayer);
+  }
+  function swimAcross(src) {
+    const fish = document.createElement("img");
+    fish.className = "swim-fish";
+    fish.src = src;
+    swimLayer.appendChild(fish);
+    const vw = window.innerWidth;
+    fish.style.top = (15 + Math.random() * 45) + "vh";   // random lane each time
+    const anim = fish.animate([
+      { transform: `translateX(${vw + 240}px) rotate(3deg)` },
+      { transform: `translateX(${vw * 0.6}px) translateY(-18px) rotate(-4deg)`, offset: 0.35 },
+      { transform: `translateX(${vw * 0.35}px) translateY(16px) rotate(4deg)`, offset: 0.65 },
+      { transform: `translateX(-280px) translateY(0) rotate(-3deg)` }
+    ], { duration: 3400, easing: "linear" });
+    anim.onfinish = () => fish.remove();
+  }
+ 
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
@@ -270,6 +293,7 @@ function initCaptcha() {
       if (item.effect)  tile.dataset.effect  = item.effect;
       if (item.label)   tile.dataset.label   = item.label;
       if (item.gif)     tile.dataset.gif      = item.gif;
+      if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -282,7 +306,8 @@ function initCaptcha() {
       if (item.src) img.src = item.src;
       tile.addEventListener("click", () => {
         const on = tile.classList.toggle("selected");
-        if (on && tile.dataset.gif) showGif(tile.dataset.gif);
+        if (on && tile.dataset.gif)  showGif(tile.dataset.gif);
+        if (on && tile.dataset.swim) swimAcross(tile.dataset.swim);
       });
       grid.appendChild(tile);
     });
@@ -308,7 +333,7 @@ function initCaptcha() {
     );
     if (thunderPicked.size >= 2) {
       triggerThunder();
-      fail("Xaden AND Violet?! Ahí te di un preview de lo que hacen... pero yo también tengo un taser ⚡😏");
+      fail("Xaden AND Violet?! You summoned a whole storm. Both fictional, both taken — by each other. Pick me ⚡⚡");
       return;
     }
     // Allie + Dean (and ONLY those two) selected => their couple gif

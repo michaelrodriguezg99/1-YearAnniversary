@@ -236,6 +236,18 @@ body {
   image-rendering: pixelated;
 }
  
+/* --- Swim-across effect (e.g. Lola gliding over the screen when picked) --- */
+.swim-layer {
+  position: fixed; inset: 0; z-index: 9998;
+  pointer-events: none; overflow: hidden;
+}
+.swim-fish {
+  position: absolute; left: 0;
+  width: 160px; height: auto;
+  transform: translateX(120vw);
+  filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
+}
+ 
 /* =====================================================================
    SCREEN 3 — LOGIN MODULE
    ===================================================================== */
