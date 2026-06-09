@@ -94,7 +94,7 @@ body {
 .cap-head .small { font-size: 13px; opacity: 0.9; display: block; margin-top: 2px; }
 .cap-prompt { font-size: 19px; line-height: 1.15; }
 .cap-refresh {
-  position: relative; top: 10px; right: 10px;
+  position: absolute; top: 10px; right: 10px;
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
   font-family: "Pixelify Sans", sans-serif; font-size: 20px; line-height: 1;
