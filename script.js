@@ -69,7 +69,7 @@ const CAPTCHA_POOL = [
     caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
   { src: "Garrett.jpg", label: "Garrett", effect: "thunder",
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒⚡" },
-  { src: "Allie.jpg", label: "Allie",
+  { src: "Allie.jpg", label: "Allie", gif: "AllieAndDean.gif",
     caption: "Allie Hayes is a drama-major sweetheart… who only exists in Elle Kennedy's head. I'm in your contacts 🎭" },
   { src: "Dean.jpg", label: "Dean", gif: "Dean.gif",
     caption: "Dean Di Laurentis — trust-fund charmer who flirts with anything that moves. I only flirt with you 😏⚡" },
