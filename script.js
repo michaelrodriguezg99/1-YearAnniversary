@@ -11,7 +11,7 @@ const SCREENS = [
   // future modules (login, quiz, wrapped, scrapbook...) slot in HERE
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
-
+ 
 let _screen = 0;
 function showScreen(i) {
   SCREENS.forEach((s, idx) =>
@@ -28,14 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
   SCREENS.forEach(s => s.init && s.init());
   showScreen(0);
 });
-
+ 
 /* =====================================================================
    SCREEN 1 — ENVELOPE
    ===================================================================== */
 function initEnvelope() {
   document.getElementById("envelope-screen").addEventListener("click", nextScreen);
 }
-
+ 
 /* =====================================================================
    SCREEN 2 — CAPTCHA MODULE
    ---------------------------------------------------------------------
@@ -51,7 +51,7 @@ const CAPTCHA_POOL = [
   { src: "me1.jpg", label: "Michael", correct: true },
   { src: "me2.jpg", label: "Michael", correct: true },
   { src: "me3.jpg", label: "Michael", correct: true },
-
+ 
   // ----- Book boyfriends / decoys (each picked => its own funny error) -----
   // REPLACE these with Alondra's actual favorites + your own captions.
   { src: "rhysand.jpg", label: "Rhysand",
@@ -59,26 +59,26 @@ const CAPTCHA_POOL = [
   { src: "xaden.jpg", label: "Xaden",
     caption: "Xaden can't even text back — he's fictional. I reply in 4 seconds. Try again 😌" },
 ];
-
+ 
 const CAPTCHA_VISIBLE     = 9;  // tiles shown at once
 const CAPTCHA_CORRECT_MIN = 1;  // guarantee at least this many of YOUR photos appear
-
+ 
 const CAPTCHA_NUDGES = [
   "Pick at least one. He's right there 👀",
   "Still nothing? He's getting insecure.",
   "Bestie. Select the boyfriend.",
 ];
-
+ 
 function initCaptcha() {
   const grid   = document.getElementById("cap-grid");
   const msgEl  = document.getElementById("cap-msg");
   const verify = document.getElementById("cap-verify");
   const win    = document.querySelector("#captcha-screen .win");
   let nudgeIdx = 0;
-
+ 
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
-
+ 
   function pickVisible() {
     const correct = CAPTCHA_POOL.filter(p => p.correct);
     const decoys  = CAPTCHA_POOL.filter(p => !p.correct);
@@ -91,7 +91,7 @@ function initCaptcha() {
       console.warn("CAPTCHA: no correct photo visible — add at least one {correct:true}.");
     return shuffle(chosen).slice(0, CAPTCHA_VISIBLE);
   }
-
+ 
   function render() {
     msgEl.textContent = ""; msgEl.className = "cap-msg";
     grid.innerHTML = "";
@@ -114,17 +114,17 @@ function initCaptcha() {
       grid.appendChild(tile);
     });
   }
-
+ 
   function fail(text) {
     msgEl.textContent = text; msgEl.className = "cap-msg bad";
     win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake");
     grid.querySelectorAll(".selected").forEach(t => t.classList.remove("selected"));
   }
-
+ 
   verify.addEventListener("click", () => {
     const tiles    = [...grid.querySelectorAll(".cap-tile")];
     const selected = tiles.filter(t => t.classList.contains("selected"));
-
+ 
     if (!selected.length) {
       fail(CAPTCHA_NUDGES[Math.min(nudgeIdx++, CAPTCHA_NUDGES.length - 1)]);
       return;
@@ -139,10 +139,10 @@ function initCaptcha() {
     verify.disabled = true;
     setTimeout(nextScreen, 1200);
   });
-
+ 
   render();
 }
-
+ 
 /* =====================================================================
    SCREEN 3 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
@@ -153,7 +153,7 @@ function openLetterWindow() {
   win.classList.remove("open");          // reset in case of re-entry
   setTimeout(() => win.classList.add("open"), 50);
 }
-
+ 
 function initLetter() {
   const screen    = document.getElementById("letter-screen");
   const noBtn     = screen.querySelector(".no-btn");
@@ -162,15 +162,15 @@ function initLetter() {
   const catImg    = screen.querySelector("#letter-cat");
   const buttons   = screen.querySelector("#letter-buttons");
   const finalText = screen.querySelector("#final-text");
-
+ 
   // "grow" -> No grows Yes | "sad" -> heartbroken Cameo | "runaway" -> No dodges
   let phase = "grow";
   let yesScale = 1;
-
+ 
   yesBtn.style.position = "relative";
   yesBtn.style.transformOrigin = "center center";
   yesBtn.style.transition = "transform 0.3s ease";
-
+ 
   function resetYesBtn() {
     yesScale = 1;
     yesBtn.style.position = "relative";
@@ -178,7 +178,7 @@ function initLetter() {
     yesBtn.style.left = "";
     yesBtn.style.transform = "";
   }
-
+ 
   function startSadRound() {
     phase = "sad";
     resetYesBtn();
@@ -186,7 +186,7 @@ function initLetter() {
     title.textContent = "Hiciste a Cameo triste por dudar... ¿De verdad quieres ponerlo triste?";
     yesBtn.style.display = "none";
   }
-
+ 
   function startRunawayRound() {
     phase = "runaway";
     catImg.src = "candy_heart.gif";
@@ -194,7 +194,7 @@ function initLetter() {
     yesBtn.style.display = "";
     noBtn.style.transform = "";
   }
-
+ 
   function showFinal() {
     title.textContent = "Yippeeee!";
     catImg.src = "cameo_and_candy_dancing.gif";
@@ -202,7 +202,7 @@ function initLetter() {
     buttons.style.display = "none";
     finalText.style.display = "block";
   }
-
+ 
   noBtn.addEventListener("click", () => {
     if (phase === "grow") {
       yesScale += 2;
@@ -216,7 +216,7 @@ function initLetter() {
       startRunawayRound();
     }
   });
-
+ 
   noBtn.addEventListener("mouseover", () => {
     if (phase !== "runaway") return;
     const min = 150, max = 250;
@@ -227,7 +227,7 @@ function initLetter() {
     noBtn.style.transition = "transform 0.3s ease";
     noBtn.style.transform = `translate(${moveX}px, ${moveY}px)`;
   });
-
+ 
   yesBtn.addEventListener("click", () => {
     if (phase === "grow") { startSadRound(); return; }
     if (phase === "runaway") { showFinal(); }
