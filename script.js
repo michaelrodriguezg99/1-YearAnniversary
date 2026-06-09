@@ -207,12 +207,19 @@ function initCaptcha() {
   }
   let gifTimer;
   function showGif(src) {
-    gifPop.querySelector("img").src = src;
+    const img = gifPop.querySelector("img");
+    img.src = src;
+  
+    img.classList.remove("cropped-allie");
+  
+    if (src.includes("AllieAndDean.gif")) {
+      img.classList.add("cropped-allie");
+    }
+  
     gifPop.classList.add("show");
     clearTimeout(gifTimer);
-    gifTimer = setTimeout(() => gifPop.classList.remove("show"), 4000);
+    gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
   }
- 
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
