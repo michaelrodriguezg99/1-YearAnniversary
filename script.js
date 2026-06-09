@@ -211,7 +211,7 @@ function initCaptcha() {
     img.src = src;
   
     img.classList.remove("cropped-allie");
-  
+  debugger;
     if (src.includes("AllieAndDean.gif")) {
       img.classList.add("cropped-allie");
     }

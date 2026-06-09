@@ -130,7 +130,7 @@ body {
 .cap-tile.has-img .tile-ph { display: none; }
 
 .gif-pop img.cropped-allie {
-  transform: scale(1.08);
+  clip-path: inset(50px); /* crops 12px from all sides */
 }
  
 .tile-ph {                       /* avatar placeholder (shown until a real photo loads) */
