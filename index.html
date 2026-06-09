@@ -19,6 +19,7 @@
       <section class="screen" id="envelope-screen">
         <div class="env">
           <img src="envelope.png" alt="Envelope" id="envelope" />
+          <p>♡ Cartita de vencimiento... ♡</p>
         </div>
       </section>
  
@@ -40,7 +41,31 @@
         </div>
       </section>
  
-      <!-- ============ SCREEN 3: LETTER (renewal finale) ============ -->
+      <!-- ============ SCREEN 3: LOGIN ============ -->
+      <section class="screen" id="login-screen">
+        <div class="win">
+          <div class="win-bar"><span>login.exe</span><span class="dots">— ▢ ✕</span></div>
+          <div class="win-body login-body">
+            <div class="login-logo">♡ RelationshipOS ♡</div>
+            <p class="login-sub">Sign in to manage your subscription.</p>
+ 
+            <label class="login-label" for="login-user">Username</label>
+            <input id="login-user" class="login-input" type="text" value="Girlfriend"
+                   autocomplete="off" spellcheck="false" />
+ 
+            <label class="login-label" for="login-pass">Password</label>
+            <input id="login-pass" class="login-input" type="password"
+                   placeholder="••••••••" autocomplete="off" />
+ 
+            <div class="login-hint" id="login-hint">💡 Hint: our official date (MM/DD/YYYY)</div>
+ 
+            <button class="login-btn" id="login-btn">Log In ♥</button>
+            <div class="login-msg" id="login-msg"></div>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- ============ SCREEN 4: LETTER (renewal finale) ============ -->
       <section class="screen" id="letter-screen">
         <div class="letter-window">
           <h1 id="letter-title">¿Deseas renover tu anualidad conmigo?</h1>
