@@ -243,7 +243,7 @@ body {
 }
 .swim-fish {
   position: absolute; left: 0;
-  width: min(480px, 63vw); height: auto;
+  width: min(640px, 84vw); height: auto;
   transform: translateX(120vw) rotate(-90deg);
   filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
 }
@@ -280,6 +280,36 @@ body {
 .login-msg { min-height: 20px; margin-top: 10px; font-size: 14px; line-height: 1.2; }
 .login-msg.bad { color: var(--frame-dark); }
 .login-msg.ok  { color: var(--good); }
+ 
+/* =====================================================================
+   SCREEN 4 — QUIZ MODULE
+   ===================================================================== */
+#quiz-screen .win {
+  width: min(440px, calc(100vw - 24px), calc(100vh - 120px));
+  max-width: none;
+}
+.quiz-head { text-align: center; margin-bottom: 12px; }
+.quiz-counter { font-size: 12px; color: var(--ink-soft); display: block; }
+.quiz-prompt { font-size: 20px; line-height: 1.15; margin: 4px 0 0; color: var(--ink); }
+.quiz-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.quiz-tile {
+  position: relative; aspect-ratio: 1 / 1; overflow: hidden;
+  border: 3px solid var(--frame); border-radius: 2px;
+  background: #e7c7cd; cursor: pointer; padding: 0;
+  font-family: "Pixelify Sans", sans-serif;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.quiz-tile:hover { border-color: var(--frame-dark); }
+.quiz-tile:disabled { cursor: default; }
+.quiz-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+.quiz-tile.has-img img { display: block; }
+.quiz-tile.has-img .quiz-ph { display: none; }
+.quiz-ph { font-size: 15px; color: var(--ink); padding: 6px; text-align: center; }
+.quiz-emoji { font-size: 54px; line-height: 1; }
+.quiz-elabel { font-size: 14px; color: var(--ink); }
+.quiz-msg { min-height: 22px; margin-top: 12px; text-align: center; font-size: 15px; line-height: 1.15; }
+.quiz-msg.ok  { color: var(--good); }
+.quiz-msg.bad { color: var(--frame-dark); }
  
 /* =====================================================================
    SCREEN 3 — LETTER (renewal finale)  — your original styling, verbatim

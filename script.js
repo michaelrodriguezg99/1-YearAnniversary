@@ -9,7 +9,8 @@ const SCREENS = [
   { id: "envelope-screen", init: initEnvelope },
   { id: "captcha-screen",  init: initCaptcha },
   { id: "login-screen",    init: initLogin, onShow: focusLoginPass },
-  // future modules (boot, quiz, wrapped, scrapbook...) slot in HERE
+  { id: "quiz-screen",     init: initQuiz },
+  // future modules (wrapped, scrapbook...) slot in HERE
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
  
@@ -450,7 +451,207 @@ function initLogin() {
 }
  
 /* =====================================================================
-   SCREEN 4 — LETTER (renewal finale)
+   SCREEN 4 — QUIZ MODULE  (photo multiple-choice, pick one, random order)
+   ---------------------------------------------------------------------
+   ✏️  EDIT ZONE — set the photos + the correct answers.
+   - Each question shows its options in RANDOM order.
+   - Mark the right answer(s) with  correct: true.
+   - Use  src: "file.jpg"  for a photo, or  emoji: "🍒"  for an emoji tile.
+   - Until a photo file exists, the option shows its label so you can test.
+   Special flags:
+   - vanish: true        -> picking it makes that tile disappear (Q: the door)
+   - deny: {...} on a Q   -> the correct pick is denied a few times, then admits
+   ===================================================================== */
+const QUIZ = [
+  // Q1 — favorite Spider-Man  (TODO: set which one is correct + photo files)
+  {
+    prompt: "Who is my favorite Spider-Man?",
+    right: "Obviously. Iconic taste 🕷️",
+    wrong: "Nope — wrong Spidey. Swing again 🕸️",
+    options: [
+      { src: "Toby.png",   label: "Toby" },
+      { src: "Andrew.png", label: "Andrew", correct: true },
+      { src: "Tom.png",    label: "Tom" },
+      { src: "Miles.png",  label: "Miles" },
+    ],
+  },
+ 
+  // Q2 — first date (correct = Calle Cerra; TODO: photos + the 3 decoy spots)
+  {
+    prompt: "Where was our first date?",
+    right: "The bowling alley 🎳 Where it all started ❤️",
+    wrong: "Nope — that's not where it began 😌",
+    options: [
+      { src: "Bowling.png",   label: "Bowling", correct: true },
+      { src: "SkyDiving.png", label: "SkyDiving" },
+      { src: "Drinking.png",  label: "Drinking" },
+      { src: "Picnic.png",    label: "Picnic" },
+    ],
+  },
+ 
+  // Q3 — the fruit inside joke  (TODO: which berry is correct?)
+  {
+    prompt: "Pick the right one 😏 (you know which)",
+    right: "Hahaha yes. That one 🍒",
+    wrong: "Wrong berry, amor 🫐",
+    options: [
+      { emoji: "🍒", label: "Cherry", correct: true },
+      { emoji: "🍓", label: "Strawberry" },
+      { emoji: "🫐", label: "Blueberry" },
+      { emoji: "🍇", label: "Raspberry" },
+    ],
+  },
+ 
+  // Q4 — the item Mike hides  (TODO: the item + photos + decoys)
+  {
+    prompt: "What does Mike hide for you to always find?",
+    right: "Always. Every time 🥹",
+    wrong: "Nope — keep looking 👀",
+    options: [
+      { src: "Photo.png",      label: "Photo", correct: true },
+      { src: "Coin.png",       label: "Coin" },
+      { src: "Flower.png",     label: "Flower" },
+      { src: "LoveLetter.png", label: "LoveLetter" },
+    ],
+  },
+ 
+  // Q5 — the door (her photo vanishes if picked; the 3 of YOU remain)
+  {
+    prompt: "Who should open the door… always?",
+    right: "Correct. I've always got the door 💪",
+    wrong: "Try again 😏",
+    options: [
+      { src: "me1.jpg", label: "Michael", correct: true },
+      { src: "me2.jpg", label: "Michael", correct: true },
+      { src: "me3.jpg", label: "Michael", correct: true },
+      { src: "her.jpg", label: "You", vanish: true,
+        vanishMsg: "Absolutely not. *poof* 💨 You don't open doors on my watch." },
+    ],
+  },
+ 
+  // Q6 — "Te quiero" first (pick HIM 3 times; then he dramatically admits it)
+  {
+    prompt: 'Who said "Te quiero" first?',
+    wrong: "Wrong — and you KNOW that's wrong 👀",
+    deny: {
+      msgs: [
+        "Pfft. No. Definitely wasn't me 😏",
+        "Still wasn't me. You positive? 😼",
+      ],
+      gif: "MikeFine.gif",   // TODO: a gif of you reacting
+      finalMsg: "…UGHHH. FINE. It was me. Happy now?? 🙄💕",
+    },
+    options: [
+      { src: "me1.jpg", label: "Michael", correct: true },
+      { src: "her.jpg", label: "You" },
+      { emoji: "🐱", label: "Cameo" },
+      { emoji: "🤝", label: "It was mutual" },
+    ],
+  },
+];
+ 
+function initQuiz() {
+  const counterEl = document.getElementById("quiz-counter");
+  const promptEl  = document.getElementById("quiz-prompt");
+  const grid      = document.getElementById("quiz-grid");
+  const msgEl     = document.getElementById("quiz-msg");
+  const win       = document.querySelector("#quiz-screen .win");
+ 
+  // reuse the shared reaction-gif overlay (created by the captcha module) or make one
+  let gifPop = document.querySelector(".gif-pop");
+  if (!gifPop) {
+    gifPop = document.createElement("div");
+    gifPop.className = "gif-pop";
+    gifPop.innerHTML = '<img alt="">';
+    document.body.appendChild(gifPop);
+  }
+  function popGif(src, ms) {
+    const img = gifPop.querySelector("img");
+    img.classList.remove("cropped-allie");
+    img.src = src;
+    gifPop.classList.add("show");
+    setTimeout(() => gifPop.classList.remove("show"), ms || 2600);
+  }
+ 
+  const shuffle  = a => a.slice().sort(() => Math.random() - 0.5);
+  const prettify = s => (s || "").replace(/([a-z0-9])([A-Z])/g, "$1 $2").trim();
+  const setMsg   = (text, cls) => { msgEl.textContent = text; msgEl.className = "quiz-msg " + (cls || ""); };
+  const shake    = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
+ 
+  let qIndex = 0;
+  let denyCount = 0;
+ 
+  function advance() {
+    qIndex++;
+    denyCount = 0;
+    if (qIndex >= QUIZ.length) { nextScreen(); return; }
+    render();
+  }
+ 
+  function render() {
+    const q = QUIZ[qIndex];
+    counterEl.textContent = `Question ${qIndex + 1} of ${QUIZ.length}`;
+    promptEl.textContent = q.prompt;
+    setMsg("", "");
+    grid.innerHTML = "";
+    shuffle(q.options).forEach(opt => {
+      const tile = document.createElement("button");
+      tile.className = "quiz-tile";
+      if (opt.emoji) {
+        tile.innerHTML = `<span class="quiz-emoji">${opt.emoji}</span><span class="quiz-elabel">${opt.label || ""}</span>`;
+      } else {
+        tile.innerHTML = `<img alt=""><span class="quiz-ph">${prettify(opt.label)}</span>`;
+        const img = tile.querySelector("img");
+        img.onload = () => tile.classList.add("has-img");
+        if (opt.src) img.src = opt.src;
+      }
+      tile.addEventListener("click", () => handlePick(q, opt, tile));
+      grid.appendChild(tile);
+    });
+  }
+ 
+  function handlePick(q, opt, tile) {
+    // vanishing option (the door question)
+    if (opt.vanish) {
+      tile.style.transition = "opacity .4s ease, transform .4s ease";
+      tile.style.opacity = "0";
+      tile.style.transform = "scale(0.55)";
+      setMsg(opt.vanishMsg || "Nope 💨", "bad");
+      setTimeout(() => tile.remove(), 400);
+      return;
+    }
+    // denial question: the correct pick is denied a few times, then admitted
+    if (q.deny && opt.correct) {
+      const msgs = q.deny.msgs || [];
+      if (denyCount < msgs.length) {
+        setMsg(msgs[denyCount], "bad");
+        shake();
+        denyCount++;
+        return;
+      }
+      if (q.deny.gif) popGif(q.deny.gif, 2600);
+      setMsg(q.deny.finalMsg || "Fine. It was me.", "ok");
+      [...grid.children].forEach(t => t.disabled = true);
+      setTimeout(advance, 2600);
+      return;
+    }
+    // standard correct
+    if (opt.correct) {
+      setMsg(q.right || "Correct! 💖", "ok");
+      [...grid.children].forEach(t => t.disabled = true);
+      setTimeout(advance, 1100);
+      return;
+    }
+    // wrong
+    setMsg(q.wrong || "Nope, try again 😌", "bad");
+    shake();
+  }
+ 
+  render();
+}
+ 
+/* =====================================================================
+   SCREEN 5 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
    scoped to #letter-screen so it can't collide with other modules.
    ===================================================================== */
