@@ -107,7 +107,7 @@ const CAPTCHA_POOL = [
     caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
   { src: "LoveQuinn.jpg", label: "LoveQuinn",
     caption: "Love Quinn is devoted… to a concerning, body-count kind of degree. I'm devoted AND legally free 🔪❤️" },
-  { src: "RheaRipley.jpg", label: "RheaRipley",
+  { src: "RheaRipley.jpg", label: "RheaRipley", gif: "RheaRipley.gif",
     caption: "Rhea Ripley would suplex me for looking at you wrong. Massive respect — but she's on TV, I'm on your couch 💪" },
 ];
  
