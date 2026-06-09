@@ -308,7 +308,7 @@ function initCaptcha() {
     );
     if (thunderPicked.size >= 2) {
       triggerThunder();
-      fail("Xaden AND Violet?! You summoned a whole storm. Both fictional, both taken — by each other. Pick me ⚡⚡");
+      fail("Xaden AND Violet?! Ahí te di un preview de lo que hacen... pero yo también tengo un taser ⚡😏");
       return;
     }
     // Allie + Dean (and ONLY those two) selected => their couple gif
