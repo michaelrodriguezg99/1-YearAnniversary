@@ -213,6 +213,25 @@ body {
   /* position + transform are set per-strike by JS (random angle/position) */
 }
  
+/* --- Reaction GIF popup (shown when a tile with a gif is picked) --- */
+.gif-pop {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.gif-pop.show { opacity: 1; }
+.gif-pop img {
+  max-width: 60vw; max-height: 60vh;
+  background: var(--panel);
+  border: 4px solid var(--frame);
+  box-shadow: 0 0 0 4px var(--panel-2), 8px 8px 0 0 rgba(0, 0, 0, 0.25);
+  image-rendering: pixelated;
+  transform: scale(0.8);
+  transition: transform 0.25s ease;
+}
+.gif-pop.show img { transform: scale(1); }
+ 
 /* =====================================================================
    SCREEN 3 — LOGIN MODULE
    ===================================================================== */
