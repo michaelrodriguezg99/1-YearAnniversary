@@ -101,7 +101,7 @@ const CAPTCHA_POOL = [
     caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
   { src: "JakeSully.jpg", label: "JakeSully",
     caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
-  { src: "Lola.jpg", label: "Lola", swim: true,
+  { src: "Lola.png", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor",
     caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
