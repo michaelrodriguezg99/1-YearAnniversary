@@ -157,6 +157,41 @@ body {
 }
 .shake { animation: capShake 0.4s ease; }
  
+/* --- Lightning effect (fires when a Fourth Wing pick is tapped) --- */
+.thunder-flash {
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none; opacity: 0;
+  background: #fff;
+}
+.thunder-flash.go { animation: thunderFlash 0.75s ease; }
+@keyframes thunderFlash {
+  0%   { opacity: 0; }
+  6%   { opacity: 0.9; }
+  10%  { opacity: 0.15; }
+  16%  { opacity: 0.85; }
+  24%  { opacity: 0; }
+  44%  { opacity: 0.55; }
+  50%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+.thunder-bolt {
+  position: absolute;
+  top: 0; left: 50%;
+  width: 110px; height: 62%;
+  transform: translateX(-50%);
+  fill: #fff;
+  filter: drop-shadow(0 0 8px #b07cff) drop-shadow(0 0 18px #7c4dff);
+  opacity: 0;
+}
+.thunder-flash.go .thunder-bolt { animation: boltFlicker 0.75s ease; }
+@keyframes boltFlicker {
+  0%, 100% { opacity: 0; }
+  6%  { opacity: 1; }
+  12% { opacity: 0.2; }
+  18% { opacity: 1; }
+  26% { opacity: 0; }
+}
+ 
 /* =====================================================================
    SCREEN 3 — LETTER (renewal finale)  — your original styling, verbatim
    ===================================================================== */
