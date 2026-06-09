@@ -8,7 +8,8 @@
 const SCREENS = [
   { id: "envelope-screen", init: initEnvelope },
   { id: "captcha-screen",  init: initCaptcha },
-  // future modules (login, quiz, wrapped, scrapbook...) slot in HERE
+  { id: "login-screen",    init: initLogin, onShow: focusLoginPass },
+  // future modules (boot, quiz, wrapped, scrapbook...) slot in HERE
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
  
@@ -48,48 +49,6 @@ function initEnvelope() {
    ===================================================================== */
 const CAPTCHA_POOL = [
   // ----- YOU (the ONLY correct answers) -----
-  { src: "me1.jpg", label: "Michael", correct: true },
-  { src: "me2.jpg", label: "Michael", correct: true },
-  { src: "me3.jpg", label: "Michael", correct: true },
- 
-  // ----- Book boyfriends / decoys (each picked => its own funny error) -----
-  // REPLACE these with Alondra's actual favorites + your own captions.
-  // Add  effect: "thunder"  to any entry to trigger the lightning effect.
-  { src: "rhysand.jpg", label: "Rhysand",
-    caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
-  { src: "xaden.jpg", label: "Xaden", effect: "thunder",
-    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
-  { src: "violet.jpg", label: "Violet", effect: "thunder",
-    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-     // ----- YOU (the ONLY correct answers) -----
-  { src: "me1.jpg", label: "Michael", correct: true },
-  { src: "me2.jpg", label: "Michael", correct: true },
-  { src: "me3.jpg", label: "Michael", correct: true },
- 
-  // ----- Book boyfriends / decoys (each picked => its own funny error) -----
-  // REPLACE these with Alondra's actual favorites + your own captions.
-  // Add  effect: "thunder"  to any entry to trigger the lightning effect.
-  { src: "rhysand.jpg", label: "Test1",
-    caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
-  { src: "xaden.jpg", label: "Test2", effect: "thunder",
-    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
-  { src: "violet.jpg", label: "Test3", effect: "thunder",
-    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-     // ----- YOU (the ONLY correct answers) -----
-  { src: "me1.jpg", label: "Michael", correct: true },
-  { src: "me2.jpg", label: "Michael", correct: true },
-  { src: "me3.jpg", label: "Michael", correct: true },
- 
-  // ----- Book boyfriends / decoys (each picked => its own funny error) -----
-  // REPLACE these with Alondra's actual favorites + your own captions.
-  // Add  effect: "thunder"  to any entry to trigger the lightning effect.
-  { src: "rhysand.jpg", label: "Test4",
-    caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
-  { src: "xaden.jpg", label: "Test5", effect: "thunder",
-    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
-  { src: "violet.jpg", label: "Test6", effect: "thunder",
-    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-     // ----- YOU (the ONLY correct answers) -----
   { src: "me1.jpg", label: "Michael", correct: true },
   { src: "me2.jpg", label: "Michael", correct: true },
   { src: "me3.jpg", label: "Michael", correct: true },
@@ -184,7 +143,17 @@ function initCaptcha() {
     bolt.style.left = left + "%";
     bolt.style.transformOrigin = "top center";
     bolt.style.transform = `translateX(-50%) rotate(${angle}deg) scale(${scale})`;
-    flash.classList.remove("strike"); void flash.offsetWidth; flash.classList.add("strike");
+    // animate in JS so the visual never depends on a cached/old stylesheet
+    flash.animate(
+      [ { opacity: 0 }, { opacity: 0.95, offset: 0.10 }, { opacity: 0.20, offset: 0.20 },
+        { opacity: 0.85, offset: 0.35 }, { opacity: 0, offset: 0.55 }, { opacity: 0 } ],
+      { duration: 550, easing: "ease" }
+    );
+    bolt.animate(
+      [ { opacity: 0 }, { opacity: 1, offset: 0.08 }, { opacity: 0.25, offset: 0.18 },
+        { opacity: 1, offset: 0.30 }, { opacity: 0, offset: 0.50 }, { opacity: 0 } ],
+      { duration: 550, easing: "ease" }
+    );
     crack();
   }
   function triggerThunder() {       // a 3.5–5s storm of strikes from different angles
@@ -274,7 +243,80 @@ function initCaptcha() {
 }
  
 /* =====================================================================
-   SCREEN 3 — LETTER (renewal finale)
+   SCREEN 3 — LOGIN MODULE
+   ---------------------------------------------------------------------
+   ✏️  EDIT ZONE:
+   - LOGIN_USERS: accepted usernames (case-insensitive).
+   - LOGIN_PASSWORDS: accepted passwords = your official date.
+     All inputs are normalized (lowercased, spaces/punctuation removed),
+     so "11/09/2025", "11-9-2025", "11092025" all match. Add/remove forms
+     here to control exactly what counts as correct.
+   ===================================================================== */
+const LOGIN_USERS = ["girlfriend", "alondra"];
+const LOGIN_PASSWORDS = [
+  "11092025", "1192025",       // MM/DD/YYYY  (11/09 and 11/9)
+  "09112025", "9112025",       // DD/MM/YYYY  (just in case she thinks day-first)
+  "nov92025", "november92025", // word forms
+];
+ 
+// Silly wrong-password errors (shown in order, then sticks on the last one)
+const LOGIN_ERRORS = [
+  "ERROR 404 — boyfriend feelings not found. Try again 💔",
+  "ERROR 403 — access denied: too cute to let in this easily 😌",
+  "ERROR 418 — I'm a teapot, and that's still wrong ☕",
+  "ERROR 401 — unauthorized. Think about the day everything changed 💕",
+  "ERROR 429 — too many attempts. Just kidding, keep going mi vida.",
+];
+ 
+function focusLoginPass() {
+  const el = document.getElementById("login-pass");
+  if (el) el.focus();
+}
+ 
+function initLogin() {
+  const userEl = document.getElementById("login-user");
+  const passEl = document.getElementById("login-pass");
+  const btn    = document.getElementById("login-btn");
+  const msg    = document.getElementById("login-msg");
+  const hint   = document.getElementById("login-hint");
+  let tries = 0;
+ 
+  const norm = s => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const show = (text, cls) => { msg.textContent = text; msg.className = "login-msg " + cls; };
+ 
+  function submit() {
+    const u = norm(userEl.value);
+    const p = norm(passEl.value);
+ 
+    if (!p) {
+      show("ERROR 400 — a relationship requires *some* effort. Type something 😌", "bad");
+      return;
+    }
+    if (!LOGIN_USERS.includes(u)) {
+      show("ERROR 404 — user not found. There's only one girlfriend here 💁", "bad");
+      return;
+    }
+    if (!LOGIN_PASSWORDS.includes(p)) {
+      show(LOGIN_ERRORS[Math.min(tries, LOGIN_ERRORS.length - 1)], "bad");
+      tries++;
+      if (tries === 2) hint.textContent = "💡 Hint: the day we made it official 💕 (MM/DD/YYYY)";
+      return;
+    }
+    // success
+    show("✅ ACCESS GRANTED — welcome back 💖", "ok");
+    btn.disabled = true;
+    passEl.disabled = true;
+    userEl.disabled = true;
+    setTimeout(nextScreen, 1300);
+  }
+ 
+  btn.addEventListener("click", submit);
+  userEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+  passEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+}
+ 
+/* =====================================================================
+   SCREEN 4 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
    scoped to #letter-screen so it can't collide with other modules.
    ===================================================================== */
