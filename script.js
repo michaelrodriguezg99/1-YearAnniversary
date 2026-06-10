@@ -154,6 +154,7 @@ const SCREENS = [
   { id: "login-screen",    init: initLogin, onShow: focusLoginPass },
   { id: "quiz-screen",     init: initQuiz },
   { id: "wrapped-screen",  init: initWrapped, onShow: showWrapped },
+  { id: "scrapbook-screen", init: initScrapbook, onShow: showScrapbook },
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
  
@@ -1065,7 +1066,93 @@ function initWrapped() {
 function showWrapped() { if (initWrapped._reset) initWrapped._reset(); }
  
 /* =====================================================================
-   SCREEN 6 — LETTER (renewal finale)
+   SCREEN 6 — DIGITAL SCRAPBOOK  (a stack of polaroids she flips through)
+   ---------------------------------------------------------------------
+   ✏️  FILL ME IN: one entry per photo. Drop the image files next to
+   index.html and put the filename in `src`. `caption` is the handwritten
+   line under the photo; `date` is optional (also handwritten, bottom-right).
+   Add/remove as many as you like — the counter and flow adapt.
+   ===================================================================== */
+const SCRAPBOOK = [
+  { src: "scrap1.jpg", caption: "PLACEHOLDER — your caption (e.g. 'where it all started 🎳')", date: "" },
+  { src: "scrap2.jpg", caption: "PLACEHOLDER — a favorite memory", date: "" },
+  { src: "scrap3.jpg", caption: "PLACEHOLDER — an inside-joke moment", date: "" },
+  { src: "scrap4.jpg", caption: "PLACEHOLDER — a trip or a night out", date: "" },
+  { src: "scrap5.jpg", caption: "PLACEHOLDER — the one that gets you 🥹", date: "" },
+];
+ 
+function initScrapbook() {
+  const stack   = document.getElementById("scrap-stack");
+  const countEl = document.getElementById("scrap-count");
+  const hint    = document.getElementById("scrap-hint");
+  const doneEl  = document.getElementById("scrap-done");
+  const nextBtn = document.getElementById("scrap-next");
+ 
+  function updateCount() {
+    const total = SCRAPBOOK.length;
+    const left  = stack.querySelectorAll(".polaroid").length;
+    const cur   = Math.min(total - left + 1, total);
+    countEl.textContent = total ? `${cur} / ${total}` : "";
+  }
+ 
+  function attachTop() {
+    const cards = [...stack.querySelectorAll(".polaroid")];
+    if (!cards.length) {                 // flipped through them all
+      hint.style.display = "none";
+      doneEl.style.display = "";
+      nextBtn.style.display = "";
+      return;
+    }
+    cards.forEach(c => c.classList.remove("top"));
+    const top = cards[0];                // first child = highest z = on top
+    top.classList.add("top");
+    top.addEventListener("click", dismiss, { once: true });
+    updateCount();
+  }
+ 
+  function dismiss(e) {
+    const card = e.currentTarget;
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    card.style.transition = "transform .5s ease, opacity .5s ease";
+    card.style.transform  = `translate(calc(-50% + ${dir * 160}%), -50%) rotate(${dir * 20}deg)`;
+    card.style.opacity = "0";
+    setTimeout(() => { card.remove(); attachTop(); }, 470);
+  }
+ 
+  function build() {
+    stack.innerHTML = "";
+    doneEl.style.display = "none";
+    nextBtn.style.display = "none";
+    hint.style.display = "";
+    SCRAPBOOK.forEach((m, i) => {
+      const card = document.createElement("div");
+      card.className = "polaroid";
+      const rot = (i % 2 ? 1 : -1) * (2 + (i * 2) % 6);
+      card.style.setProperty("--rot", rot + "deg");
+      card.style.zIndex = String(SCRAPBOOK.length - i);   // first memory on top
+      card.innerHTML =
+        '<div class="tape"></div>' +
+        '<div class="pola-photo"><img alt=""><span class="pola-ph">' +
+          (m.label || ("Photo " + (i + 1))) + '</span></div>' +
+        '<div class="pola-cap">' + (m.caption || "") + '</div>' +
+        (m.date ? '<div class="pola-date">' + m.date + '</div>' : '');
+      const img = card.querySelector("img");
+      img.onload = () => card.classList.add("has-img");
+      if (m.src) img.src = m.src;
+      stack.appendChild(card);
+    });
+    attachTop();
+  }
+ 
+  nextBtn.addEventListener("click", nextScreen);
+  initScrapbook._reset = build;
+  build();
+}
+// onShow: rebuild the stack each time the screen is entered
+function showScrapbook() { if (initScrapbook._reset) initScrapbook._reset(); }
+ 
+/* =====================================================================
+   SCREEN 7 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
    scoped to #letter-screen so it can't collide with other modules.
    ===================================================================== */
