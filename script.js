@@ -1081,6 +1081,13 @@ const SCRAPBOOK = [
   { src: "scrap5.jpg", caption: "PLACEHOLDER — the one that gets you 🥹", date: "" },
 ];
  
+// Optional year-recap video — revealed after the last photo is flipped through.
+// Drop your .mp4 next to index.html. Set src to "" to skip the video entirely.
+const SCRAPBOOK_VIDEO = {
+  src: "recap.mp4",
+  caption: "Our year, in one take 🎬",
+};
+ 
 function initScrapbook() {
   const stack   = document.getElementById("scrap-stack");
   const countEl = document.getElementById("scrap-count");
@@ -1099,6 +1106,14 @@ function initScrapbook() {
     const cards = [...stack.querySelectorAll(".polaroid")];
     if (!cards.length) {                 // flipped through them all
       hint.style.display = "none";
+      if (SCRAPBOOK_VIDEO && SCRAPBOOK_VIDEO.src) {
+        stack.classList.add("video-mode");
+        stack.innerHTML =
+          '<div class="scrap-video">' +
+            '<video src="' + SCRAPBOOK_VIDEO.src + '" controls playsinline preload="metadata"></video>' +
+            (SCRAPBOOK_VIDEO.caption ? '<div class="scrap-vcap">' + SCRAPBOOK_VIDEO.caption + '</div>' : '') +
+          '</div>';
+      }
       doneEl.style.display = "";
       nextBtn.style.display = "";
       return;
@@ -1121,6 +1136,7 @@ function initScrapbook() {
  
   function build() {
     stack.innerHTML = "";
+    stack.classList.remove("video-mode");
     doneEl.style.display = "none";
     nextBtn.style.display = "none";
     hint.style.display = "";

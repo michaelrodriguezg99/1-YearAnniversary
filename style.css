@@ -421,6 +421,14 @@ body {
   border-radius: 6px; padding: 10px 26px;
 }
 .scrap-next:hover { background: var(--frame-dark); }
+/* year-recap video (revealed after the last photo) */
+.scrap-stack.video-mode { height: auto; width: min(340px, 88vw); }
+.scrap-video { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.scrap-video video {
+  width: 100%; max-height: 52vh; display: block; border-radius: 6px;
+  background: #000; border: 3px solid var(--frame); box-shadow: 0 8px 18px rgba(0, 0, 0, .22);
+}
+.scrap-vcap { font-family: "Caveat", cursive; font-weight: 700; font-size: 22px; color: var(--ink); text-align: center; }
 .gif-pop img {
   max-width: 60vw; max-height: 60vh;
   background: var(--panel);
