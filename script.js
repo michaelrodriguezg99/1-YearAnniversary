@@ -58,13 +58,15 @@ const CAPTCHA_POOL = [
   // Any entry with  effect: "thunder"  joins the lightning storm when
   // two different thunder picks are selected together.
   // Any entry with  gif: "file.gif"  pops that gif up when the tile is picked.
+  { src: "MikeBefore.jpg", label: "Mike",
+    caption: "NOW he's your boyfriend?!?! 😭 That's me BEFORE I met you. Rude." },
   { src: "rhysand.jpg", label: "Rhysand",
     caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
   { src: "xaden.jpg", label: "Xaden", effect: "thunder",
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
   { src: "violet.jpg", label: "Violet", effect: "thunder",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-  { src: "BadBunny.jpg", label: "BadBunny",
+  { src: "BadBunny.jpg", label: "BadBunny", gif: "cat_dance.gif",
     caption: "Bad Bunny is selling out stadiums, not showing up at your door. I bring snacks 🐰" },
   { src: "BabyMiko.jpg", label: "BabyMiko", effect: "thunder",
     caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
@@ -102,6 +104,8 @@ const CAPTCHA_POOL = [
     caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
   { src: "JakeSully.jpg", label: "JakeSully",
     caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
+  { src: "Varang.jpg", label: "Varang",
+    caption: "Varang runs an entire fire clan and would torch the place to make a point. I just light candles for date night 🔥💙" },
   { src: "Lola.jpg", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor",
@@ -121,7 +125,7 @@ const CAPTCHA_NUDGES = [
   "Still nothing? He's getting insecure.",
   "Bestie. Select the boyfriend.",
 ];
- 
+
 // ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
 const DUET = {
   line: `Baby, qué afrenta'
@@ -576,8 +580,8 @@ const QUIZ = [
       finalMsg: "…UGHHH. FINE. It was me. Happy now?? 🙄💕",
     },
     options: [
-      { src: "me1.jpg", label: "Michael", correct: true },
-      { src: "her.jpg", label: "You" },
+      { src: "me1.jpeg", label: "Michael", correct: true },
+      { src: "her.jpeg", label: "You" },
       { emoji: "🐱", label: "Cameo" },
       { emoji: "🤝", label: "It was mutual" },
     ],
