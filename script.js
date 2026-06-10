@@ -70,10 +70,10 @@ function measureGif(src, onMeasured) {
    gif popup. Replace the filenames in CONFETTI_IMAGES with your own images
    (hearts, faces, little photos, whatever). Call rainImages() to trigger.
      rainImages();                         // uses CONFETTI_IMAGES defaults
-     rainImages(["a.png","b.png"]);        // custom images for this burst
+     rainImages(["a.jpg","b.jpg"]);        // custom images for this burst
      rainImages(null, { count: 40, duration: 4000 });
    ===================================================================== */
-const CONFETTI_IMAGES = ["confetti1.png", "confetti2.png", "confetti3.png"]; // <- swap these
+const CONFETTI_IMAGES = ["confetti1.jpg", "confetti2.jpg", "confetti3.jpg"]; // <- swap these
  
 function rainImages(images, opts) {
   opts = opts || {};
@@ -493,7 +493,7 @@ function initCaptcha() {
           }
           if (tile.dataset.label === "Cherry") {
             // reveal the cherry image, pop it into falling cherries, THEN her gif
-            rainImages(["CherryConfetti.png"], {
+            rainImages(["CherryConfetti.jpg"], {
               onPop: () => { if (tile.dataset.gif) showGif(tile.dataset.gif); }
             });
           } else {
