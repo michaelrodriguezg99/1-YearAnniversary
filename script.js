@@ -925,8 +925,8 @@ const WRAPPED = [
   { kind: "spotlight", accent: "green", art: "me1.jpeg", topLabel: "Your Top Artist",
     name: "Michael", note: "You were in the top 0.01% of his listeners 🎧" },
  
-  { kind: "spotlight", accent: "coral", note2: "♫", topLabel: "Your Top Song",
-    name: "Como dormiste?", note: "You know exactly which one 🎵" },
+  { kind: "spotlight", accent: "coral", art: "ComoDormisteCover.jpg", topLabel: "Your Top Song",
+    name: "Como Dormiste", note: "You know exactly which one 🎵" },
  
   { kind: "ranked", accent: "purple", title: "Your Top Artists", items: [
     { name: "Michael",                 img: "me1.jpeg" },
@@ -1030,9 +1030,9 @@ function initWrapped() {
           '<div class="wr-mark">● Wrapped &middot; Us</div>' +
           '<div class="wr-sumgrid">' +
             pair("Top Artist", "Michael") +
-            pair("Top Song", "Party") +
+            pair("Top Song", "Como Dormiste") +
             pair("Minutes", "131,400") +
-            pair("Top Genre", "hopelessly in love") +
+            pair("Top Genre", "Love/Reggaeton") +
           '</div>' +
           '<div class="wr-note">That\'s our two years 💛 Tap to keep going →</div>' +
         '</div>';
