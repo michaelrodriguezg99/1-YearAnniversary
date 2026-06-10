@@ -186,6 +186,7 @@ body {
 .cap-msg { font-size: 14px; min-height: 20px; max-width: 62%; line-height: 1.1; color: var(--ink); }
 .cap-msg.bad { color: var(--frame-dark); }
 .cap-msg.ok  { color: var(--good); }
+.cap-msg.hint { color: var(--ink); opacity: .75; font-style: italic; }
 .cap-verify {
   font-family: "Pixelify Sans", sans-serif; font-size: 17px;
   background: var(--frame-dark); color: #fff;

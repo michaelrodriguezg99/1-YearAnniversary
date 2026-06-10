@@ -405,8 +405,26 @@ function initCaptcha() {
       if (item.src) img.src = item.src;
       tile.addEventListener("click", () => {
         const on = tile.classList.toggle("selected");
-        if (on && tile.dataset.gif)  showGif(tile.dataset.gif);
-        if (on && tile.dataset.swim) swimAcross(tile.dataset.swim);
+        if (on) {
+          // show this tile's caption right away — neutral hint, not an error yet
+          if (tile.dataset.caption) {
+            msgEl.textContent = tile.dataset.caption;
+            msgEl.className = "cap-msg hint";
+          } else {
+            msgEl.textContent = ""; msgEl.className = "cap-msg";
+          }
+          if (tile.dataset.gif)  showGif(tile.dataset.gif);
+          if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+        } else {
+          // deselected — fall back to another selected tile's caption, or clear
+          const other = grid.querySelector(".cap-tile.selected");
+          if (other && other.dataset.caption) {
+            msgEl.textContent = other.dataset.caption;
+            msgEl.className = "cap-msg hint";
+          } else {
+            msgEl.textContent = ""; msgEl.className = "cap-msg";
+          }
+        }
       });
       grid.appendChild(tile);
     });
@@ -440,6 +458,12 @@ function initCaptcha() {
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
       showGif("AllieAndDean.gif");
       fail("Allie AND Dean? They're endgame with each OTHER (read The Score 😉). Hands off — pick me 💛");
+      return;
+    }
+    // both Alastors (demon form + human form) selected => Danny.gif
+    if (picked.length === 2 && picked.includes("AlastorDemon") && picked.includes("AlastorHuman")) {
+      showGif("Danny.gif");
+      fail("Both Alastors?? Demon form AND human form — that's two whole versions of fictional. I only come in one form: yours 📻⚡");
       return;
     }
     // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
