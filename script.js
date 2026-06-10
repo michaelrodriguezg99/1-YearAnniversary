@@ -6,6 +6,64 @@ Tú quieres con do' y no sé si va' a aguantar (Ey)`,
   artist: "Rauw Alejandro & Bad Bunny",
 };
 /* =====================================================================
+   GIF DURATION (shared) — so reaction-gif popups stay up until the gif
+   actually finishes a loop, instead of a fixed timer cutting it short.
+   Reads the file's frame delays directly; caches the result per file.
+   If the gif can't be fetched (e.g. opened as a local file:// in some
+   browsers), the caller keeps its fallback duration.
+   ===================================================================== */
+const GIF_MIN_MS = 1800;    // never flash by faster than this
+const GIF_MAX_MS = 12000;   // safety cap for very long gifs
+const _gifDurCache = {};
+ 
+function _parseGifMs(buf) {
+  const b = new Uint8Array(buf);
+  if (b.length < 13 || b[0] !== 0x47 || b[1] !== 0x49 || b[2] !== 0x46) return 0; // "GIF"
+  let ms = 0, i = 13;
+  if (b[10] & 0x80) i += 3 * (1 << ((b[10] & 7) + 1));          // skip global color table
+  while (i < b.length) {
+    const k = b[i];
+    if (k === 0x21) {                       // extension block
+      if (b[i + 1] === 0xF9) {              // graphic control ext -> frame delay
+        ms += ((b[i + 4] | (b[i + 5] << 8)) || 0) * 10; // delay stored in 1/100 s
+      }
+      i += 2;
+      while (i < b.length && b[i] !== 0) i += b[i] + 1;          // skip sub-blocks
+      i++;
+    } else if (k === 0x2C) {                // image descriptor
+      const lp = b[i + 9];
+      i += 10;
+      if (lp & 0x80) i += 3 * (1 << ((lp & 7) + 1));            // skip local color table
+      i++;                                   // LZW min code size
+      while (i < b.length && b[i] !== 0) i += b[i] + 1;
+      i++;
+    } else if (k === 0x3B) break;           // trailer
+    else i++;
+  }
+  return ms;
+}
+ 
+// Measures `src` and calls onMeasured(ms) with a sensible "show this long"
+// duration. Plays at least one full loop (more if the loop is very short),
+// capped by GIF_MAX_MS. Never calls back if the file can't be fetched.
+function measureGif(src, onMeasured) {
+  if (_gifDurCache[src] != null) { onMeasured(_gifDurCache[src]); return; }
+  fetch(src)
+    .then(r => r.arrayBuffer())
+    .then(buf => {
+      const loop = _parseGifMs(buf);
+      let total = 2600;
+      if (loop > 0) {
+        const loops = Math.max(1, Math.ceil(GIF_MIN_MS / loop)); // whole loops only
+        total = Math.min(loops * loop, GIF_MAX_MS) + 150;
+      }
+      _gifDurCache[src] = total;
+      onMeasured(total);
+    })
+    .catch(() => { /* leave the caller's fallback timer in place */ });
+}
+ 
+/* =====================================================================
    SCREEN MANAGER CORE (shared)
    Add a screen by appending to SCREENS. Remove one by commenting it out.
    Reorder by moving lines. Order lives ONLY here.
@@ -244,8 +302,13 @@ function initCaptcha() {
     img.removeAttribute("src");
     img.src = src;
     gifPop.classList.add("show");
+    // start with a fallback, then extend to the gif's real length once measured
     clearTimeout(gifTimer);
     gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
+    measureGif(src, (ms) => {
+      clearTimeout(gifTimer);
+      gifTimer = setTimeout(() => gifPop.classList.remove("show"), ms);
+    });
   }
  
   // ----- Swim-across effect (an image glides over the screen with a bob) -----
@@ -605,7 +668,7 @@ function initQuiz() {
     gifPop.innerHTML = '<img alt="">';
     document.body.appendChild(gifPop);
   }
-  function popGif(src, ms) {
+  function popGif(src, minMs) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     img.style.visibility = "hidden";
@@ -613,7 +676,12 @@ function initQuiz() {
     img.removeAttribute("src");
     img.src = src;
     gifPop.classList.add("show");
-    setTimeout(() => gifPop.classList.remove("show"), ms || 2600);
+    let gTimer = setTimeout(() => gifPop.classList.remove("show"), minMs || 2600);
+    measureGif(src, (ms) => {
+      const dur = Math.max(ms, minMs || 0); // passed value acts as a floor
+      clearTimeout(gTimer);
+      gTimer = setTimeout(() => gifPop.classList.remove("show"), dur);
+    });
   }
  
   const shuffle  = a => a.slice().sort(() => Math.random() - 0.5);
