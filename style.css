@@ -3,7 +3,7 @@
    Your existing letter styling is untouched; these only feed new screens.
    ===================================================================== */
 :root {
-  --frame: #c75c52;       /* salmon window border (matches window.png) */
+  --frame: #c75c52;       /* salmon window border (matches window.jpg) */
   --frame-dark: #a8443b;  /* darker red accents */
   --panel: #f4d9dd;       /* light pink panel */
   --panel-2: #e9c4cb;     /* mid pink */
@@ -347,7 +347,7 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-image: url("window.png");
+  background-image: url("window.jpg");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -379,3 +379,5 @@ body {
   display: inline-block;
   padding: 10px 20px;
   background-color: rgba(255, 240, 240, 0.5);
+  border-radius: 12px;
+}
