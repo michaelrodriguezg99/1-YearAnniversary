@@ -230,6 +230,30 @@ body {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .gif-pop.show { opacity: 1; transform: scale(1); }
+ 
+/* ---- Falling-image "confetti" (rains BEHIND the gif at z 9990) ----
+   Each piece falls (wrapper) while swaying side-to-side like a wiper (img).
+   Swap which images fall via CONFETTI_IMAGES in script.js. */
+.img-rain { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 9990; }
+.img-rain .drop {
+  position: absolute; top: -14%;
+  animation: img-fall var(--dur, 3200ms) linear both;
+}
+.img-rain .drop img {
+  display: block;
+  width: var(--sz, 48px); height: auto;
+  image-rendering: pixelated;
+  animation: img-sway var(--sway-dur, 1200ms) ease-in-out infinite alternate;
+}
+@keyframes img-fall {
+  0%   { transform: translateY(0) rotate(0deg);                  opacity: 0; }
+  8%   { opacity: 1; }
+  100% { transform: translateY(120vh) rotate(var(--rot, 360deg)); opacity: 1; }
+}
+@keyframes img-sway {
+  from { transform: translateX(calc(var(--sway, 16px) * -1)); }
+  to   { transform: translateX(var(--sway, 16px)); }
+}
 .gif-pop img {
   max-width: 60vw; max-height: 60vh;
   background: var(--panel);

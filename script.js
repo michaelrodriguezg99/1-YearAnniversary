@@ -66,6 +66,54 @@ function measureGif(src, onMeasured) {
 }
  
 /* =====================================================================
+   FALLING-IMAGE "CONFETTI" (shared) — rains photos/icons down BEHIND the
+   gif popup. Replace the filenames in CONFETTI_IMAGES with your own images
+   (hearts, faces, little photos, whatever). Call rainImages() to trigger.
+     rainImages();                         // uses CONFETTI_IMAGES defaults
+     rainImages(["a.png","b.png"]);        // custom images for this burst
+     rainImages(null, { count: 40, duration: 4000 });
+   ===================================================================== */
+const CONFETTI_IMAGES = ["confetti1.png", "confetti2.png", "confetti3.png"]; // <- swap these
+ 
+function rainImages(images, opts) {
+  opts = opts || {};
+  const list = (images && images.length) ? images : CONFETTI_IMAGES;
+  if (!list.length) return;
+  const count = opts.count || 28;
+  const base  = opts.duration || 3200; // ms for a piece to fall
+  const layer = document.createElement("div");
+  layer.className = "img-rain";
+  if (opts.z != null) layer.style.zIndex = opts.z;
+  document.body.appendChild(layer);
+ 
+  let maxEnd = 0;
+  for (let i = 0; i < count; i++) {
+    const drop = document.createElement("div");
+    drop.className = "drop";
+    const img = document.createElement("img");
+    img.src = list[i % list.length];
+    const size    = 26 + Math.random() * 42;             // 26–68px
+    const delay   = Math.random() * 800;                 // staggered entry
+    const fall    = base * (0.8 + Math.random() * 0.6);  // varied fall speed
+    const rot     = (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 540);
+    const sway    = 10 + Math.random() * 16;             // px wiper amplitude
+    const swayDur = 800 + Math.random() * 800;           // ms per swing
+    drop.style.left = (Math.random() * 100) + "%";
+    drop.style.setProperty("--dur", fall + "ms");
+    drop.style.setProperty("--rot", rot + "deg");
+    drop.style.animationDelay = delay + "ms";
+    img.style.setProperty("--sz",   size + "px");
+    img.style.setProperty("--sway", sway + "px");
+    img.style.setProperty("--sway-dur", swayDur + "ms");
+    img.style.animationDelay = "-" + (Math.random() * swayDur) + "ms"; // desync the wiper phase
+    drop.appendChild(img);
+    layer.appendChild(drop);
+    maxEnd = Math.max(maxEnd, delay + fall);
+  }
+  setTimeout(() => layer.remove(), maxEnd + 250);
+}
+ 
+/* =====================================================================
    SCREEN MANAGER CORE (shared)
    Add a screen by appending to SCREENS. Remove one by commenting it out.
    Reorder by moving lines. Order lives ONLY here.
@@ -135,9 +183,9 @@ const CAPTCHA_POOL = [
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
   { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
     caption: "Bad Bunny is selling out stadiums, not showing up at your door. I bring snacks 🐰" },
-  { src: "BabyMiko.jpg", label: "BabyMiko", effect: "thunder",
+  { src: "BabyMiko.jpg", label: "BabyMiko",
     caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
-  { src: "Garrett.jpg", label: "Garrett", effect: "thunder",
+  { src: "Garrett.jpg", label: "Garrett",
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒⚡" },
   { src: "Allie.jpg", label: "Allie", gif: "AllieHayes.gif",
     caption: "Allie Hayes is a drama-major sweetheart… who only exists in Elle Kennedy's head. I'm in your contacts 🎭" },
@@ -145,23 +193,23 @@ const CAPTCHA_POOL = [
     caption: "Dean Di Laurentis — trust-fund charmer who flirts with anything that moves. I only flirt with you 😏⚡" },
       { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif",
     caption: "Hannah Wells — mysterious and alluring, but I'm the one who's always here for you 😏⚡" },
-  { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "thunder",
+  { src: "AlastorDemon.jpg", label: "AlastorDemon",
     caption: "Alastor is a literal demon who HATES being touched. I'm a softie who gives free hugs 📻⚡" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman",
     caption: "Same Alastor, just pre-deal. Still fictional, still allergic to affection. I'm right here." },
-  { src: "Cherry.jpg", label: "Cherry", effect: "thunder", gif: "Cherry.gif",
+  { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
     caption: "Sweet pick, but Cherry isn't showing up with snacks and forehead kisses. I am ⚡" },
-  { src: "RauwAlejandro.jpg", label: "RauwAlejandro", effect: "thunder",
+  { src: "RauwAlejandro.jpg", label: "RauwAlejandro",
     caption: "Rauw Alejandro doesn't know you exist, mi amor. I know your coffee order by heart ☕⚡" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift",
     caption: "Taylor has millions of fans. You've got one whole boyfriend, fully yours. Renew me 💜" },
-  { src: "Anthony.jpg", label: "Anthony", effect: "thunder",
+  { src: "Anthony.jpg", label: "Anthony",
     caption: "Anthony Bridgerton: brooding, emotionally constipated, and 200 years old. I actually talk to you ⚡" },
-  { src: "Benedict.jpg", label: "Benedict", effect: "thunder",
+  { src: "Benedict.jpg", label: "Benedict",
     caption: "Benedict's a dreamy artist who won't commit. I committed — a whole year, renewing right now 🎨⚡" },
   { src: "Colin.jpg", label: "Colin",
     caption: "Colin took eight seasons to notice the girl right in front of him. I noticed you instantly 😌" },
-  { src: "HitachiinTwins.jpg", label: "HitachiinTwins", effect: "thunder", gif: "HitachiinTwins.gif",
+  { src: "HitachiinTwins.jpg", label: "HitachiinTwins", gif: "HitachiinTwins.gif",
     caption: "The Hitachiin twins are a 2-for-1 cartoon deal. You already have your favorite duo: us 👯⚡" },
   { src: "Tamaki.jpg", label: "Tamaki", gif: "Tamaki.gif",
     caption: "Even Tamaki knows who your daddy is 😏. Now pick him." },
@@ -417,6 +465,8 @@ function initCaptcha() {
           }
           if (tile.dataset.gif)  showGif(tile.dataset.gif);
           if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+          // Cherry: rain actual cherries behind her gif on select (no verify needed)
+          if (tile.dataset.label === "Cherry") rainImages(["CherryConfetti.png"]);
         } else {
           // deselected — fall back to another selected tile's caption, or clear
           const other = grid.querySelector(".cap-tile.selected");
@@ -446,6 +496,13 @@ function initCaptcha() {
       fail(CAPTCHA_NUDGES[Math.min(nudgeIdx++, CAPTCHA_NUDGES.length - 1)]);
       return;
     }
+    // the 3 Bridgerton brothers together => AloStraws confetti
+    const allPicked = selected.map(t => t.dataset.label);
+    if (allPicked.includes("Anthony") && allPicked.includes("Benedict") && allPicked.includes("Colin")) {
+      rainImages(["AloStraws.jpg"]);
+      fail("All three Bridgerton brothers?! That's a whole regency scandal. They're fictional AND taken — I'm real AND yours 🍓");
+      return;
+    }
     // both Xaden AND Violet (two different thunder characters) selected => storm
     const thunderPicked = new Set(
       selected.filter(t => t.dataset.effect === "thunder").map(t => t.dataset.label)
@@ -466,6 +523,13 @@ function initCaptcha() {
     if (picked.length === 2 && picked.includes("AlastorDemon") && picked.includes("AlastorHuman")) {
       showGif("Danny.gif");
       fail("Both Alastors?? Demon form AND human form — that's two whole versions of fictional. I only come in one form: yours 📻⚡");
+      return;
+    }
+    // las Chicas submitted for verification => whawhawha confetti
+    const chicasTile = selected.find(t => t.dataset.label === "Chicas");
+    if (chicasTile) {
+      rainImages(["whawhawha.jpg"]);
+      fail(chicasTile.dataset.caption || "Las Chicas are great company — but not one of them is your boyfriend 💃");
       return;
     }
     // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
