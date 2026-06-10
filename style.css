@@ -124,6 +124,7 @@ body {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
+  object-position: top;          /* crop from the bottom, keep faces at the top */
   display: none;                 /* shown only once a real photo loads */
 }
 .cap-tile.has-img img { display: block; }
@@ -323,7 +324,7 @@ body {
 }
 .quiz-tile:hover { border-color: var(--frame-dark); }
 .quiz-tile:disabled { cursor: default; }
-.quiz-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+.quiz-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; display: none; }
 .quiz-tile.has-img img { display: block; }
 .quiz-tile.has-img .quiz-ph { display: none; }
 .quiz-ph { font-size: 15px; color: var(--ink); padding: 6px; text-align: center; }
@@ -378,5 +379,3 @@ body {
   display: inline-block;
   padding: 10px 20px;
   background-color: rgba(255, 240, 240, 0.5);
-  border-radius: 12px;
-}
