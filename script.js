@@ -1,3 +1,10 @@
+// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
+const DUET = {
+  line: `Baby, qué afrenta'
+Tú quieres con do' y no sé si va' a aguantar (Ey)`,
+  song:   "Party",
+  artist: "Rauw Alejandro & Bad Bunny",
+};
 /* =====================================================================
    SCREEN MANAGER CORE (shared)
    Add a screen by appending to SCREENS. Remove one by commenting it out.
@@ -94,12 +101,12 @@ const CAPTCHA_POOL = [
     caption: "Benedict's a dreamy artist who won't commit. I committed — a whole year, renewing right now 🎨⚡" },
   { src: "Colin.jpg", label: "Colin",
     caption: "Colin took eight seasons to notice the girl right in front of him. I noticed you instantly 😌" },
-  { src: "HitachiinTwins.jpg", label: "HitachiinTwins", effect: "thunder",
+  { src: "HitachiinTwins.jpg", label: "HitachiinTwins", effect: "thunder", gif: "HitachiinTwins.gif",
     caption: "The Hitachiin twins are a 2-for-1 cartoon deal. You already have your favorite duo: us 👯⚡" },
   { src: "Tamaki.jpg", label: "Tamaki", effect: "thunder",
     caption: "Tamaki would spin you through a rose garden, then trip over himself. Charming, but fictional 🌹⚡" },
-  { src: "Kovu.jpg", label: "Kovu",
-    caption: "Kovu was literally raised to assassinate his girlfriend's dad. I just want to renew our subscription — no betrayal arc 🦁" },
+  { src: "Kovu.jpg", label: "Kovu", gif: "Kovu.gif",
+    caption: "Rawr — he's feisty today and doesn't seem to want you. But I do 🙂🦁" },
   { src: "Neytiri.jpg", label: "Neytiri",
     caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
   { src: "JakeSully.jpg", label: "JakeSully",
@@ -125,14 +132,6 @@ const CAPTCHA_NUDGES = [
   "Still nothing? He's getting insecure.",
   "Bestie. Select the boyfriend.",
 ];
-
-// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
-const DUET = {
-  line: `Baby, qué afrenta'
-Tú quieres con do' y no sé si va' a aguantar (Ey)`,
-  song:   "Party",
-  artist: "Rauw Alejandro & Bad Bunny",
-};
  
 function initCaptcha() {
   const grid   = document.getElementById("cap-grid");
@@ -320,6 +319,7 @@ function initCaptcha() {
     pickVisible().forEach(item => {
       const tile = document.createElement("button");
       tile.className = "cap-tile";
+      tile.title = prettify(item.label || "");
       tile.dataset.correct = item.correct ? "true" : "false";
       if (item.caption) tile.dataset.caption = item.caption;
       if (item.effect)  tile.dataset.effect  = item.effect;
