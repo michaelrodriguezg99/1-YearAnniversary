@@ -153,7 +153,7 @@ const SCREENS = [
   { id: "captcha-screen",  init: initCaptcha },
   { id: "login-screen",    init: initLogin, onShow: focusLoginPass },
   { id: "quiz-screen",     init: initQuiz },
-  // future modules (wrapped, scrapbook...) slot in HERE
+  { id: "wrapped-screen",  init: initWrapped, onShow: showWrapped },
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
  
@@ -202,63 +202,69 @@ const CAPTCHA_POOL = [
   // two different thunder picks are selected together.
   // Any entry with  gif: "file.gif"  pops that gif up when the tile is picked.
   { src: "MikeBefore.jpg", label: "Mike",
-    caption: "NOW he's your boyfriend?!?! 😭 That's me BEFORE I met you. Rude." },
+    caption: "NOW he's your boyfriend?!?! 😭 That's me BEFORE I met you." },
   { src: "rhysand.jpg", label: "Rhysand",
-    caption: "Rhysand? He lives in a book, mi amor. I live in your kitchen eating your snacks." },
+    caption: "Rhysand? He is literaly head over heels for Feyre, so I don't see this working." },
+  { src: "Feyre.jpg", label: "Feyre",
+    caption: "Feyre? She is literaly head over heels for Rhysand, so I don't see this working." },
   { src: "xaden.jpg", label: "Xaden", effect: "thunder",
-    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
+    caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag." },
   { src: "violet.jpg", label: "Violet", effect: "thunder",
-    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
+    caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper." },
   { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
-    caption: "Bad Bunny is selling out stadiums, not showing up at your door. I bring snacks 🐰" },
+    caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
   { src: "BabyMiko.jpg", label: "BabyMiko",
-    caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
+    caption: "Te va a tener de tamagochi 🕹️" },
   { src: "Garrett.jpg", label: "Garrett",
-    caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒⚡" },
+    caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒" },
   { src: "Allie.jpg", label: "Allie", gif: "AllieHayes.gif",
-    caption: "Allie Hayes is a drama-major sweetheart… who only exists in Elle Kennedy's head. I'm in your contacts 🎭" },
+    caption: "Allie Hayes or JLO? 🤔" },
   { src: "Dean.jpg", label: "Dean", gif: "Dean.gif",
-    caption: "Dean Di Laurentis — trust-fund charmer who flirts with anything that moves. I only flirt with you 😏⚡" },
+    caption: "Quote: 1) Stupid Dean & his stipid awesome dick. -random bathroom girl 2) We don't actually need him -second random batroom girl" },
       { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif",
-    caption: "Hannah Wells — mysterious and alluring, but I'm the one who's always here for you 😏⚡" },
+    caption: "I also have big boobs 👀" },
   { src: "AlastorDemon.jpg", label: "AlastorDemon",
-    caption: "Alastor is a literal demon who HATES being touched. I'm a softie who gives free hugs 📻⚡" },
+    caption: "Crazy even as a human 😭" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman",
-    caption: "Same Alastor, just pre-deal. Still fictional, still allergic to affection. I'm right here." },
+    caption: "Crazy even as a demon 😭" },
   { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
-    caption: "Sweet pick, but Cherry isn't showing up with snacks and forehead kisses. I am ⚡" },
+    caption: "Te estoy velando graciosa 👀" },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro",
-    caption: "Rauw Alejandro doesn't know you exist, mi amor. I know your coffee order by heart ☕⚡" },
+    caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift",
-    caption: "Taylor has millions of fans. You've got one whole boyfriend, fully yours. Renew me 💜" },
+    caption: "Do you wanna get swifted? 💀" },
   { src: "Anthony.jpg", label: "Anthony",
-    caption: "Anthony Bridgerton: brooding, emotionally constipated, and 200 years old. I actually talk to you ⚡" },
+    caption: "Anthony Bridgerton: brooding, emotionally constipated." },
   { src: "Benedict.jpg", label: "Benedict",
-    caption: "Benedict's a dreamy artist who won't commit. I committed — a whole year, renewing right now 🎨⚡" },
+    caption: "His mistress?! Really?!" },
   { src: "Colin.jpg", label: "Colin",
     caption: "Colin took eight seasons to notice the girl right in front of him. I noticed you instantly 😌" },
   { src: "HitachiinTwins.jpg", label: "HitachiinTwins", gif: "HitachiinTwins.gif",
-    caption: "The Hitachiin twins are a 2-for-1 cartoon deal. You already have your favorite duo: us 👯⚡" },
+    caption: "I... have no words..." },
   { src: "Tamaki.jpg", label: "Tamaki", gif: "Tamaki.gif",
     caption: "Even Tamaki knows who your daddy is 😏. Now pick him." },
   { src: "Kovu.jpg", label: "Kovu", gif: "Kovu.gif",
     caption: "Rawr — he's feisty today and doesn't seem to want you. But I do 🙂🦁" },
   { src: "Neytiri.jpg", label: "Neytiri",
-    caption: "Neytiri is a 10-foot blue warrior who'll put an arrow in you for standing too close. I just hand you the remote 🏹💙" },
+    caption: "Okay I heard you out, but stil. 😭" },
   { src: "JakeSully.jpg", label: "JakeSully",
-    caption: "Jake Sully had to download into a whole new body to get the girl. I'm already in the right one, mi amor 💙" },
+    caption: "Okay I heard you out, but stil. 😭" },
   { src: "Varang.jpg", label: "Varang",
-    caption: "Varang runs an entire fire clan and would torch the place to make a point. I just light candles for date night 🔥💙" },
+    caption: "Bitch will literally burn you alive." },
   { src: "Lola.jpg", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor",
-    caption: "Lena Luthor: genius billionaire with a last name that screams trust issues. I'm a simple man with zero evil lairs 🦸" },
+    caption: "Lena Luthor: genius billionaire with a last name that screams trust and daddy issues." },
   { src: "LoveQuinn.jpg", label: "LoveQuinn",
     caption: "Love Quinn is devoted… to a concerning, body-count kind of degree. I'm devoted AND legally free 🔪❤️" },
   { src: "RheaRipley.jpg", label: "RheaRipley", gif: "RheaRipley.gif",
-    caption: "Rhea Ripley would suplex me for looking at you wrong. Massive respect — but she's on TV, I'm on your couch 💪" },
+    caption: "Rhea Ripley would suplex me for looking at you wrong. Massive respect — but id still win 😎" },
   { src: "Chicas.jpg", label: "Chicas", gif: "Chicas.gif",
-    caption: "PLACEHOLDER — tell me who las Chicas are and I'll write the real roast 💃" },
+    caption: "YOU 🫵 said no friends 😡 so no empieces ahora jaja" },
+  { src: "Caitlyn.jpg", label: "Caitlyn", gif: "Caitlyn.gif",
+    caption: "Not bad, but I can do better." },
+  { src: "VI.jpg", label: "VI", gif: "VI.gif",
+    caption: "Will literally betray you for her sister everytime 😈" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -891,7 +897,97 @@ function initQuiz() {
 }
  
 /* =====================================================================
-   SCREEN 5 — LETTER (renewal finale)
+   SCREEN 5 — SPOTIFY WRAPPED: US EDITION
+   ---------------------------------------------------------------------
+   FILL ME IN: edit the WRAPPED cards below with your real numbers and
+   your song. Anything marked PLACEHOLDER is mine-to-fill -> yours-to-fill.
+   - Stats use `num:` (animated count-up). Put the real number there.
+   - Text cards use `big:` (shown as-is).
+   Add/remove/reorder cards freely; the dots and flow adapt automatically.
+   ===================================================================== */
+const WRAPPED = [
+  { kind: "intro",  accent: "a1", big: "2025",        label: "Us · Wrapped",
+    sub: "One year of us, by the numbers. Ready? →" },
+ 
+  { kind: "stat",   accent: "a2", num: 0,             label: "Messages sent",
+    sub: "PLACEHOLDER number — and somehow we STILL had more to say 💬" },
+ 
+  { kind: "stat",   accent: "a3", num: 0, unit: " hrs", label: "Hours together",
+    sub: "PLACEHOLDER number — officially my favorite way to spend time ⏳" },
+ 
+  { kind: "stat",   accent: "a4", num: 0,             label: "Meals shared",
+    sub: "PLACEHOLDER number — every single one beat eating alone 🍽️" },
+ 
+  { kind: "stat",   accent: "a5", big: "∞",           label: "Inside jokes",
+    sub: "Officially uncountable — and nobody else would get a single one 😂" },
+ 
+  { kind: "artist", accent: "a6", big: "Michael",     label: "Your #1 artist",
+    sub: "On repeat all year. Top 0.01% of listeners 🎧" },
+ 
+  { kind: "song",   accent: "a1", big: "PLACEHOLDER", label: "Your top song",
+    sub: "our song — PLACEHOLDER 🎵" },
+ 
+  { kind: "finish", accent: "a3", big: "💛",          label: "Top genre: hopelessly in love",
+    sub: "That's a wrap on year one. Tap to keep going →" },
+];
+ 
+function initWrapped() {
+  const stage   = document.getElementById("wr-stage");
+  const dotsEl  = document.getElementById("wr-dots");
+  const nextBtn = document.getElementById("wr-next");
+  let idx = 0;
+ 
+  // progress dots (one per card)
+  dotsEl.innerHTML = "";
+  WRAPPED.forEach(() => {
+    const d = document.createElement("span");
+    d.className = "wr-dot";
+    dotsEl.appendChild(d);
+  });
+ 
+  function countUp(el, target, unit) {
+    const dur = 900, t0 = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toLocaleString("en-US") + (unit || "");
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+ 
+  function render() {
+    const c = WRAPPED[idx];
+    stage.className = "wr-stage " + (c.accent || "a1");
+    const wordy = (c.big && c.big.length > 4) ? " text" : "";
+    stage.innerHTML =
+      '<div class="wr-card">' +
+        '<div class="wr-label">' + (c.label || "") + '</div>' +
+        '<div class="wr-big' + wordy + '" id="wr-big"></div>' +
+        '<div class="wr-sub">' + (c.sub || "") + '</div>' +
+      '</div>';
+    const big = document.getElementById("wr-big");
+    if (c.num != null) { big.textContent = "0"; countUp(big, c.num, c.unit); }
+    else big.textContent = c.big || "";
+    [...dotsEl.children].forEach((d, i) => d.classList.toggle("on", i === idx));
+    nextBtn.textContent = (idx === WRAPPED.length - 1) ? "Continue →" : "Next →";
+  }
+ 
+  function advance() {
+    if (idx < WRAPPED.length - 1) { idx++; render(); }
+    else nextScreen();
+  }
+ 
+  nextBtn.addEventListener("click", advance);
+  stage.addEventListener("click", advance);   // tapping the card also advances
+ 
+  initWrapped._reset = () => { idx = 0; render(); };
+  render();
+}
+// onShow: always start the deck from the first card
+function showWrapped() { if (initWrapped._reset) initWrapped._reset(); }
+ 
+/* =====================================================================
+   SCREEN 6 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
    scoped to #letter-screen so it can't collide with other modules.
    ===================================================================== */
