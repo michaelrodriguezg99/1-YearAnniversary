@@ -163,7 +163,7 @@ const CAPTCHA_POOL = [
     caption: "Colin took eight seasons to notice the girl right in front of him. I noticed you instantly 😌" },
   { src: "HitachiinTwins.jpg", label: "HitachiinTwins", effect: "thunder", gif: "HitachiinTwins.gif",
     caption: "The Hitachiin twins are a 2-for-1 cartoon deal. You already have your favorite duo: us 👯⚡" },
-  { src: "Tamaki.jpg", label: "Tamaki", effect: "thunder",
+  { src: "Tamaki.jpg", label: "Tamaki", gif: "Tamaki.gif",
     caption: "Tamaki would spin you through a rose garden, then trip over himself. Charming, but fictional 🌹⚡" },
   { src: "Kovu.jpg", label: "Kovu", gif: "Kovu.gif",
     caption: "Rawr — he's feisty today and doesn't seem to want you. But I do 🙂🦁" },
