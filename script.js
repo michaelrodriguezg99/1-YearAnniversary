@@ -463,7 +463,7 @@ function initCaptcha() {
     // both Alastors (demon form + human form) selected => Danny.gif
     if (picked.length === 2 && picked.includes("AlastorDemon") && picked.includes("AlastorHuman")) {
       showGif("Danny.gif");
-      fail("Both Alastors?? Demon form AND human form — that's two whole versions of fictional. I only come in one form: yours 📻⚡");
+      fail("Hanna Montana?!?!?!?!");
       return;
     }
     // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
