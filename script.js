@@ -508,10 +508,10 @@ const QUIZ = [
     right: "Obviously. Iconic taste 🕷️",
     wrong: "Nope — wrong Spidey. Swing again 🕸️",
     options: [
-      { src: "Toby.png",   label: "Toby" },
-      { src: "Andrew.png", label: "Andrew", correct: true },
-      { src: "Tom.png",    label: "Tom" },
-      { src: "Miles.png",  label: "Miles" },
+      { src: "Toby.jpg",   label: "Toby" },
+      { src: "Andrew.jpg", label: "Andrew", correct: true },
+      { src: "Tom.jpg",    label: "Tom" },
+      { src: "Miles.jpg",  label: "Miles" },
     ],
   },
  
@@ -521,10 +521,10 @@ const QUIZ = [
     right: "The bowling alley 🎳 Where it all started ❤️",
     wrong: "Nope — that's not where it began 😌",
     options: [
-      { src: "Bowling.png",   label: "Bowling", correct: true },
-      { src: "SkyDiving.png", label: "SkyDiving" },
-      { src: "Drinking.png",  label: "Drinking" },
-      { src: "Picnic.png",    label: "Picnic" },
+      { src: "Bowling.jpg",   label: "Bowling", correct: true },
+      { src: "SkyDiving.jpg", label: "SkyDiving" },
+      { src: "Drinking.jpg",  label: "Drinking" },
+      { src: "Picnic.jpg",    label: "Picnic" },
     ],
   },
  
@@ -547,10 +547,10 @@ const QUIZ = [
     right: "Always. Every time 🥹",
     wrong: "Nope — keep looking 👀",
     options: [
-      { src: "Photo.png",      label: "Photo", correct: true },
-      { src: "Coin.png",       label: "Coin" },
-      { src: "Flower.png",     label: "Flower" },
-      { src: "LoveLetter.png", label: "LoveLetter" },
+      { src: "Photo.jpg",      label: "Photo", correct: true },
+      { src: "Coin.jpg",       label: "Coin" },
+      { src: "Flower.jpg",     label: "Flower" },
+      { src: "LoveLetter.jpg", label: "LoveLetter" },
     ],
   },
  
