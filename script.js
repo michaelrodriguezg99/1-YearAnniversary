@@ -181,6 +181,8 @@ const CAPTCHA_POOL = [
     caption: "Love Quinn is devoted… to a concerning, body-count kind of degree. I'm devoted AND legally free 🔪❤️" },
   { src: "RheaRipley.jpg", label: "RheaRipley", gif: "RheaRipley.gif",
     caption: "Rhea Ripley would suplex me for looking at you wrong. Massive respect — but she's on TV, I'm on your couch 💪" },
+  { src: "Chicas.jpg", label: "Chicas", gif: "Chicas.gif",
+    caption: "PLACEHOLDER — tell me who las Chicas are and I'll write the real roast 💃" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -463,7 +465,7 @@ function initCaptcha() {
     // both Alastors (demon form + human form) selected => Danny.gif
     if (picked.length === 2 && picked.includes("AlastorDemon") && picked.includes("AlastorHuman")) {
       showGif("Danny.gif");
-      fail("Hanna Montana?!?!?!?!");
+      fail("Both Alastors?? Demon form AND human form — that's two whole versions of fictional. I only come in one form: yours 📻⚡");
       return;
     }
     // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
