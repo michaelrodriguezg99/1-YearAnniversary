@@ -910,14 +910,14 @@ function initQuiz() {
 const WRAPPED = [
   { kind: "intro",  accent: "green" },
  
-  { kind: "stat",   accent: "pink",   num: 27375,                 label: "messages sent",
+  { kind: "stat",   accent: "pink",   num: 59375,                 label: "messages sent",
     note: "Two years of texts and we STILL had more to say 💬" },
  
   { kind: "stat",   accent: "purple", num: 131400, unit: "",      label: "minutes together",
     note: "That's 2,190 hours of you being my favorite place to be ⏳" },
  
   { kind: "stat",   accent: "yellow", num: 1095,                  label: "meals shared",
-    note: "Every single one beat eating alone 🍽️" },
+    note: "Every single one beats eating alone 🍽️" },
  
   { kind: "stat",   accent: "blue",   big: "∞",                   label: "inside jokes",
     note: "Officially uncountable — nobody else would get a single one 😂" },
@@ -926,11 +926,14 @@ const WRAPPED = [
     name: "Michael", note: "You were in the top 0.01% of his listeners 🎧" },
  
   { kind: "spotlight", accent: "coral", note2: "♫", topLabel: "Your Top Song",
-    name: "Party", note: "our song — you know exactly which one 🎵" },
+    name: "Como dormiste?", note: "You know exactly which one 🎵" },
  
   { kind: "ranked", accent: "purple", title: "Your Top Artists", items: [
-    "Michael", "Michael (Acoustic)", "Michael & The Cat",
-    "Michael feat. You", "Honestly, still Michael",
+    { name: "Michael",                 img: "me1.jpeg" },
+    { name: "Michael (Acoustic)",      img: "me2.jpeg" },
+    { name: "Michael & The Cat",       img: "me3.jpeg" },
+    { name: "Michael feat. You",       img: "her.jpeg" },
+    { name: "Honestly, still Michael", img: "MikeBefore.jpg" },
   ] },
  
   { kind: "summary", accent: "pink" },
@@ -1001,11 +1004,15 @@ function initWrapped() {
     } else if (c.kind === "ranked") {
       let rows = "";
       c.items.forEach((it, i) => {
+        const name  = (typeof it === "string") ? it : it.name;
+        const thumb = (it && it.img)
+          ? '<span class="wr-thumb" style="background-image:url(\'' + it.img + '\')"></span>'
+          : '<span class="wr-thumb wr-t' + (i % 6) + '"></span>';
         rows +=
           '<div class="wr-row">' +
             '<span class="wr-rank">' + (i + 1) + '</span>' +
-            '<span class="wr-thumb wr-t' + (i % 6) + '"></span>' +
-            '<span class="wr-rowname">' + it + '</span>' +
+            thumb +
+            '<span class="wr-rowname">' + name + '</span>' +
           '</div>';
       });
       html =

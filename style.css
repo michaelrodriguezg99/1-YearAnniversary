@@ -342,7 +342,7 @@ body {
 .wr-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
 .wr-row { display: flex; align-items: center; gap: 12px; }
 .wr-rank { font-weight: 900; font-size: 22px; width: 22px; text-align: right; opacity: .85; }
-.wr-thumb { width: 42px; height: 42px; border-radius: 5px; flex: none; box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+.wr-thumb { width: 42px; height: 42px; border-radius: 5px; flex: none; box-shadow: 0 3px 8px rgba(0,0,0,.25); background-size: cover; background-position: center top; }
 .wr-rowname { font-weight: 800; font-size: 18px; line-height: 1.1; }
 .wr-t0 { background: #ffb3c7; } .wr-t1 { background: #b39dff; }
 .wr-t2 { background: #9bf6c4; } .wr-t3 { background: #ffd36e; }
