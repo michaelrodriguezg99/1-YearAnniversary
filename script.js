@@ -25,7 +25,9 @@ function _parseGifMs(buf) {
     const k = b[i];
     if (k === 0x21) {                       // extension block
       if (b[i + 1] === 0xF9) {              // graphic control ext -> frame delay
-        ms += ((b[i + 4] | (b[i + 5] << 8)) || 0) * 10; // delay stored in 1/100 s
+        let d = (b[i + 4] | (b[i + 5] << 8)); // delay stored in 1/100 s (centiseconds)
+        if (d < 2) d = 10;                   // browsers render 0/1-delay frames at ~100ms
+        ms += d * 10;
       }
       i += 2;
       while (i < b.length && b[i] !== 0) i += b[i] + 1;          // skip sub-blocks
