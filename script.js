@@ -1074,11 +1074,11 @@ function showWrapped() { if (initWrapped._reset) initWrapped._reset(); }
    Add/remove as many as you like — the counter and flow adapt.
    ===================================================================== */
 const SCRAPBOOK = [
-  { src: "scrap1.jpg", caption: "PLACEHOLDER — your caption (e.g. 'where it all started 🎳')", date: "" },
-  { src: "scrap2.jpg", caption: "PLACEHOLDER — a favorite memory", date: "" },
-  { src: "scrap3.jpg", caption: "PLACEHOLDER — an inside-joke moment", date: "" },
-  { src: "scrap4.jpg", caption: "PLACEHOLDER — a trip or a night out", date: "" },
-  { src: "scrap5.jpg", caption: "PLACEHOLDER — the one that gets you 🥹", date: "" },
+  { src: "scrap1.jpg", caption: "Our first kiss", date: "December, 1, 2024" },
+  { src: "scrap2.jpg", caption: "A favorite memory", date: "October, 1, 2025" },
+  { src: "scrap3.jpg", caption: "A random side quest", date: "October, 15, 2025" },
+  { src: "scrap4.jpg", caption: "Our last celebrated goal", date: "May, 9, 2026" },
+  { src: "scrap5.jpg", caption: "Our recreated kiss", date: "December, 1, 2025" },
 ];
  
 // Optional year-recap video — revealed after the last photo is flipped through.
