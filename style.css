@@ -254,6 +254,31 @@ body {
   from { transform: translateX(calc(var(--sway, 16px) * -1)); }
   to   { transform: translateX(var(--sway, 16px)); }
 }
+/* the "here's what's about to fall" reveal: appears, grows, then POPS
+   (sits ABOVE the gif at 10050 so she sees it clearly first) */
+.rain-preview {
+  position: fixed; left: 50%; top: 42%;
+  transform: translate(-50%, -50%) scale(0.3);
+  z-index: 10050; pointer-events: none; opacity: 0;
+  animation: preview-grow var(--grow, 1000ms) ease forwards;
+}
+.rain-preview img {
+  display: block; max-width: 56vw; max-height: 46vh;
+  background: var(--panel); border: 4px solid var(--frame);
+  box-shadow: 0 0 0 4px var(--panel-2), 8px 8px 0 0 rgba(0,0,0,.25);
+  image-rendering: pixelated;
+}
+.rain-preview.pop { animation: preview-pop .33s ease-in forwards; }
+@keyframes preview-grow {
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+  25%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+}
+@keyframes preview-pop {
+  0%   { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+  55%  { opacity: 1; transform: translate(-50%,-50%) scale(1.55); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(1.75); }
+}
 .gif-pop img {
   max-width: 60vw; max-height: 60vh;
   background: var(--panel);

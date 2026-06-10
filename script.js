@@ -79,38 +79,66 @@ function rainImages(images, opts) {
   opts = opts || {};
   const list = (images && images.length) ? images : CONFETTI_IMAGES;
   if (!list.length) return;
-  const count = opts.count || 28;
-  const base  = opts.duration || 3200; // ms for a piece to fall
-  const layer = document.createElement("div");
-  layer.className = "img-rain";
-  if (opts.z != null) layer.style.zIndex = opts.z;
-  document.body.appendChild(layer);
  
-  let maxEnd = 0;
-  for (let i = 0; i < count; i++) {
-    const drop = document.createElement("div");
-    drop.className = "drop";
-    const img = document.createElement("img");
-    img.src = list[i % list.length];
-    const size    = 26 + Math.random() * 42;             // 26–68px
-    const delay   = Math.random() * 800;                 // staggered entry
-    const fall    = base * (0.8 + Math.random() * 0.6);  // varied fall speed
-    const rot     = (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 540);
-    const sway    = 10 + Math.random() * 16;             // px wiper amplitude
-    const swayDur = 800 + Math.random() * 800;           // ms per swing
-    drop.style.left = (Math.random() * 100) + "%";
-    drop.style.setProperty("--dur", fall + "ms");
-    drop.style.setProperty("--rot", rot + "deg");
-    drop.style.animationDelay = delay + "ms";
-    img.style.setProperty("--sz",   size + "px");
-    img.style.setProperty("--sway", sway + "px");
-    img.style.setProperty("--sway-dur", swayDur + "ms");
-    img.style.animationDelay = "-" + (Math.random() * swayDur) + "ms"; // desync the wiper phase
-    drop.appendChild(img);
-    layer.appendChild(drop);
-    maxEnd = Math.max(maxEnd, delay + fall);
+  // spawns the actual falling confetti
+  function spawn() {
+    const count = opts.count || 28;
+    const base  = opts.duration || 3200; // ms for a piece to fall
+    const layer = document.createElement("div");
+    layer.className = "img-rain";
+    if (opts.z != null) layer.style.zIndex = opts.z;
+    document.body.appendChild(layer);
+ 
+    let maxEnd = 0;
+    for (let i = 0; i < count; i++) {
+      const drop = document.createElement("div");
+      drop.className = "drop";
+      const img = document.createElement("img");
+      img.src = list[i % list.length];
+      const size    = 26 + Math.random() * 42;             // 26–68px
+      const delay   = Math.random() * 800;                 // staggered entry
+      const fall    = base * (0.8 + Math.random() * 0.6);  // varied fall speed
+      const rot     = (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 540);
+      const sway    = 10 + Math.random() * 16;             // px wiper amplitude
+      const swayDur = 800 + Math.random() * 800;           // ms per swing
+      drop.style.left = (Math.random() * 100) + "%";
+      drop.style.setProperty("--dur", fall + "ms");
+      drop.style.setProperty("--rot", rot + "deg");
+      drop.style.animationDelay = delay + "ms";
+      img.style.setProperty("--sz",   size + "px");
+      img.style.setProperty("--sway", sway + "px");
+      img.style.setProperty("--sway-dur", swayDur + "ms");
+      img.style.animationDelay = "-" + (Math.random() * swayDur) + "ms"; // desync the wiper phase
+      drop.appendChild(img);
+      layer.appendChild(drop);
+      maxEnd = Math.max(maxEnd, delay + fall);
+    }
+    setTimeout(() => layer.remove(), maxEnd + 250);
   }
-  setTimeout(() => layer.remove(), maxEnd + 250);
+ 
+  // no reveal: just rain (then optional gif). Used for multi-icon showers.
+  if (opts.preview === false) {
+    spawn();
+    if (typeof opts.onPop === "function") opts.onPop();
+    return;
+  }
+ 
+  // reveal: image appears, grows, POPS -> confetti -> (optional) gif after
+  const grow = opts.previewMs || 1000;
+  const prev = document.createElement("div");
+  prev.className = "rain-preview";
+  prev.style.setProperty("--grow", grow + "ms");
+  const pimg = document.createElement("img");
+  pimg.src = list[0];
+  prev.appendChild(pimg);
+  document.body.appendChild(prev);
+ 
+  setTimeout(() => prev.classList.add("pop"), grow);        // start the pop
+  setTimeout(() => {                                        // pop finished
+    prev.remove();
+    spawn();                                                // confetti bursts out
+    if (typeof opts.onPop === "function") setTimeout(opts.onPop, 120); // gif AFTER
+  }, grow + 340);
 }
  
 /* =====================================================================
@@ -463,10 +491,15 @@ function initCaptcha() {
           } else {
             msgEl.textContent = ""; msgEl.className = "cap-msg";
           }
-          if (tile.dataset.gif)  showGif(tile.dataset.gif);
-          if (tile.dataset.swim) swimAcross(tile.dataset.swim);
-          // Cherry: rain actual cherries behind her gif on select (no verify needed)
-          if (tile.dataset.label === "Cherry") rainImages(["CherryConfetti.png"]);
+          if (tile.dataset.label === "Cherry") {
+            // reveal the cherry image, pop it into falling cherries, THEN her gif
+            rainImages(["CherryConfetti.png"], {
+              onPop: () => { if (tile.dataset.gif) showGif(tile.dataset.gif); }
+            });
+          } else {
+            if (tile.dataset.gif)  showGif(tile.dataset.gif);
+            if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+          }
         } else {
           // deselected — fall back to another selected tile's caption, or clear
           const other = grid.querySelector(".cap-tile.selected");
