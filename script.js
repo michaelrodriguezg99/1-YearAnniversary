@@ -73,7 +73,7 @@ const CAPTCHA_POOL = [
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag. ⚡" },
   { src: "violet.jpg", label: "Violet", effect: "thunder",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper. Pick me ⚡" },
-  { src: "BadBunny.jpg", label: "BadBunny", gif: "cat_dance.gif",
+  { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
     caption: "Bad Bunny is selling out stadiums, not showing up at your door. I bring snacks 🐰" },
   { src: "BabyMiko.jpg", label: "BabyMiko", effect: "thunder",
     caption: "Baby Miko lives in your phone. I live one room away and already made you food ⚡" },
@@ -89,7 +89,7 @@ const CAPTCHA_POOL = [
     caption: "Alastor is a literal demon who HATES being touched. I'm a softie who gives free hugs 📻⚡" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman",
     caption: "Same Alastor, just pre-deal. Still fictional, still allergic to affection. I'm right here." },
-  { src: "Cherry.jpg", label: "Cherry", effect: "thunder",
+  { src: "Cherry.jpg", label: "Cherry", effect: "thunder", gif: "Cherry.gif",
     caption: "Sweet pick, but Cherry isn't showing up with snacks and forehead kisses. I am ⚡" },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro", effect: "thunder",
     caption: "Rauw Alejandro doesn't know you exist, mi amor. I know your coffee order by heart ☕⚡" },
@@ -234,13 +234,15 @@ function initCaptcha() {
   let gifTimer;
   function showGif(src) {
     const img = gifPop.querySelector("img");
-    img.src = src;
- 
     img.classList.remove("cropped-allie");
     if (src.includes("AllieAndDean.gif")) {
       img.classList.add("cropped-allie");
     }
- 
+    // hide the previous gif's last frame until the new one has loaded
+    img.style.visibility = "hidden";
+    img.onload = () => { img.style.visibility = "visible"; };
+    img.removeAttribute("src");
+    img.src = src;
     gifPop.classList.add("show");
     clearTimeout(gifTimer);
     gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
@@ -606,6 +608,9 @@ function initQuiz() {
   function popGif(src, ms) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
+    img.style.visibility = "hidden";
+    img.onload = () => { img.style.visibility = "visible"; };
+    img.removeAttribute("src");
     img.src = src;
     gifPop.classList.add("show");
     setTimeout(() => gifPop.classList.remove("show"), ms || 2600);
