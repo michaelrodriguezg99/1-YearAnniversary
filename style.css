@@ -10,6 +10,7 @@
   --ink: #7d2f2a;         /* dark red text */
   --ink-soft: #b06a64;    /* muted red (hints) */
   --good: #3f8f5e;        /* success green */
+  --font: "Space Mono", monospace;
 }
  
 body {
@@ -20,7 +21,7 @@ body {
   align-items: center;
   background-image: url("heart-bg.jpg");
   background-size: cover;
-  font-family: "Pixelify Sans", sans-serif;
+  font-family: var(--font);
 }
  
 /* =====================================================================
@@ -97,7 +98,7 @@ body {
   position: absolute; top: 10px; right: 10px;
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
-  font-family: "Pixelify Sans", sans-serif; font-size: 20px; line-height: 1;
+  font-family: var(--font); font-size: 20px; line-height: 1;
   background: rgba(255, 255, 255, 0.18); color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 50%;
   cursor: pointer; transition: transform 0.3s ease, background 0.15s ease;
@@ -118,7 +119,7 @@ body {
   padding: 0; margin: 0; border: none;
   cursor: pointer; overflow: hidden;
   background: #d9b7bd;
-  font-family: "Pixelify Sans", sans-serif;
+  font-family: var(--font);
 }
 .cap-tile img {
   position: absolute; inset: 0;
@@ -188,7 +189,7 @@ body {
 .cap-msg.ok  { color: var(--good); }
 .cap-msg.hint { color: var(--ink); opacity: .75; font-style: italic; }
 .cap-verify {
-  font-family: "Pixelify Sans", sans-serif; font-size: 17px;
+  font-family: var(--font); font-size: 17px;
   background: var(--frame-dark); color: #fff;
   border: none; padding: 9px 16px; cursor: pointer;
   box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
@@ -281,48 +282,99 @@ body {
 }
  
 /* =====================================================================
-   SCREEN 5 — SPOTIFY WRAPPED: US EDITION
+   SCREEN 5 — SPOTIFY WRAPPED: US EDITION  (Spotify-Wrapped styling)
    ===================================================================== */
 .wrapped-body { display: flex; flex-direction: column; gap: 12px; }
+/* bold display font, scoped to just this screen */
+.wrapped-body, .wrapped-body * { font-family: "Montserrat", "Space Mono", sans-serif; }
+ 
 .wr-dots { display: flex; gap: 6px; justify-content: center; }
-.wr-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--panel-2); transition: background .2s; }
+.wr-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--panel-2); transition: background .2s; }
 .wr-dot.on { background: var(--frame); }
+ 
 .wr-stage {
-  position: relative; min-height: 300px; cursor: pointer; overflow: hidden;
-  border: 3px solid var(--frame-dark); border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 26px 22px; color: #fff;
+  position: relative; cursor: pointer; overflow: hidden;
+  border-radius: 14px; aspect-ratio: 9 / 15;
+  min-height: 380px; max-height: calc(100vh - 240px);
+  display: flex; padding: 22px; color: #111;
 }
-.wr-card { animation: wr-in .5s ease both; }
+.wr-card {
+  width: 100%; display: flex; flex-direction: column;
+  justify-content: space-between; text-align: left;
+  animation: wr-in .45s ease both;
+}
 @keyframes wr-in {
-  from { opacity: 0; transform: translateY(20px) scale(.96); }
+  from { opacity: 0; transform: translateY(16px) scale(.98); }
   to   { opacity: 1; transform: none; }
 }
-.wr-label { font-size: 18px; letter-spacing: 1px; opacity: .92; margin-bottom: 6px; }
-.wr-big {
-  font-size: 64px; line-height: 1; font-weight: 700;
-  margin: 6px 0 14px; word-break: break-word;
-  text-shadow: 3px 3px 0 rgba(0,0,0,.18);
+.wr-mark {
+  font-weight: 800; font-size: 13px; letter-spacing: .5px;
+  text-transform: uppercase; opacity: .85;
 }
-.wr-big.text { font-size: 40px; }
-.wr-sub { font-size: 15px; line-height: 1.3; max-width: 34ch; margin: 0 auto; opacity: .96; }
+.wr-block { display: flex; flex-direction: column; }
+ 
+/* stat cards: giant number near the bottom, label + note under it */
+.wr-statnum {
+  font-weight: 900; font-size: clamp(58px, 19vw, 92px); line-height: .9;
+  letter-spacing: -2px;
+}
+.wr-statlabel {
+  font-weight: 800; font-size: 24px; text-transform: lowercase;
+  margin-top: 6px; line-height: 1.05;
+}
+.wr-note { font-weight: 600; font-size: 14.5px; line-height: 1.35; margin-top: 14px; opacity: .9; }
+ 
+/* spotlight cards: big "album art" + name */
+.wr-toplabel { font-weight: 900; font-size: 26px; line-height: 1.05; margin-bottom: 14px; }
+.wr-art {
+  width: 74%; aspect-ratio: 1 / 1; object-fit: cover; object-position: top;
+  border-radius: 6px; display: block;
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
+.wr-art-ph {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px; background: rgba(0,0,0,.18);
+}
+.wr-name { font-weight: 900; font-size: 40px; line-height: 1; margin: 14px 0 0; letter-spacing: -1px; }
+ 
+/* ranked top-5 list */
+.wr-ranktitle { margin-bottom: 6px; }
+.wr-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.wr-row { display: flex; align-items: center; gap: 12px; }
+.wr-rank { font-weight: 900; font-size: 22px; width: 22px; text-align: right; opacity: .85; }
+.wr-thumb { width: 42px; height: 42px; border-radius: 5px; flex: none; box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+.wr-rowname { font-weight: 800; font-size: 18px; line-height: 1.1; }
+.wr-t0 { background: #ffb3c7; } .wr-t1 { background: #b39dff; }
+.wr-t2 { background: #9bf6c4; } .wr-t3 { background: #ffd36e; }
+.wr-t4 { background: #8ec5ff; } .wr-t5 { background: #ff9e7d; }
+ 
+/* the final shareable summary card */
+.wr-summarycard { gap: 14px; }
+.wr-sumgrid { display: flex; flex-direction: column; gap: 14px; margin: auto 0; }
+.wr-sumrow { display: flex; flex-direction: column; }
+.wr-sumh { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: .7; }
+.wr-sumv { font-weight: 900; font-size: 30px; line-height: 1.05; letter-spacing: -1px; }
+ 
+/* intro splash */
+.wr-introbig { font-weight: 900; font-size: clamp(52px, 17vw, 84px); line-height: .92; letter-spacing: -2px; }
+.wr-introsub { font-weight: 700; font-size: 17px; margin-top: 12px; opacity: .9; }
+ 
 .wr-next {
-  align-self: center; font-family: inherit; font-size: 17px; cursor: pointer;
-  background: var(--frame); color: #fff;
-  border: 3px solid var(--frame-dark); border-radius: 8px; padding: 8px 24px;
+  align-self: center; font-family: "Montserrat", sans-serif; font-weight: 800;
+  font-size: 16px; cursor: pointer; color: #111;
+  background: #fff; border: none; border-radius: 40px; padding: 11px 30px;
 }
-.wr-next:hover { background: var(--frame-dark); }
-/* card accent backgrounds — Wrapped energy, tuned to the salmon theme */
-.wr-stage.a1 { background: #c75c52; }  /* salmon  */
-.wr-stage.a2 { background: #e0894a; }  /* peach   */
-.wr-stage.a3 { background: #4f9d8b; }  /* teal    */
-.wr-stage.a4 { background: #9b5fa8; }  /* purple  */
-.wr-stage.a5 { background: #d96a8e; }  /* pink    */
-.wr-stage.a6 { background: #3f6fae; }  /* blue    */
-@media (max-width: 480px) {
-  .wr-big { font-size: 52px; }
-  .wr-big.text { font-size: 34px; }
-}
+.wr-next:hover { transform: scale(1.04); }
+ 
+/* Spotify-Wrapped vibrant backgrounds */
+.wr-green  { background: #1ed760; color: #06371c; }
+.wr-pink   { background: #ff4f81; color: #3a0d20; }
+.wr-purple { background: #7b4dff; color: #fdfdff; }
+.wr-yellow { background: #ffd23f; color: #3a2e00; }
+.wr-blue   { background: #2e77ff; color: #f5f9ff; }
+.wr-coral  { background: #ff6f59; color: #3a1106; }
+/* keep next-button readable on light vs dark cards */
+.wr-purple .wr-next, .wr-blue .wr-next { background: #fff; color: #111; }
 .gif-pop img {
   max-width: 60vw; max-height: 60vh;
   background: var(--panel);
@@ -377,7 +429,7 @@ body {
 }
 .login-input {
   width: 100%; box-sizing: border-box;
-  font-family: "Pixelify Sans", sans-serif; font-size: 17px;
+  font-family: var(--font); font-size: 17px;
   padding: 9px 10px; color: var(--ink);
   background: #fff; border: 3px solid var(--frame); outline: none;
 }
@@ -386,7 +438,7 @@ body {
 .login-hint { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0; text-align: left; cursor: help; }
 .login-btn {
   width: 100%; margin-top: 14px;
-  font-family: "Pixelify Sans", sans-serif; font-size: 18px;
+  font-family: var(--font); font-size: 18px;
   background: var(--frame-dark); color: #fff; border: none;
   padding: 11px; cursor: pointer;
   box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
@@ -413,7 +465,7 @@ body {
   position: relative; aspect-ratio: 1 / 1; overflow: hidden;
   border: 3px solid var(--frame); border-radius: 2px;
   background: #e7c7cd; cursor: pointer; padding: 0;
-  font-family: "Pixelify Sans", sans-serif;
+  font-family: var(--font);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
 }
 .quiz-tile:hover { border-color: var(--frame-dark); }

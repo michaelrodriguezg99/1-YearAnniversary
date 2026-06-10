@@ -899,36 +899,41 @@ function initQuiz() {
 /* =====================================================================
    SCREEN 5 — SPOTIFY WRAPPED: US EDITION
    ---------------------------------------------------------------------
-   FILL ME IN: edit the WRAPPED cards below with your real numbers and
-   your song. Anything marked PLACEHOLDER is mine-to-fill -> yours-to-fill.
-   - Stats use `num:` (animated count-up). Put the real number there.
-   - Text cards use `big:` (shown as-is).
-   Add/remove/reorder cards freely; the dots and flow adapt automatically.
+   Styled to look like a real Spotify Wrapped. Card kinds:
+     intro     - the splash
+     stat      - giant count-up number + label
+     spotlight - "album art" + Top Artist / Top Song
+     ranked    - numbered top-5 list (edit the `items`)
+     summary   - the final shareable stacked card
+   `accent` picks the bright background: green/pink/purple/yellow/blue/coral.
    ===================================================================== */
 const WRAPPED = [
-  { kind: "intro",  accent: "a1", big: "2025",        label: "Us · Wrapped",
-    sub: "One year of us, by the numbers. Ready? →" },
+  { kind: "intro",  accent: "green" },
  
-  { kind: "stat",   accent: "a2", num: 0,             label: "Messages sent",
-    sub: "PLACEHOLDER number — and somehow we STILL had more to say 💬" },
+  { kind: "stat",   accent: "pink",   num: 27375,                 label: "messages sent",
+    note: "Two years of texts and we STILL had more to say 💬" },
  
-  { kind: "stat",   accent: "a3", num: 0, unit: " hrs", label: "Hours together",
-    sub: "PLACEHOLDER number — officially my favorite way to spend time ⏳" },
+  { kind: "stat",   accent: "purple", num: 131400, unit: "",      label: "minutes together",
+    note: "That's 2,190 hours of you being my favorite place to be ⏳" },
  
-  { kind: "stat",   accent: "a4", num: 0,             label: "Meals shared",
-    sub: "PLACEHOLDER number — every single one beat eating alone 🍽️" },
+  { kind: "stat",   accent: "yellow", num: 1095,                  label: "meals shared",
+    note: "Every single one beat eating alone 🍽️" },
  
-  { kind: "stat",   accent: "a5", big: "∞",           label: "Inside jokes",
-    sub: "Officially uncountable — and nobody else would get a single one 😂" },
+  { kind: "stat",   accent: "blue",   big: "∞",                   label: "inside jokes",
+    note: "Officially uncountable — nobody else would get a single one 😂" },
  
-  { kind: "artist", accent: "a6", big: "Michael",     label: "Your #1 artist",
-    sub: "On repeat all year. Top 0.01% of listeners 🎧" },
+  { kind: "spotlight", accent: "green", art: "me1.jpeg", topLabel: "Your Top Artist",
+    name: "Michael", note: "You were in the top 0.01% of his listeners 🎧" },
  
-  { kind: "song",   accent: "a1", big: "PLACEHOLDER", label: "Your top song",
-    sub: "our song — PLACEHOLDER 🎵" },
+  { kind: "spotlight", accent: "coral", note2: "♫", topLabel: "Your Top Song",
+    name: "Party", note: "our song — you know exactly which one 🎵" },
  
-  { kind: "finish", accent: "a3", big: "💛",          label: "Top genre: hopelessly in love",
-    sub: "That's a wrap on year one. Tap to keep going →" },
+  { kind: "ranked", accent: "purple", title: "Your Top Artists", items: [
+    "Michael", "Michael (Acoustic)", "Michael & The Cat",
+    "Michael feat. You", "Honestly, still Michael",
+  ] },
+ 
+  { kind: "summary", accent: "pink" },
 ];
  
 function initWrapped() {
@@ -937,7 +942,6 @@ function initWrapped() {
   const nextBtn = document.getElementById("wr-next");
   let idx = 0;
  
-  // progress dots (one per card)
   dotsEl.innerHTML = "";
   WRAPPED.forEach(() => {
     const d = document.createElement("span");
@@ -946,7 +950,7 @@ function initWrapped() {
   });
  
   function countUp(el, target, unit) {
-    const dur = 900, t0 = performance.now();
+    const dur = 1100, t0 = performance.now();
     (function step(now) {
       const p = Math.min(1, (now - t0) / dur);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -957,17 +961,84 @@ function initWrapped() {
  
   function render() {
     const c = WRAPPED[idx];
-    stage.className = "wr-stage " + (c.accent || "a1");
-    const wordy = (c.big && c.big.length > 4) ? " text" : "";
-    stage.innerHTML =
-      '<div class="wr-card">' +
-        '<div class="wr-label">' + (c.label || "") + '</div>' +
-        '<div class="wr-big' + wordy + '" id="wr-big"></div>' +
-        '<div class="wr-sub">' + (c.sub || "") + '</div>' +
-      '</div>';
-    const big = document.getElementById("wr-big");
-    if (c.num != null) { big.textContent = "0"; countUp(big, c.num, c.unit); }
-    else big.textContent = c.big || "";
+    stage.className = "wr-stage wr-" + (c.accent || "green");
+    const mark = '<div class="wr-mark">● Wrapped</div>';
+    let html = "";
+ 
+    if (c.kind === "intro") {
+      html =
+        '<div class="wr-card wr-introcard">' + mark +
+          '<div class="wr-block">' +
+            '<div class="wr-introbig">Us,<br>Wrapped</div>' +
+            '<div class="wr-introsub">Two years. Tap to unwrap →</div>' +
+          '</div>' +
+        '</div>';
+ 
+    } else if (c.kind === "stat") {
+      html =
+        '<div class="wr-card">' + mark +
+          '<div class="wr-block">' +
+            '<div class="wr-statnum" id="wr-num"></div>' +
+            '<div class="wr-statlabel">' + (c.label || "") + '</div>' +
+            '<div class="wr-note">' + (c.note || "") + '</div>' +
+          '</div>' +
+        '</div>';
+ 
+    } else if (c.kind === "spotlight") {
+      const art = c.art
+        ? '<img class="wr-art" src="' + c.art + '" alt="">'
+        : '<div class="wr-art wr-art-ph">' + (c.note2 || "♫") + '</div>';
+      html =
+        '<div class="wr-card">' + mark +
+          '<div class="wr-block">' +
+            '<div class="wr-toplabel">' + (c.topLabel || "") + '</div>' +
+            art +
+            '<div class="wr-name">' + (c.name || "") + '</div>' +
+            '<div class="wr-note">' + (c.note || "") + '</div>' +
+          '</div>' +
+        '</div>';
+ 
+    } else if (c.kind === "ranked") {
+      let rows = "";
+      c.items.forEach((it, i) => {
+        rows +=
+          '<div class="wr-row">' +
+            '<span class="wr-rank">' + (i + 1) + '</span>' +
+            '<span class="wr-thumb wr-t' + (i % 6) + '"></span>' +
+            '<span class="wr-rowname">' + it + '</span>' +
+          '</div>';
+      });
+      html =
+        '<div class="wr-card">' + mark +
+          '<div class="wr-toplabel wr-ranktitle">' + (c.title || "") + '</div>' +
+          '<div class="wr-list">' + rows + '</div>' +
+        '</div>';
+ 
+    } else if (c.kind === "summary") {
+      const pair = (h, v) =>
+        '<div class="wr-sumrow"><div class="wr-sumh">' + h + '</div>' +
+        '<div class="wr-sumv">' + v + '</div></div>';
+      html =
+        '<div class="wr-card wr-summarycard">' +
+          '<div class="wr-mark">● Wrapped &middot; Us</div>' +
+          '<div class="wr-sumgrid">' +
+            pair("Top Artist", "Michael") +
+            pair("Top Song", "Party") +
+            pair("Minutes", "131,400") +
+            pair("Top Genre", "hopelessly in love") +
+          '</div>' +
+          '<div class="wr-note">That\'s our two years 💛 Tap to keep going →</div>' +
+        '</div>';
+    }
+ 
+    stage.innerHTML = html;
+ 
+    if (c.kind === "stat") {
+      const el = document.getElementById("wr-num");
+      if (c.num != null) { el.textContent = "0"; countUp(el, c.num, c.unit); }
+      else el.textContent = c.big || "";
+    }
+ 
     [...dotsEl.children].forEach((d, i) => d.classList.toggle("on", i === idx));
     nextBtn.textContent = (idx === WRAPPED.length - 1) ? "Continue →" : "Next →";
   }
