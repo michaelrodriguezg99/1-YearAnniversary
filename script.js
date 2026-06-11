@@ -820,7 +820,7 @@ const QUIZ = [
  
   // Q3 — the fruit inside joke  (TODO: which berry is correct?)
   {
-    prompt: "Pick the right one 😏 (you know which)",
+    prompt: "Which are you most likly to buy from marshalls?",
     right: "Hahaha yes. That one 🍒",
     wrong: "Wrong berry, amor 🫐",
     options: [
