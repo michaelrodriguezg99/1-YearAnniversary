@@ -1295,12 +1295,9 @@ const TERMS_OPTIONS = [
 ];
  
 // --- Where the signed agreement is emailed -----------------------------
-const RENEWAL_EMAIL_TO = "";   // ✏️ put the address it should go to, e.g. "michael@example.com"
-// OPTIONAL truly-automatic send via EmailJS (free: https://www.emailjs.com).
-// Leave blank to use the no-setup mailto fallback (opens her mail app pre-filled).
-// To enable: add EmailJS's <script> to index.html, make a service + template
-// (template should use {{subject}} and {{message}}), then fill these three:
-const EMAILJS = { publicKey: "", serviceId: "", templateId: "" };
+const RENEWAL_EMAIL_TO = "mikivan8@gmail.com";   // where the signed agreement lands
+// Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
+const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93" };
  
 function initTerms() {
   const scroll     = document.getElementById("terms-scroll");
@@ -1380,19 +1377,7 @@ function initTerms() {
     return L.join("\n");
   }
  
-  function sendRenewalEmail(chosen) {
-    const subject = "Relationship Renewal Agreement — Signed ✅";
-    const message = buildEmailBody(chosen);
-    // truly-automatic path (only if EmailJS is set up + loaded)
-    if (window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId) {
-      try {
-        emailjs.init({ publicKey: EMAILJS.publicKey });
-        emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
-          { to_email: RENEWAL_EMAIL_TO, subject: subject, message: message });
-        return;
-      } catch (e) { /* fall through to mailto */ }
-    }
-    // zero-setup fallback: open the mail client pre-filled (she taps send)
+  function openMailto(subject, message) {
     const a = document.createElement("a");
     a.href = "mailto:" + encodeURIComponent(RENEWAL_EMAIL_TO) +
       "?subject=" + encodeURIComponent(subject) +
@@ -1401,6 +1386,26 @@ function initTerms() {
     document.body.appendChild(a);
     a.click();
     a.remove();
+  }
+ 
+  function sendRenewalEmail(chosen) {
+    const subject = "Relationship Renewal Agreement — Signed ✅";
+    const message = buildEmailBody(chosen);
+    // truly-automatic path (only if EmailJS is set up + loaded)
+    if (window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId) {
+      try {
+        emailjs.init({ publicKey: EMAILJS.publicKey });
+        emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
+          { to_email: RENEWAL_EMAIL_TO, subject: subject, message: message }
+        ).then(
+          () => { /* sent silently in the background */ },
+          () => { openMailto(subject, message); }   // network/template failed -> fall back
+        );
+        return;
+      } catch (e) { /* fall through to mailto */ }
+    }
+    // zero-setup fallback: open the mail client pre-filled (she taps send)
+    openMailto(subject, message);
   }
  
   acceptBtn.addEventListener("click", () => {
