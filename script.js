@@ -866,16 +866,16 @@ const QUIZ = [
     deny: {
       msgs: [
         "Pfft. No. Definitely wasn't me 😏",
-        "Still wasn't me. You positive? 😼",
+        "Are you sure about that? 🤔",
       ],
-      gif: "MikeFine.gif",   // TODO: a gif of you reacting
+      gif: "MikeFine.gif",
       finalMsg: "…UGHHH. FINE. It was me. Happy now?? 🙄💕",
     },
     options: [
       { src: "me1.jpeg", label: "Michael", correct: true },
       { src: "her.jpeg", label: "You" },
-      { emoji: "🐱", label: "Cameo" },
-      { emoji: "🤝", label: "It was mutual" },
+      { src: "Cameo.jpg", label: "Cameo", },
+      { src: "Candy.jpg", label: "Candy" },
     ],
   },
 ];
@@ -1304,13 +1304,13 @@ const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", 
 // In that EmailJS template, set the Subject field to {{subject}} and put
 // {{message}} in the body (same as your working agreement template).
 const FINAL_EMAIL = {
-  subject: "💖 Renewed! She picked YES (again)",
+  subject: "💖 Renewed! You picked YES (again) and your membership is locked in!",
   message:
     "Great news 🎉\n\n" +
-    "Alondra just renewed her Girlfriend Membership — Premium Tier — for another year.\n\n" +
-    "📅 Date locked in: November 9th — Meow Restaurant, 7pm.\n\n" +
+    "You just renewed your Girlfriend Membership — Premium Tier — for another year.\n\n" +
+    "📅 Date locked in: November 9th — PLACEHOLDER Restaurant, 7pm.\n\n" +
     "Status: Renewed successfully.\n" +
-    "Expiration date: Never. 💖🐱",
+    "Expiration date: Never. 💖🐱🐶",
 };
  
 function initTerms() {
@@ -1389,7 +1389,7 @@ function initTerms() {
     L.push("");
     L.push(TERMS_FINE);
     return L.join("\n");
-  }
+  } 
  
   function sendRenewalEmail(chosen) {
     const subject = "Relationship Renewal Agreement — Signed ✅";
@@ -1590,14 +1590,14 @@ function initLetter() {
     phase = "sad";
     resetYesBtn();
     catImg.src = "cameo_heartbroken.gif";
-    title.textContent = "🐱 It's me, Cameo. You hesitated… and now my tiny heart is cracked 🥺 Do you REALLY want to renew your membership as Michael's girlfriend?";
+    title.textContent = "🐱 It's me, Cameo. You hesitated… and now my tiny heart is cracked 🥺 Do you REALLY want to break my heart like this?";
     yesBtn.style.display = "none";
   }
  
   function startRunawayRound() {
     phase = "runaway";
     catImg.src = "candy_heart.gif";
-    title.textContent = "🐱 Candy here. Okay, enough teasing — for real this time: renew your membership as his girlfriend? 🥺";
+    title.textContent = "🐶 Candy here. Okay, enough teasing — for real this time: renew your membership as his girlfriend? 🥺";
     yesBtn.style.display = "";
     noBtn.style.transform = "";
   }
