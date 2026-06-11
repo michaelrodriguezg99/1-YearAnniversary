@@ -222,6 +222,68 @@ body {
   /* position + transform are set per-strike by JS (random angle/position) */
 }
  
+/* --- Alastor (Radio Demon) powers: crimson vignette + static + eldritch glyphs --- */
+.alastor-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; opacity: 0; transition: opacity .4s ease; }
+.alastor-fx.show { opacity: 1; }
+.al-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 28%, rgba(150,0,12,.22) 58%, rgba(80,0,8,.62) 100%);
+  animation: al-pulse 1.5s ease-in-out infinite;
+}
+@keyframes al-pulse { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
+.al-static {
+  position: absolute; inset: 0; mix-blend-mode: overlay; opacity: .35;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  animation: al-flicker .1s steps(2) infinite;
+}
+@keyframes al-flicker { 0% { transform: translate(0,0); } 50% { transform: translate(-3px,2px); } 100% { transform: translate(2px,-2px); } }
+.al-symbols { position: absolute; inset: 0; }
+.al-glyph {
+  position: absolute; width: var(--gsz, 60px); height: var(--gsz, 60px);
+  transform: translate(-50%, -50%) rotate(var(--grot, 0deg)) scale(.4);
+  opacity: 0; animation: al-glyph 1.7s ease-out forwards;
+}
+.al-glyph svg { width: 100%; height: 100%; fill: none; stroke: #ff2a2a; stroke-width: 3; filter: drop-shadow(0 0 6px #ff0019) drop-shadow(0 0 14px #c40012); }
+@keyframes al-glyph {
+  0%   { opacity: 0; transform: translate(-50%,-50%) rotate(var(--grot)) scale(.4); }
+  30%  { opacity: 1; }
+  70%  { opacity: 1; transform: translate(-50%,-50%) rotate(calc(var(--grot) + 18deg)) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) rotate(calc(var(--grot) + 28deg)) scale(1.12); }
+}
+ 
+/* --- Blood (human Alastor): drips run down + splatters --- */
+.blood-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; opacity: 0; transition: opacity .6s ease; }
+.blood-fx.show { opacity: 1; }
+.blood-fx::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(120,4,14,.30), transparent 60%);
+}
+.blood-drip {
+  position: absolute; top: -2px; width: var(--w, 10px); height: 0;
+  background: linear-gradient(#5e040c, #b3121f);
+  border-radius: 0 0 45% 45% / 0 0 12px 12px;
+  box-shadow: 0 0 8px rgba(120,0,10,.5);
+  animation: blood-run 2.6s cubic-bezier(.5,0,.8,.3) forwards;
+}
+.blood-drip::after {
+  content: ""; position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+  width: calc(var(--w, 10px) * 1.5); height: calc(var(--w, 10px) * 1.5);
+  border-radius: 50%; background: #b3121f; box-shadow: 0 0 8px rgba(120,0,10,.5);
+}
+@keyframes blood-run { to { height: var(--h, 40vh); } }
+.blood-splat {
+  position: absolute; width: var(--ss, 60px); height: var(--ss, 60px);
+  transform: translate(-50%, -50%) scale(0); opacity: 0;
+  background: radial-gradient(circle at 40% 38%, #b3121f 0%, #7a0710 55%, transparent 72%);
+  border-radius: 48% 52% 55% 45% / 50% 48% 52% 50%;
+  animation: blood-splat .55s ease-out forwards;
+}
+@keyframes blood-splat {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+  55%  { opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity: .9; }
+}
+ 
 /* --- Reaction GIF popup (shown when a tile with a gif is picked) --- */
 .gif-pop {
   position: fixed; inset: 0; z-index: 10000;

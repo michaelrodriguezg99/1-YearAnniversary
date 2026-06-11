@@ -225,9 +225,9 @@ const CAPTCHA_POOL = [
     caption: "Quote: 1) Stupid Dean & his stipid awesome dick. -random bathroom girl 2) We don't actually need him -second random batroom girl" },
       { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif",
     caption: "I also have big boobs 👀" },
-  { src: "AlastorDemon.jpg", label: "AlastorDemon",
+  { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "radio",
     caption: "Crazy even as a human 😭" },
-  { src: "AlastorHuman.jpg", label: "AlastorHuman",
+  { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
     caption: "Crazy even as a demon 😭" },
   { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
     caption: "Te estoy velando graciosa 👀" },
@@ -267,6 +267,8 @@ const CAPTCHA_POOL = [
     caption: "Not bad, but I can do better." },
   { src: "VI.jpg", label: "VI", gif: "VI.gif",
     caption: "Will literally betray you for her sister everytime 😈" },
+  { src: "MegaMind.jpg", label: "MegaMind", gif: "MegaMind.gif",
+    caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you 🔵" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -367,6 +369,94 @@ function initCaptcha() {
     strike();                                       // first strike immediately
     for (let k = 1; k < n; k++) setTimeout(strike, 200 + Math.random() * (total - 200));
     rumble(total / 1000);
+  }
+ 
+  // ----- Alastor (Radio Demon) powers + Blood overlays (created once) -----
+  let alFx = document.querySelector(".alastor-fx");
+  if (!alFx) {
+    alFx = document.createElement("div");
+    alFx.className = "alastor-fx";
+    alFx.innerHTML = '<div class="al-vignette"></div><div class="al-static"></div><div class="al-symbols"></div>';
+    document.body.appendChild(alFx);
+  }
+  let bloodFx = document.querySelector(".blood-fx");
+  if (!bloodFx) {
+    bloodFx = document.createElement("div");
+    bloodFx.className = "blood-fx";
+    document.body.appendChild(bloodFx);
+  }
+  // eldritch glyphs (pentagram, radio dial, broadcast waves) drawn as SVG
+  const AL_GLYPHS = [
+    '<svg viewBox="0 0 100 100"><polygon points="50,5 61,38 95,38 67,59 78,92 50,72 22,92 33,59 5,38 39,38"/></svg>',
+    '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="26"/><line x1="50" y1="8" x2="50" y2="24"/><line x1="50" y1="50" x2="78" y2="36"/></svg>',
+    '<svg viewBox="0 0 100 100"><path d="M50 50 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"/><path d="M30 50 a20 20 0 0 1 40 0"/><path d="M18 50 a32 32 0 0 1 64 0"/><path d="M6 50 a44 44 0 0 1 88 0"/></svg>',
+  ];
+ 
+  function alStatic(dur) {           // synthesized red-radio static + tuning warble
+    if (!THUNDER_SOUND) return;
+    try {
+      const ctx = audioCtx();
+      const len = Math.floor(ctx.sampleRate * dur);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) { const t = i / len; d[i] = (Math.random() * 2 - 1) * (1 - t) * 0.5; }
+      const src = ctx.createBufferSource(); src.buffer = buf;
+      const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1400; bp.Q.value = 0.7;
+      const g = ctx.createGain(); g.gain.value = 0.16;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 2.4;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 700;
+      lfo.connect(lfoG); lfoG.connect(bp.frequency);
+      src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+      lfo.start(); src.start();
+      lfo.stop(ctx.currentTime + dur);
+    } catch (e) {}
+  }
+ 
+  function triggerAlastorPowers() {
+    const symbols = alFx.querySelector(".al-symbols");
+    symbols.innerHTML = "";
+    alFx.classList.remove("show"); void alFx.offsetWidth; alFx.classList.add("show");
+    const total = 3000;
+    const n = 8;
+    for (let k = 0; k < n; k++) {
+      setTimeout(() => {
+        const s = document.createElement("div");
+        s.className = "al-glyph";
+        s.innerHTML = AL_GLYPHS[Math.floor(Math.random() * AL_GLYPHS.length)];
+        s.style.left = (5 + Math.random() * 90) + "%";
+        s.style.top  = (8 + Math.random() * 84) + "%";
+        s.style.setProperty("--gsz",  (44 + Math.random() * 80) + "px");
+        s.style.setProperty("--grot", (Math.random() * 60 - 30) + "deg");
+        symbols.appendChild(s);
+        setTimeout(() => s.remove(), 1700);
+      }, Math.random() * total);
+    }
+    alStatic(3.2);
+    setTimeout(() => alFx.classList.remove("show"), 3400);
+  }
+ 
+  function triggerBlood() {
+    bloodFx.innerHTML = "";
+    bloodFx.classList.remove("show"); void bloodFx.offsetWidth; bloodFx.classList.add("show");
+    for (let k = 0; k < 8; k++) {                 // drips running down from the top
+      const drip = document.createElement("div");
+      drip.className = "blood-drip";
+      drip.style.left = (Math.random() * 96) + "%";
+      drip.style.setProperty("--w", (6 + Math.random() * 14) + "px");
+      drip.style.setProperty("--h", (28 + Math.random() * 46) + "vh");
+      drip.style.animationDelay = (Math.random() * 700) + "ms";
+      bloodFx.appendChild(drip);
+    }
+    for (let k = 0; k < 7; k++) {                 // splatters
+      const sp = document.createElement("div");
+      sp.className = "blood-splat";
+      sp.style.left = (2 + Math.random() * 90) + "%";
+      sp.style.top  = (5 + Math.random() * 82) + "%";
+      sp.style.setProperty("--ss", (40 + Math.random() * 90) + "px");
+      sp.style.animationDelay = (200 + Math.random() * 1300) + "ms";
+      bloodFx.appendChild(sp);
+    }
+    setTimeout(() => bloodFx.classList.remove("show"), 4200);
   }
  
   // ----- Reaction GIF popup (overlay created once, reused) -----
@@ -508,6 +598,9 @@ function initCaptcha() {
             if (tile.dataset.gif)  showGif(tile.dataset.gif);
             if (tile.dataset.swim) swimAcross(tile.dataset.swim);
           }
+          // per-character background powers
+          if (tile.dataset.effect === "radio") triggerAlastorPowers();
+          if (tile.dataset.effect === "blood") triggerBlood();
         } else {
           // deselected — fall back to another selected tile's caption, or clear
           const other = grid.querySelector(".cap-tile.selected");
