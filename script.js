@@ -228,7 +228,7 @@ const CAPTCHA_POOL = [
   { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "radio",
     caption: "Crazy even as a human 😭" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
-    caption: "Crazy even as a demon 😭" },
+    caption: "I'm not afraid of a little blood either 😈" },
   { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
     caption: "Te estoy velando graciosa 👀" },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro",
@@ -268,7 +268,7 @@ const CAPTCHA_POOL = [
   { src: "VI.jpg", label: "VI", gif: "VI.gif",
     caption: "Will literally betray you for her sister everytime 😈" },
   { src: "MegaMind.jpg", label: "MegaMind", gif: "MegaMind.gif",
-    caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you 🔵" },
+    caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you!" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
