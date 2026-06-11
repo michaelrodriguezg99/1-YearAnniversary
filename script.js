@@ -156,6 +156,7 @@ const SCREENS = [
   { id: "wrapped-screen",  init: initWrapped, onShow: showWrapped },
   { id: "scrapbook-screen", init: initScrapbook, onShow: showScrapbook },
   { id: "terms-screen",    init: initTerms, onShow: showTerms },
+  { id: "date-screen",     init: initDatePicker, onShow: showDatePicker },
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
  
@@ -1295,7 +1296,7 @@ const TERMS_OPTIONS = [
 ];
  
 // --- Where the signed agreement is emailed -----------------------------
-const RENEWAL_EMAIL_TO = "mikivan8@gmail.com";   // where the signed agreement lands
+const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";   // where the signed agreement lands
 // Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
 const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93" };
  
@@ -1377,35 +1378,18 @@ function initTerms() {
     return L.join("\n");
   }
  
-  function openMailto(subject, message) {
-    const a = document.createElement("a");
-    a.href = "mailto:" + encodeURIComponent(RENEWAL_EMAIL_TO) +
-      "?subject=" + encodeURIComponent(subject) +
-      "&body=" + encodeURIComponent(message);
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
- 
   function sendRenewalEmail(chosen) {
     const subject = "Relationship Renewal Agreement — Signed ✅";
     const message = buildEmailBody(chosen);
-    // truly-automatic path (only if EmailJS is set up + loaded)
+    // Send silently via EmailJS only — never touches the device's mail app.
     if (window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId) {
       try {
         emailjs.init({ publicKey: EMAILJS.publicKey });
         emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
           { to_email: RENEWAL_EMAIL_TO, subject: subject, message: message }
-        ).then(
-          () => { /* sent silently in the background */ },
-          () => { openMailto(subject, message); }   // network/template failed -> fall back
-        );
-        return;
-      } catch (e) { /* fall through to mailto */ }
+        ).catch(() => { /* send failed; stay silent, do nothing */ });
+      } catch (e) { /* ignore */ }
     }
-    // zero-setup fallback: open the mail client pre-filled (she taps send)
-    openMailto(subject, message);
   }
  
   acceptBtn.addEventListener("click", () => {
@@ -1433,7 +1417,128 @@ function initTerms() {
 function showTerms() { if (initTerms._reset) initTerms._reset(); }
  
 /* =====================================================================
-   SCREEN 8 — LETTER (renewal finale)
+   SCREEN 8 — DATE PICKER  (a calendar where only ONE day is "available")
+   ---------------------------------------------------------------------
+   ✏️  DATE_ANSWER is the only correct day (month is 1-indexed: Nov = 11).
+   Every OTHER day shows a random funny excuse from DATE_EXCUSES (reused).
+   Edit the excuses freely — add/remove as many as you like.
+   ===================================================================== */
+const DATE_ANSWER = { year: 2026, month: 11, day: 9 };   // November 9, 2026
+ 
+const DATE_EXCUSES = [
+  "Booked solid — Cameo scheduled a very important nap that day 🐱",
+  "Can't, the restaurant is closed for mysterious \"renovations\" 👀",
+  "Nope — that's National Stay-Home-and-Miss-Each-Other Day 😔",
+  "Mercury's in retrograde that day. Hard pass 🔮",
+  "Sold out! Everyone wants a date with you — but only I get one 😤",
+  "Tengo que lavar el pelo ese día 💁 (excusa oficial)",
+  "The stars say no… but they keep whispering \"try November\" 🌟",
+  "Cameo vetoed it — he's very protective of our calendar 🐱✋",
+  "That's a fake date, the calendar made it up. Don't trust it 🫥",
+  "Conflicto de horario con mi clase de extrañarte 😅",
+  "Nuh-uh. That day is reserved for thinking about the RIGHT day 🤔",
+  "Unavailable — I'll be too busy being obsessed with you 💘",
+];
+ 
+const DATE_HINTS = [
+  "",
+  "",
+  "💡 Psst… pick a day that already means something to us 💕",
+  "💡 Our anniversary. The 9th of November. You've got this 😉",
+];
+ 
+function showDatePicker() { if (initDatePicker._reset) initDatePicker._reset(); }
+ 
+function initDatePicker() {
+  const grid    = document.getElementById("date-grid");
+  const monthEl = document.getElementById("date-month");
+  const prevBtn = document.getElementById("date-prev");
+  const nextBtn = document.getElementById("date-next");
+  const msgEl   = document.getElementById("date-msg");
+  const hintEl  = document.getElementById("date-hint");
+  const win     = document.querySelector("#date-screen .win");
+ 
+  const MONTHS = ["January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November", "December"];
+ 
+  let viewYear  = DATE_ANSWER.year;
+  let viewMonth = DATE_ANSWER.month - 1;   // 0-indexed for JS Date
+  let wrong = 0;
+  let done  = false;
+ 
+  const rand  = a => a[Math.floor(Math.random() * a.length)];
+  const shake = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
+ 
+  function build() {
+    monthEl.textContent = MONTHS[viewMonth] + " " + viewYear;
+    grid.innerHTML = "";
+    const firstDow = new Date(viewYear, viewMonth, 1).getDay();      // 0 = Sunday
+    const days     = new Date(viewYear, viewMonth + 1, 0).getDate(); // last day of month
+ 
+    for (let i = 0; i < firstDow; i++) {
+      const blank = document.createElement("span");
+      blank.className = "date-cell empty";
+      grid.appendChild(blank);
+    }
+    for (let d = 1; d <= days; d++) {
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "date-cell";
+      cell.textContent = d;
+      cell.addEventListener("click", () => pick(d, cell));
+      grid.appendChild(cell);
+    }
+  }
+ 
+  function pick(d, cell) {
+    if (done) return;
+    const isCorrect =
+      viewYear === DATE_ANSWER.year &&
+      viewMonth === DATE_ANSWER.month - 1 &&
+      d === DATE_ANSWER.day;
+ 
+    if (isCorrect) {
+      done = true;
+      grid.querySelectorAll(".date-cell").forEach(c => c.disabled = true);
+      cell.classList.add("correct");
+      hintEl.textContent = "";
+      msgEl.textContent = "It's a date 💖 See you November 9th, 2026 ✨";
+      msgEl.className = "date-msg ok";
+      setTimeout(nextScreen, 1600);
+      return;
+    }
+ 
+    cell.classList.remove("wrong"); void cell.offsetWidth; cell.classList.add("wrong");
+    setTimeout(() => cell.classList.remove("wrong"), 500);
+    msgEl.textContent = rand(DATE_EXCUSES);
+    msgEl.className = "date-msg bad";
+    shake();
+    wrong++;
+    hintEl.textContent = DATE_HINTS[Math.min(wrong, DATE_HINTS.length - 1)];
+  }
+ 
+  prevBtn.addEventListener("click", () => {
+    if (--viewMonth < 0) { viewMonth = 11; viewYear--; }
+    build();
+  });
+  nextBtn.addEventListener("click", () => {
+    if (++viewMonth > 11) { viewMonth = 0; viewYear++; }
+    build();
+  });
+ 
+  initDatePicker._reset = () => {
+    viewYear  = DATE_ANSWER.year;
+    viewMonth = DATE_ANSWER.month - 1;
+    wrong = 0; done = false;
+    msgEl.textContent = ""; msgEl.className = "date-msg";
+    hintEl.textContent = "";
+    build();
+  };
+  build();
+}
+ 
+/* =====================================================================
+   SCREEN 9 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
    scoped to #letter-screen so it can't collide with other modules.
    ===================================================================== */

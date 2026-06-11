@@ -643,6 +643,56 @@ body {
 .quiz-msg.bad { color: var(--frame-dark); }
  
 /* =====================================================================
+   SCREEN 8 — DATE PICKER  (calendar where only one day is "available")
+   ===================================================================== */
+.date-body { display: flex; flex-direction: column; gap: 10px; }
+.date-title { font-weight: 700; font-size: 19px; color: var(--ink); text-align: center; }
+.date-sub { font-size: 13px; color: var(--ink-soft); text-align: center; margin-top: -4px; }
+.date-cal {
+  background: #fff; border: 2px solid var(--frame); border-radius: 6px;
+  padding: 10px; display: flex; flex-direction: column; gap: 6px;
+}
+.date-nav { display: flex; align-items: center; justify-content: space-between; }
+.date-month { font-weight: 700; font-size: 16px; color: var(--ink); letter-spacing: 1px; }
+.date-arrow {
+  font-family: var(--font); font-size: 20px; line-height: 1;
+  width: 34px; height: 34px; cursor: pointer;
+  background: var(--panel-2); color: var(--frame-dark);
+  border: 2px solid var(--frame); border-radius: 6px;
+}
+.date-arrow:hover { background: var(--frame); color: #fff; }
+.date-arrow:active { transform: translateY(1px); }
+.date-dow {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+  font-size: 11px; font-weight: 700; color: var(--ink-soft); text-align: center;
+}
+.date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.date-cell {
+  aspect-ratio: 1 / 1; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font); font-size: 14px; color: var(--ink);
+  background: var(--panel); border: 2px solid transparent; border-radius: 6px;
+  cursor: pointer;
+}
+.date-cell:hover:not(.empty):not(:disabled) { border-color: var(--frame); }
+.date-cell.empty { background: transparent; cursor: default; }
+.date-cell:disabled { cursor: default; }
+.date-cell.correct {
+  background: var(--good); color: #fff; border-color: var(--good);
+  animation: date-pop 0.4s ease;
+}
+@keyframes date-pop { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.date-cell.wrong { animation: date-nope 0.45s ease; }
+@keyframes date-nope {
+  0%, 100% { background: var(--panel); }
+  30% { background: #f3b0b0; border-color: var(--frame-dark); transform: scale(0.92); }
+}
+.date-msg { min-height: 22px; text-align: center; font-size: 14px; line-height: 1.25; color: var(--ink); }
+.date-msg.bad { color: var(--frame-dark); }
+.date-msg.ok  { color: var(--good); font-weight: 700; }
+.date-hint { min-height: 16px; text-align: center; font-size: 12px; color: var(--ink-soft); font-style: italic; }
+ 
+/* =====================================================================
    SCREEN 3 — LETTER (renewal finale)  — your original styling, verbatim
    ===================================================================== */
 .letter-window {
