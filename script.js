@@ -1298,7 +1298,20 @@ const TERMS_OPTIONS = [
 // --- Where the signed agreement is emailed -----------------------------
 const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";   // where the signed agreement lands
 // Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
-const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93" };
+const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93", finalTemplateId: "template_fmbfeh9" };
+ 
+// ✏️ Subject + body sent with the FINAL renewal email (template_fmbfeh9).
+// In that EmailJS template, set the Subject field to {{subject}} and put
+// {{message}} in the body (same as your working agreement template).
+const FINAL_EMAIL = {
+  subject: "💖 Renewed! She picked YES (again)",
+  message:
+    "Great news 🎉\n\n" +
+    "Alondra just renewed her Girlfriend Membership — Premium Tier — for another year.\n\n" +
+    "📅 Date locked in: November 9th — Meow Restaurant, 7pm.\n\n" +
+    "Status: Renewed successfully.\n" +
+    "Expiration date: Never. 💖🐱",
+};
  
 function initTerms() {
   const scroll     = document.getElementById("terms-scroll");
@@ -1577,20 +1590,35 @@ function initLetter() {
     phase = "sad";
     resetYesBtn();
     catImg.src = "cameo_heartbroken.gif";
-    title.textContent = "Hiciste a Cameo triste por dudar... ¿De verdad quieres ponerlo triste?";
+    title.textContent = "🐱 It's me, Cameo. You hesitated… and now my tiny heart is cracked 🥺 Do you REALLY want to renew your membership as Michael's girlfriend?";
     yesBtn.style.display = "none";
   }
  
   function startRunawayRound() {
     phase = "runaway";
     catImg.src = "candy_heart.gif";
-    title.textContent = "¿Entonces... sí? 🥺";
+    title.textContent = "🐱 Candy here. Okay, enough teasing — for real this time: renew your membership as his girlfriend? 🥺";
     yesBtn.style.display = "";
     noBtn.style.transform = "";
   }
  
+  let finalSent = false;
+  function sendRenewalConfirmation() {
+    if (finalSent) return;                 // only ever send once
+    finalSent = true;
+    if (window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.finalTemplateId) {
+      try {
+        emailjs.init({ publicKey: EMAILJS.publicKey });
+        emailjs.send(EMAILJS.serviceId, EMAILJS.finalTemplateId,
+          { to_email: RENEWAL_EMAIL_TO, subject: FINAL_EMAIL.subject, message: FINAL_EMAIL.message }
+        ).catch(() => { /* send failed; stay silent */ });
+      } catch (e) { /* ignore */ }
+    }
+  }
+ 
   function showFinal() {
-    title.textContent = "Yippeeee!";
+    sendRenewalConfirmation();             // membership renewed -> fire the final email
+    title.textContent = "Yippeeee! Membership renewed — for another forever 💖";
     catImg.src = "cameo_and_candy_dancing.gif";
     screen.querySelector(".letter-window").classList.add("final");
     buttons.style.display = "none";
