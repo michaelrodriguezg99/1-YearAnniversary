@@ -230,7 +230,7 @@ const CAPTCHA_POOL = [
   { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
     caption: "I'm not afraid of a little blood either 😈" },
   { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
-    caption: "Te estoy velando graciosa 👀, at least no es amiga lol." },
+    caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro",
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift",
