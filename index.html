@@ -101,13 +101,39 @@
             <div class="scrap-head">Our Scrapbook <span class="scrap-count" id="scrap-count"></span></div>
             <div class="scrap-stack" id="scrap-stack"></div>
             <div class="scrap-hint" id="scrap-hint">tap the photo to flip through →</div>
-            <div class="scrap-done" id="scrap-done" style="display:none">…and the best part is it's still going 💚</div>
+            <div class="scrap-done" id="scrap-done" style="display:none">…and the best part is it's still going 💛</div>
             <button class="scrap-next" id="scrap-next" type="button" style="display:none">Continue →</button>
           </div>
         </div>
       </section>
  
-      <!-- ============ SCREEN 7: LETTER (renewal finale) ============ -->
+      <!-- ============ SCREEN 7: TERMS & CONDITIONS (sign to renew) ============ -->
+      <section class="screen" id="terms-screen">
+        <div class="win terms-win">
+          <div class="win-bar"><span>terms.exe</span><span class="dots">— ▢ ✕</span></div>
+          <div class="win-body terms-body">
+            <div class="terms-title">Relationship Renewal Agreement</div>
+            <div class="terms-sub">Please read in full, then sign to confirm renewal.</div>
+            <div class="terms-scroll" id="terms-scroll">
+              <ol class="terms-list" id="terms-list"></ol>
+              <p class="terms-fine" id="terms-fine"></p>
+            </div>
+            <div class="terms-signwrap">
+              <div class="terms-signlabel">
+                Sign here <span id="terms-scrollhint">(scroll to the bottom first ↓)</span>
+              </div>
+              <canvas id="terms-canvas" class="terms-canvas"></canvas>
+              <div class="terms-signrow">
+                <span class="terms-x">✗ ⁃⁃⁃⁃⁃⁃⁃⁃⁃⁃⁃⁃⁃⁃⁃</span>
+                <button id="terms-clear" type="button" class="terms-clear">Clear</button>
+              </div>
+            </div>
+            <button id="terms-accept" type="button" class="terms-accept" disabled>Sign &amp; Renew →</button>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- ============ SCREEN 8: LETTER (renewal finale) ============ -->
       <section class="screen" id="letter-screen">
         <div class="letter-window">
           <div class="win letter-win">

@@ -155,6 +155,7 @@ const SCREENS = [
   { id: "quiz-screen",     init: initQuiz },
   { id: "wrapped-screen",  init: initWrapped, onShow: showWrapped },
   { id: "scrapbook-screen", init: initScrapbook, onShow: showScrapbook },
+  { id: "terms-screen",    init: initTerms, onShow: showTerms },
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
  
@@ -1168,7 +1169,103 @@ function initScrapbook() {
 function showScrapbook() { if (initScrapbook._reset) initScrapbook._reset(); }
  
 /* =====================================================================
-   SCREEN 7 — LETTER (renewal finale)
+   SCREEN 7 — TERMS & CONDITIONS  (read to the bottom, then draw a signature)
+   ---------------------------------------------------------------------
+   ✏️  Edit the clauses below freely. TERMS_FINE is the italic line at the end.
+   She must scroll to the bottom AND draw a signature to unlock "Sign & Renew".
+   ===================================================================== */
+const TERMS = [
+  "By signing, Subscriber (\"You\") agrees to renew the Boyfriend Subscription — Premium Tier — for a minimum of one (1) additional year.",
+  "Subscriber shall accept all compliments without argument, including on days she insists she \"looks terrible.\" (She does not.)",
+  "Hand-holding shall be initiated whenever physically possible: walks, car rides, grocery aisles, and during scary movies.",
+  "Forehead kisses are a core feature and may not be disabled, paused, or downgraded.",
+  "Cameo retains full executive authority over the household and must be consulted on all major decisions. 🐱",
+  "Subscriber reserves the lifelong right to steal fries; Provider permanently waives all objections. 🍟",
+  "All inside jokes accrued during the term remain jointly owned, in perpetuity, across all future updates.",
+  "Provider (Michael) guarantees unlimited snacks, rides, and reassurance — 24/7, no rollover caps.",
+  "Either party may call the other for absolutely no reason, at any hour, no agenda required.",
+  "This agreement auto-renews indefinitely. We checked: there is no cancellation button. 💔🚫",
+  "Subscriber confirms she is, and will remain, the favorite person. Status is non-transferable.",
+];
+const TERMS_FINE = "By signing below, Subscriber acknowledges she is officially stuck with me. Congratulations. ❤️";
+ 
+function initTerms() {
+  const scroll     = document.getElementById("terms-scroll");
+  const list       = document.getElementById("terms-list");
+  const fine       = document.getElementById("terms-fine");
+  const canvas     = document.getElementById("terms-canvas");
+  const clearBtn   = document.getElementById("terms-clear");
+  const acceptBtn  = document.getElementById("terms-accept");
+  const scrollHint = document.getElementById("terms-scrollhint");
+  const ctx = canvas.getContext("2d");
+ 
+  let scrolled = false, signed = false, drawing = false;
+ 
+  list.innerHTML = TERMS.map(t => "<li>" + t + "</li>").join("");
+  fine.textContent = TERMS_FINE;
+ 
+  function sizeCanvas() {
+    const w = canvas.parentElement.clientWidth || 280;
+    canvas.width = w; canvas.height = 120;           // (resets the drawing)
+    ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.strokeStyle = "#5a3e3a";
+  }
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return { x: p.clientX - r.left, y: p.clientY - r.top };
+  }
+  function start(e) { drawing = true; const { x, y } = pos(e); ctx.beginPath(); ctx.moveTo(x, y); e.preventDefault(); }
+  function move(e) {
+    if (!drawing) return;
+    const { x, y } = pos(e); ctx.lineTo(x, y); ctx.stroke();
+    if (!signed) { signed = true; updateBtn(); }
+    e.preventDefault();
+  }
+  function end() { drawing = false; }
+ 
+  canvas.addEventListener("mousedown", start);
+  canvas.addEventListener("mousemove", move);
+  window.addEventListener("mouseup", end);
+  canvas.addEventListener("touchstart", start, { passive: false });
+  canvas.addEventListener("touchmove", move, { passive: false });
+  canvas.addEventListener("touchend", end);
+ 
+  function updateBtn() { acceptBtn.disabled = !(scrolled && signed); }
+ 
+  scroll.addEventListener("scroll", () => {
+    if (scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 8) {
+      scrolled = true;
+      if (scrollHint) scrollHint.style.display = "none";
+      updateBtn();
+    }
+  });
+ 
+  clearBtn.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    signed = false; updateBtn();
+  });
+ 
+  acceptBtn.addEventListener("click", () => { if (!acceptBtn.disabled) nextScreen(); });
+ 
+  initTerms._reset = () => {
+    sizeCanvas();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    signed = false; drawing = false;
+    scroll.scrollTop = 0;
+    // if the clauses are short enough not to scroll, count it as already read
+    scrolled = scroll.scrollHeight <= scroll.clientHeight + 8;
+    if (scrollHint) scrollHint.style.display = scrolled ? "none" : "";
+    updateBtn();
+  };
+  sizeCanvas();
+  updateBtn();
+}
+// onShow: resize the canvas to the now-visible window and reset the gates
+function showTerms() { if (initTerms._reset) initTerms._reset(); }
+ 
+/* =====================================================================
+   SCREEN 8 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
    scoped to #letter-screen so it can't collide with other modules.
    ===================================================================== */
