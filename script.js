@@ -230,7 +230,7 @@ const CAPTCHA_POOL = [
   { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
     caption: "I'm not afraid of a little blood either 😈" },
   { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
-    caption: "Te estoy velando graciosa 👀" },
+    caption: "Te estoy velando graciosa 👀, at least no es amiga lol." },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro",
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift",
@@ -1282,6 +1282,26 @@ const TERMS = [
 ];
 const TERMS_FINE = "By signing below, Subscriber acknowledges she is officially stuck with me. Congratulations. ❤️";
  
+// Optional add-ons she ticks (or doesn't). The accepted ones get folded into
+// the signed agreement and emailed. Edit freely.
+const TERMS_OPTIONS = [
+  "Boyfriend must always let me choose the movie 🎬",
+  "Unlimited forehead kisses, available on demand 😚",
+  "I am entitled to the last bite of every dessert 🍰",
+  "He handles all bugs, spiders, and scary noises 🕷️",
+  "I get to steal his hoodies indefinitely 🧥",
+  "He must hype me up at least once a day 📣",
+  "Cuddles are non-negotiable after a long day 🫂",
+];
+ 
+// --- Where the signed agreement is emailed -----------------------------
+const RENEWAL_EMAIL_TO = "";   // ✏️ put the address it should go to, e.g. "michael@example.com"
+// OPTIONAL truly-automatic send via EmailJS (free: https://www.emailjs.com).
+// Leave blank to use the no-setup mailto fallback (opens her mail app pre-filled).
+// To enable: add EmailJS's <script> to index.html, make a service + template
+// (template should use {{subject}} and {{message}}), then fill these three:
+const EMAILJS = { publicKey: "", serviceId: "", templateId: "" };
+ 
 function initTerms() {
   const scroll     = document.getElementById("terms-scroll");
   const list       = document.getElementById("terms-list");
@@ -1290,12 +1310,16 @@ function initTerms() {
   const clearBtn   = document.getElementById("terms-clear");
   const acceptBtn  = document.getElementById("terms-accept");
   const scrollHint = document.getElementById("terms-scrollhint");
+  const optsEl     = document.getElementById("terms-options");
   const ctx = canvas.getContext("2d");
  
   let scrolled = false, signed = false, drawing = false;
  
   list.innerHTML = TERMS.map(t => "<li>" + t + "</li>").join("");
   fine.textContent = TERMS_FINE;
+  optsEl.innerHTML = TERMS_OPTIONS.map((t, i) =>
+    '<label class="terms-opt"><input type="checkbox" data-opt="' + i + '"><span>' + t + '</span></label>'
+  ).join("");
  
   function sizeCanvas() {
     const w = canvas.parentElement.clientWidth || 280;
@@ -1339,7 +1363,53 @@ function initTerms() {
     signed = false; updateBtn();
   });
  
-  acceptBtn.addEventListener("click", () => { if (!acceptBtn.disabled) nextScreen(); });
+  function buildEmailBody(chosen) {
+    const date = new Date().toLocaleDateString();
+    const L = [];
+    L.push("RELATIONSHIP RENEWAL AGREEMENT — SIGNED ✅");
+    L.push("Signed on: " + date);
+    L.push("");
+    L.push("Terms accepted by signature:");
+    TERMS.forEach((t, i) => L.push((i + 1) + ". " + t));
+    L.push("");
+    L.push("Optional add-ons she accepted:");
+    if (chosen.length) chosen.forEach(c => L.push("  ☑ " + c));
+    else L.push("  (none selected — playing hard to get 😏)");
+    L.push("");
+    L.push(TERMS_FINE);
+    return L.join("\n");
+  }
+ 
+  function sendRenewalEmail(chosen) {
+    const subject = "Relationship Renewal Agreement — Signed ✅";
+    const message = buildEmailBody(chosen);
+    // truly-automatic path (only if EmailJS is set up + loaded)
+    if (window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId) {
+      try {
+        emailjs.init({ publicKey: EMAILJS.publicKey });
+        emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
+          { to_email: RENEWAL_EMAIL_TO, subject: subject, message: message });
+        return;
+      } catch (e) { /* fall through to mailto */ }
+    }
+    // zero-setup fallback: open the mail client pre-filled (she taps send)
+    const a = document.createElement("a");
+    a.href = "mailto:" + encodeURIComponent(RENEWAL_EMAIL_TO) +
+      "?subject=" + encodeURIComponent(subject) +
+      "&body=" + encodeURIComponent(message);
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+ 
+  acceptBtn.addEventListener("click", () => {
+    if (acceptBtn.disabled) return;
+    const chosen = [...optsEl.querySelectorAll("input:checked")]
+      .map(cb => TERMS_OPTIONS[+cb.dataset.opt]);
+    sendRenewalEmail(chosen);
+    nextScreen();
+  });
  
   initTerms._reset = () => {
     sizeCanvas();
