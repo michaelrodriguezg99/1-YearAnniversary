@@ -217,7 +217,7 @@ const CAPTCHA_POOL = [
   { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
     caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
   { src: "BabyMiko.jpg", label: "BabyMiko",
-    caption: "Te va a tener de tamagochi 🕹️" },
+    caption: "Te va a tener de tamagotchi 🕹️" },
   { src: "Garrett.jpg", label: "Garrett",
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒" },
   { src: "Allie.jpg", label: "Allie", gif: "AllieHayes.gif",
@@ -541,6 +541,77 @@ function initCaptcha() {
     anim.onfinish = () => worm.remove();
   }
  
+  // ----- BabyMiko Tamagotchi (a tiny pet she pokes for a few seconds) -----
+  // Uses tama_console.png as the handheld (the pixel-her is baked into it).
+  // Three invisible hotspots sit over the pink buttons. Closes on Enter,
+  // and on the "Done" button for phones (which have no keyboard Enter here).
+  // TAMA_BTNS positions are % of the device image (520x640): {x, y} centers.
+  const TAMA_BTNS = [
+    { act: "feed", x: 30.8, y: 79 },   // left pink button
+    { act: "play", x: 49.6, y: 79 },   // middle pink button
+    { act: "love", x: 66.3, y: 79 },   // right pink button
+  ];
+  const TAMA_REACT = {
+    feed: ["Yum yum 😋", "Más papita 🍟", "Lleni-lleni 🤤", "Gracias caramelo 🥹"],
+    play: ["Wiii! 🎉", "Otra vez! 🎮", "Jijiji 😄", "Te gané 😼"],
+    love: ["Te quiero 💕", "Mimitos 💖", "Awww 🥰", "Mi caramelito 😚"],
+  };
+  function launchTamagotchi() {
+    const old = document.querySelector(".tama-overlay");
+    if (old) old.remove();
+ 
+    const ov = document.createElement("div");
+    ov.className = "tama-overlay";
+    const btns = TAMA_BTNS.map(b =>
+      '<button type="button" class="tama-hot" data-act="' + b.act + '" ' +
+      'style="left:' + b.x + '%;top:' + b.y + '%"></button>'
+    ).join("");
+    ov.innerHTML =
+      '<div class="tama-wrap">' +
+        '<div class="tama-bubble" id="tama-bubble">¡Hola! Cuídame 🥺</div>' +
+        '<div class="tama-device" id="tama-device">' +
+          '<div class="tama-fx" id="tama-fx"></div>' +
+          btns +
+        '</div>' +
+        '<button type="button" class="tama-close" id="tama-close">Done ⏎</button>' +
+      '</div>';
+    document.body.appendChild(ov);
+ 
+    const device = ov.querySelector("#tama-device");
+    const bubble = ov.querySelector("#tama-bubble");
+    const fx     = ov.querySelector("#tama-fx");
+ 
+    function react(act) {
+      const list = TAMA_REACT[act] || TAMA_REACT.love;
+      bubble.textContent = list[Math.floor(Math.random() * list.length)];
+      bubble.classList.remove("pop"); void bubble.offsetWidth; bubble.classList.add("pop");
+      // little hop so the baked-in pet feels alive
+      device.classList.remove("hop"); void device.offsetWidth; device.classList.add("hop");
+      // float a heart/sparkle up from the screen area
+      const e = document.createElement("span");
+      e.className = "tama-float";
+      e.textContent = act === "play" ? "✨" : (act === "feed" ? "🍪" : "💖");
+      e.style.left = (38 + Math.random() * 24) + "%";
+      fx.appendChild(e);
+      setTimeout(() => e.remove(), 950);
+    }
+ 
+    ov.querySelectorAll(".tama-hot").forEach(b => {
+      b.addEventListener("click", () => { react(b.dataset.act); b.blur(); });
+    });
+ 
+    function close() {
+      document.removeEventListener("keydown", onKey);
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 200);
+    }
+    function onKey(e) {
+      if (e.key === "Enter") { e.preventDefault(); close(); }
+    }
+    ov.querySelector("#tama-close").addEventListener("click", close);
+    document.addEventListener("keydown", onKey);
+  }
+ 
   // ----- Lyric flash (e.g. the Rauw × Bad Bunny duet line) -----
   let lyricBox = document.querySelector(".lyric-pop");
   if (!lyricBox) {
@@ -701,6 +772,19 @@ function initCaptcha() {
     if (chicasTile) {
       rainImages(["whawhawha.jpg"]);
       fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
+      return;
+    }
+    // BabyMiko + Rauw Alejandro together => their crossover gif
+    if (picked.includes("BabyMiko") && picked.includes("RauwAlejandro")) {
+      showGif("MikoRauw.gif");
+      fail("Lamento decirte Rauw que yo se la quiero quitar a ambos 🥱");
+      return;
+    }
+    // BabyMiko submitted => launch the mini tamagotchi (close on Enter)
+    const mikoTile = selected.find(t => t.dataset.label === "BabyMiko");
+    if (mikoTile) {
+      launchTamagotchi();
+      fail(mikoTile.dataset.caption || "Te va a tener de tamagotchi 🕹️");
       return;
     }
     // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line

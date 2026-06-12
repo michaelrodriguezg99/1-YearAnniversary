@@ -745,3 +745,79 @@ body {
   background-color: rgba(255, 240, 240, 0.5);
   border-radius: 12px;
 }
+ 
+/* =====================================================================
+   BABYMIKO TAMAGOTCHI  (captcha easter egg)
+   Uses tama_console.png as the handheld; hotspots overlay the 3 buttons.
+   ===================================================================== */
+.tama-overlay {
+  position: fixed; inset: 0; z-index: 10020;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(40, 12, 14, 0.55);
+  animation: tama-in .18s ease;
+}
+.tama-overlay.closing { animation: tama-out .2s ease forwards; }
+@keyframes tama-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tama-out { to { opacity: 0; } }
+ 
+.tama-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+ 
+.tama-bubble {
+  font-family: var(--font, "Space Mono", monospace);
+  font-size: 14px; color: var(--ink, #7d2f2a);
+  background: #fff; border: 3px solid var(--frame, #c75c52);
+  border-radius: 14px; padding: 8px 14px; max-width: 280px; text-align: center;
+  box-shadow: 4px 4px 0 0 rgba(0,0,0,.18); position: relative;
+}
+.tama-bubble::after {              /* little speech-bubble tail */
+  content: ""; position: absolute; left: 50%; bottom: -11px; transform: translateX(-50%);
+  border: 8px solid transparent; border-top-color: var(--frame, #c75c52);
+}
+.tama-bubble.pop { animation: tama-pop .35s ease; }
+@keyframes tama-pop { 0% { transform: scale(.7); } 55% { transform: scale(1.12); } 100% { transform: scale(1); } }
+ 
+.tama-device {
+  position: relative;
+  width: min(300px, 78vw);
+  aspect-ratio: 520 / 640;
+  background: url("tama_console.png") center/contain no-repeat;
+  filter: drop-shadow(8px 10px 0 rgba(0,0,0,.28));
+}
+.tama-device.hop { animation: tama-hop .42s ease; }
+@keyframes tama-hop {
+  0%,100% { transform: translateY(0); }
+  35%     { transform: translateY(-10px); }
+  60%     { transform: translateY(0) scaleY(.97); }
+}
+ 
+/* invisible tap targets over the three pink buttons */
+.tama-hot {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 16%; aspect-ratio: 1; border-radius: 50%;
+  background: transparent; border: none; cursor: pointer; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.tama-hot:active { background: radial-gradient(circle, rgba(255,255,255,.45), transparent 70%); }
+ 
+/* floating hearts/sparkles emitted over the screen area */
+.tama-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.tama-float {
+  position: absolute; top: 46%; font-size: 24px;
+  animation: tama-rise .95s ease-out forwards;
+}
+@keyframes tama-rise {
+  0%   { opacity: 0; transform: translateY(6px) scale(.6); }
+  25%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-70px) scale(1.15); }
+}
+ 
+.tama-close {
+  font-family: var(--font, "Space Mono", monospace); font-size: 13px; cursor: pointer;
+  background: var(--panel-2, #e9c4cb); color: var(--frame-dark, #a8443b);
+  border: 2px solid var(--frame, #c75c52); border-radius: 8px; padding: 8px 22px;
+  box-shadow: 3px 3px 0 0 rgba(0,0,0,.18);
+}
+.tama-close:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(0,0,0,.18); }
+ 
