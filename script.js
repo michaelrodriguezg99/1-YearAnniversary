@@ -232,7 +232,7 @@ const CAPTCHA_POOL = [
     caption: "I'm not afraid of a little blood either 😈" },
   { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
     caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
-  { src: "RauwAlejandro.jpg", label: "RauwAlejandro",
+  { src: "RauwAlejandro.jpg", label: "RauwAlejandro", worm: true,
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift",
     caption: "Do you wanna get swifted? 💀" },
@@ -513,6 +513,32 @@ function initCaptcha() {
     anim.onfinish = () => fish.remove();
   }
  
+  // ----- Worm-across effect (an image inches across with a wriggle) -----
+  // Reuses the same full-screen .swim-layer. Crawls left -> right low on the
+  // screen, alternately scrunching and stretching like an inchworm.
+  function wormAcross(src) {
+    const worm = document.createElement("img");
+    worm.className = "worm-crawl";
+    worm.src = src;
+    swimLayer.appendChild(worm);
+    const vw = window.innerWidth;
+    worm.style.top = (55 + Math.random() * 28) + "vh";   // low lane (ground-ish)
+    const start = -300, end = vw + 300;
+    const frames = [];
+    const steps = 16;
+    for (let i = 0; i <= steps; i++) {
+      const p = i / steps;
+      const x = start + (end - start) * p;
+      const scrunch = (i % 2 === 0);                       // alternate stretch/scrunch
+      const sx = scrunch ? 0.62 : 1.12;                    // squash/stretch along travel
+      const sy = scrunch ? 1.22 : 0.9;                     // taller when scrunched
+      const y  = Math.sin(p * Math.PI * 7) * 9;            // gentle up/down undulation
+      frames.push({ transform: `translate(${x}px, ${y}px) scale(${sx}, ${sy})` });
+    }
+    const anim = worm.animate(frames, { duration: 4200, easing: "linear" });
+    anim.onfinish = () => worm.remove();
+  }
+ 
   // ----- Lyric flash (e.g. the Rauw × Bad Bunny duet line) -----
   let lyricBox = document.querySelector(".lyric-pop");
   if (!lyricBox) {
@@ -570,6 +596,7 @@ function initCaptcha() {
       if (item.label)   tile.dataset.label   = item.label;
       if (item.gif)     tile.dataset.gif      = item.gif;
       if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
+      if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -598,6 +625,7 @@ function initCaptcha() {
           } else {
             if (tile.dataset.gif)  showGif(tile.dataset.gif);
             if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+            if (tile.dataset.worm) wormAcross(tile.dataset.worm);
           }
           // per-character background powers
           if (tile.dataset.effect === "radio") triggerAlastorPowers();
@@ -825,9 +853,9 @@ const QUIZ = [
     wrong: "Wrong berry, amor 🫐",
     options: [
       { emoji: "🍒", label: "Cherry", correct: true },
-      { emoji: "🍓", label: "Strawberry" },
-      { emoji: "🫐", label: "Blueberry" },
-      { emoji: "🍇", label: "Raspberry" },
+      { emoji: "🍓", label: "Strawberry", correct: true },
+      { emoji: "🫐", label: "Blueberry", correct: true },
+      { emoji: "🍇", label: "Raspberry", correct: true },
     ],
   },
  
@@ -868,7 +896,7 @@ const QUIZ = [
         "Pfft. No. Definitely wasn't me 😏",
         "Are you sure about that? 🤔",
       ],
-      gif: "MikeFine.gif",
+      gif: "MikeFine.gif",   // TODO: a gif of you reacting
       finalMsg: "…UGHHH. FINE. It was me. Happy now?? 🙄💕",
     },
     options: [
@@ -1272,14 +1300,14 @@ const TERMS = [
   "By signing, Subscriber (\"You\") agrees to renew the Boyfriend Subscription — Premium Tier — for a minimum of one (1) additional year.",
   "Subscriber shall accept all compliments without argument, including on days she insists she \"looks terrible.\" (She does not.)",
   "Hand-holding shall be initiated whenever physically possible: walks, car rides, grocery aisles, and during scary movies.",
-  "Forehead kisses are a core feature and may not be disabled, paused, or downgraded.",
-  "Cameo retains full executive authority over the household and must be consulted on all major decisions. 🐱",
-  "Subscriber reserves the lifelong right to steal fries; Provider permanently waives all objections. 🍟",
+  "Good night kisses are a core feature and may not be disabled, paused, or downgraded.",
+  "Cameo and Candy retains full executive authority over the household and must be consulted on all major decisions. 🐱🐶",
+  "Subscriber reserves the lifelong right to steal fries; Provider permanently waives all objections. 🍟(This offer has never been given before)",
   "All inside jokes accrued during the term remain jointly owned, in perpetuity, across all future updates.",
   "Provider (Michael) guarantees unlimited snacks, rides, and reassurance — 24/7, no rollover caps.",
   "Either party may call the other for absolutely no reason, at any hour, no agenda required.",
   "This agreement auto-renews indefinitely. We checked: there is no cancellation button. 💔🚫",
-  "Subscriber confirms she is, and will remain, the favorite person. Status is non-transferable.",
+  "Subscriber confirms she is, and will remain, the favorite person. Status is non-transferable. Ever.",
 ];
 const TERMS_FINE = "By signing below, Subscriber acknowledges she is officially stuck with me. Congratulations. ❤️";
  
@@ -1287,12 +1315,19 @@ const TERMS_FINE = "By signing below, Subscriber acknowledges she is officially 
 // the signed agreement and emailed. Edit freely.
 const TERMS_OPTIONS = [
   "Boyfriend must always let me choose the movie 🎬",
+  "loquear una vez al año 🍍",
   "Unlimited forehead kisses, available on demand 😚",
   "I am entitled to the last bite of every dessert 🍰",
+  "At home dinner night once a week 🍝",
   "He handles all bugs, spiders, and scary noises 🕷️",
+  "Do at a random public place once a year 🚻",
   "I get to steal his hoodies indefinitely 🧥",
   "He must hype me up at least once a day 📣",
   "Cuddles are non-negotiable after a long day 🫂",
+  "He handles more of the cleaning and I handle more of the organizing 🧼",
+  "We hit the gym together at least twice a week 💪",
+  "We must make a local or international trip together at least twice a year ✈️",
+  "I will move in with boyfriend and redo the living space to my liking 🏡",
 ];
  
 // --- Where the signed agreement is emailed -----------------------------
@@ -1389,7 +1424,7 @@ function initTerms() {
     L.push("");
     L.push(TERMS_FINE);
     return L.join("\n");
-  } 
+  }
  
   function sendRenewalEmail(chosen) {
     const subject = "Relationship Renewal Agreement — Signed ✅";
@@ -1440,6 +1475,7 @@ const DATE_ANSWER = { year: 2026, month: 11, day: 9 };   // November 9, 2026
  
 const DATE_EXCUSES = [
   "Booked solid — Cameo scheduled a very important nap that day 🐱",
+  "Booked solid — Candy has a vet appointment that day 🐶",
   "Can't, the restaurant is closed for mysterious \"renovations\" 👀",
   "Nope — that's National Stay-Home-and-Miss-Each-Other Day 😔",
   "Mercury's in retrograde that day. Hard pass 🔮",
@@ -1447,8 +1483,8 @@ const DATE_EXCUSES = [
   "Tengo que lavar el pelo ese día 💁 (excusa oficial)",
   "The stars say no… but they keep whispering \"try November\" 🌟",
   "Cameo vetoed it — he's very protective of our calendar 🐱✋",
-  "That's a fake date, the calendar made it up. Don't trust it 🫥",
-  "Conflicto de horario con mi clase de extrañarte 😅",
+  "Candy said going out that day is bad luck 🐶",
+  "Conflicto de horario con mi trabajo 😅",
   "Nuh-uh. That day is reserved for thinking about the RIGHT day 🤔",
   "Unavailable — I'll be too busy being obsessed with you 💘",
 ];
