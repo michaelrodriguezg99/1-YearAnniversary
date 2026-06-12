@@ -679,7 +679,7 @@ function initCaptcha() {
     const picked = selected.map(t => t.dataset.label);
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
       showGif("AllieAndDean.gif");
-      fail("Allie AND Dean? They're endgame with each OTHER (read The Score 😉). Hands off — pick me 💛");
+      fail("Honestly... I get it JAJAJAJA. Pero invita!");
       return;
     }
     // both Alastors (demon form + human form) selected => Danny.gif
@@ -691,14 +691,14 @@ function initCaptcha() {
     // all the Avatar / Pandora characters together => avatar gif
     if (picked.includes("Neytiri") && picked.includes("JakeSully") && picked.includes("Varang")) {
       showGif("Avatar.gif");
-      fail("All of Pandora?? 🌌 Neytiri, Jake AND Varang — you'd have to plug into an Avatar body just to keep up. I'm right here, fully human, no gene lab required 💙");
+      fail("All of Pandora?? 🌌 Neytiri, Jake AND Varang — Ni el arbol aguanta esa presión 💀");
       return;
     }
     // las Chicas submitted for verification => whawhawha confetti
     const chicasTile = selected.find(t => t.dataset.label === "Chicas");
     if (chicasTile) {
       rainImages(["whawhawha.jpg"]);
-      fail(chicasTile.dataset.caption || "Las Chicas are great company — but not one of them is your boyfriend 💃");
+      fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
       return;
     }
     // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
