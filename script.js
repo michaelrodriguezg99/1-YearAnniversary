@@ -685,7 +685,13 @@ function initCaptcha() {
     // both Alastors (demon form + human form) selected => Danny.gif
     if (picked.length === 2 && picked.includes("AlastorDemon") && picked.includes("AlastorHuman")) {
       showGif("Danny.gif");
-      fail("Both Alastors?? Demon form AND human form — that's two whole versions of fictional. I only come in one form: yours 📻⚡");
+      fail("HANNA MONTANA?!?!?! Very Bi of you.");
+      return;
+    }
+    // all the Avatar / Pandora characters together => avatar gif
+    if (picked.includes("Neytiri") && picked.includes("JakeSully") && picked.includes("Varang")) {
+      showGif("Avatar.gif");
+      fail("All of Pandora?? 🌌 Neytiri, Jake AND Varang — you'd have to plug into an Avatar body just to keep up. I'm right here, fully human, no gene lab required 💙");
       return;
     }
     // las Chicas submitted for verification => whawhawha confetti
