@@ -270,6 +270,8 @@ const CAPTCHA_POOL = [
     caption: "Will literally betray you for her sister everytime 😈" },
   { src: "MegaMind.jpg", label: "MegaMind", gif: "MegaMind.gif",
     caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you!" },
+  { src: "Zuko.jpg", label: "Zuko", gif: "Zuko.gif",
+    caption: "It is really is Zuko 🙃" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
