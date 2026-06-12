@@ -801,6 +801,23 @@ body {
 }
 .tama-hot:active { background: radial-gradient(circle, rgba(255,255,255,.45), transparent 70%); }
  
+/* tooltip naming each button (shows on hover desktop, on press/tap mobile) */
+.tama-tip {
+  position: absolute; left: 50%; bottom: 100%;
+  transform: translate(-50%, -8px) scale(.9);
+  background: var(--ink, #7d2f2a); color: #fff;
+  font-family: var(--font, "Space Mono", monospace); font-size: 12px; white-space: nowrap;
+  padding: 4px 9px; border-radius: 9px; box-shadow: 2px 2px 0 rgba(0,0,0,.22);
+  opacity: 0; pointer-events: none; transition: opacity .12s ease, transform .12s ease;
+}
+.tama-tip::after {           /* little downward arrow */
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--ink, #7d2f2a);
+}
+.tama-hot:hover .tama-tip,
+.tama-hot:active .tama-tip,
+.tama-hot.pressing .tama-tip { opacity: 1; transform: translate(-50%, -8px) scale(1); }
+ 
 /* floating hearts/sparkles emitted over the screen area */
 .tama-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .tama-float {
@@ -820,4 +837,3 @@ body {
   box-shadow: 3px 3px 0 0 rgba(0,0,0,.18);
 }
 .tama-close:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(0,0,0,.18); }
- 

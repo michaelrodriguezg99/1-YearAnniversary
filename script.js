@@ -547,14 +547,14 @@ function initCaptcha() {
   // and on the "Done" button for phones (which have no keyboard Enter here).
   // TAMA_BTNS positions are % of the device image (520x640): {x, y} centers.
   const TAMA_BTNS = [
-    { act: "feed", x: 30.8, y: 79 },   // left pink button
-    { act: "play", x: 49.6, y: 79 },   // middle pink button
-    { act: "love", x: 66.3, y: 79 },   // right pink button
+    { act: "feed", x: 30.8, y: 79, label: "🍼 Feed" },   // left pink button
+    { act: "play", x: 49.6, y: 79, label: "🎮 Play" },   // middle pink button
+    { act: "love", x: 66.3, y: 79, label: "💖 Love" },   // right pink button
   ];
   const TAMA_REACT = {
-    feed: ["Yum yum 😋", "Más papita 🍟", "Lleni-lleni 🤤", "Gracias caramelo 🥹"],
-    play: ["Wiii! 🎉", "Otra vez! 🎮", "Jijiji 😄", "Te gané 😼"],
-    love: ["Te quiero 💕", "Mimitos 💖", "Awww 🥰", "Mi caramelito 😚"],
+    feed: ["Yum yum 😋", "Quiero bibí 🍼", "Quiero más 🤤", "Gracias Mike 🥹"],
+    play: ["Wiii! 🎉", "Otra vez! 🎮", "Jijiji 😄", "Gané esta ronda 😼"],
+    love: ["Te quiero 💕", "Mimitos 💖", "Awww 🥰", "Eres el mejor 😚"],
   };
   function launchTamagotchi() {
     const old = document.querySelector(".tama-overlay");
@@ -564,7 +564,10 @@ function initCaptcha() {
     ov.className = "tama-overlay";
     const btns = TAMA_BTNS.map(b =>
       '<button type="button" class="tama-hot" data-act="' + b.act + '" ' +
-      'style="left:' + b.x + '%;top:' + b.y + '%"></button>'
+      'title="' + b.label.replace(/[^\x20-\x7E]/g, "").trim() + '" ' +
+      'style="left:' + b.x + '%;top:' + b.y + '%">' +
+        '<span class="tama-tip">' + b.label + '</span>' +
+      '</button>'
     ).join("");
     ov.innerHTML =
       '<div class="tama-wrap">' +
@@ -597,7 +600,13 @@ function initCaptcha() {
     }
  
     ov.querySelectorAll(".tama-hot").forEach(b => {
-      b.addEventListener("click", () => { react(b.dataset.act); b.blur(); });
+      b.addEventListener("click", () => {
+        react(b.dataset.act);
+        b.classList.add("pressing");                 // show tooltip on touch (no hover on phones)
+        clearTimeout(b._tipT);
+        b._tipT = setTimeout(() => b.classList.remove("pressing"), 1100);
+        b.blur();
+      });
     });
  
     function close() {
