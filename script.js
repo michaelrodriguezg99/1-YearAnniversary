@@ -238,10 +238,10 @@ const CAPTCHA_POOL = [
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag." },
   { src: "violet.jpg", label: "Violet", effect: "thunder", power: "timestop",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper." },
-  { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
+  { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif", sound: "BadBunny.mp3",
     caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
-  { src: "BabyMiko.jpg", label: "BabyMiko",
-    caption: "Te va a tener de tamagotchi 🕹️" },
+  { src: "BabyMiko.jpg", label: "BabyMiko", gif: "BabyMiko.gif", sound: "BabyMiko.mp3",
+    caption: "Yo si te puedo tener de Tamagotchi 🕹️ (Si no me crees verificalo)" },
   { src: "Garrett.jpg", label: "Garrett", fx: "hockey",
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒" },
   { src: "Allie.jpg", label: "Allie", fx: "stage", gif: "AllieHayes.gif",
@@ -1203,6 +1203,7 @@ function initCaptcha() {
     // BabyMiko + Rauw Alejandro together => their crossover gif
     if (picked.includes("BabyMiko") && picked.includes("RauwAlejandro")) {
       showGif("MikoRauw.gif");
+      playSound("MikoAndRauw.mp3");
       fail("Lamento decirte Rauw que yo se la quiero quitar a ambos 🥱");
       return;
     }
