@@ -275,7 +275,7 @@ const CAPTCHA_POOL = [
     caption: "Crazy even as a human 😭" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
     caption: "I'm not afraid of a little blood either 😈" },
-  { src: "Cherry.jpg", label: "Cherry", gif: "Cherry.gif",
+  { src: "Cherry.jpg", label: "Cherry", fx: "cherry",
     caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro", worm: true,
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
@@ -455,6 +455,7 @@ function initCaptcha() {
     stage:   { emojis: ["🎭", "⭐", "✨", "🌟"],            mode: "rain",      tint: "rgba(120,60,140,0.22)", count: 24 }, // Allie — aspiring actress
     charm:   { emojis: ["💫", "💸", "😏", "💛"],            mode: "burst",     tint: "rgba(120,90,30,0.18)", count: 24 }, // Dean — rich playboy
     knives:  { emojis: ["🔪", "🍓", "💔"],                  mode: "rain",      tint: "rgba(120,20,30,0.28)", count: 22 }, // Love Quinn — "You"
+    cherry:  { emojis: ["🍒", "❤️", "✨"],                  mode: "rain",      tint: "rgba(170,15,40,0.22)", count: 26 }, // Cherry
     roses:   { emojis: ["🌹", "✨", "💕"],                  mode: "rain",      tint: "rgba(190,60,90,0.18)", count: 26 }, // Tamaki / Twins — Host Club
     pawdust: { emojis: ["🐾", "🍂", "✨"],                  mode: "sideBurst", tint: "rgba(150,110,40,0.22)", count: 22 }, // Kovu — Pride Lands
     hextech: { emojis: ["🔷", "✨", "🎯"],                  mode: "rain",      tint: "rgba(30,90,150,0.28)", count: 24 }, // Caitlyn — Piltover
@@ -1146,10 +1147,9 @@ function initCaptcha() {
             msgEl.textContent = ""; msgEl.className = "cap-msg";
           }
           if (tile.dataset.label === "Cherry") {
-            // reveal the cherry image, pop it into falling cherries, THEN her gif
-            rainImages(["CherryConfetti.jpg"], {
-              onPop: () => { if (gif) showGif(gif, snd); }
-            });
+            // reveal her cherry image into falling cherries (gif now lives on the
+            // me + Cherry verify combo). The cherry fx adds emoji + tint on top.
+            rainImages(["CherryConfetti.jpg"]);
           } else {
             if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
             if (tile.dataset.swim) swimAcross(tile.dataset.swim);
@@ -1235,6 +1235,12 @@ function initCaptcha() {
     if (chicasTile) {
       rainImages(["whawhawha.jpg"]);
       fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
+      return;
+    }
+    // Michael + Cherry => her gif (only shows up for this pairing) + Cherry.mp3
+    if (picked.includes("Cherry") && picked.includes("Michael")) {
+      showGif("Cherry.gif", "Cherry.mp3");   // sound lasts as long as the gif
+      fail("Yo Y Cherry?? 🍒 Buen intento — pero el único que se queda eres yo 😌");
       return;
     }
     // BabyMiko + Rauw Alejandro together => their crossover gif
