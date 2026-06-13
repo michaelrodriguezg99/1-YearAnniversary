@@ -13,66 +13,6 @@ Y que se atreve con Benito y con Rauw, jeje`,
   artist: "Rauw Alejandro & Bad Bunny",
 };
 /* =====================================================================
-   GIF DURATION (shared) — so reaction-gif popups stay up until the gif
-   actually finishes a loop, instead of a fixed timer cutting it short.
-   Reads the file's frame delays directly; caches the result per file.
-   If the gif can't be fetched (e.g. opened as a local file:// in some
-   browsers), the caller keeps its fallback duration.
-   ===================================================================== */
-const GIF_MIN_MS = 1800;    // floor so a very short gif doesn't just flash by
-const GIF_MAX_MS = 12000;   // safety cap for very long gifs
-const _gifDurCache = {};
- 
-function _parseGifMs(buf) {
-  const b = new Uint8Array(buf);
-  if (b.length < 13 || b[0] !== 0x47 || b[1] !== 0x49 || b[2] !== 0x46) return 0; // "GIF"
-  let ms = 0, i = 13;
-  if (b[10] & 0x80) i += 3 * (1 << ((b[10] & 7) + 1));          // skip global color table
-  while (i < b.length) {
-    const k = b[i];
-    if (k === 0x21) {                       // extension block
-      if (b[i + 1] === 0xF9) {              // graphic control ext -> frame delay
-        let d = (b[i + 4] | (b[i + 5] << 8)); // delay stored in 1/100 s (centiseconds)
-        if (d < 2) d = 10;                   // browsers render 0/1-delay frames at ~100ms
-        ms += d * 10;
-      }
-      i += 2;
-      while (i < b.length && b[i] !== 0) i += b[i] + 1;          // skip sub-blocks
-      i++;
-    } else if (k === 0x2C) {                // image descriptor
-      const lp = b[i + 9];
-      i += 10;
-      if (lp & 0x80) i += 3 * (1 << ((lp & 7) + 1));            // skip local color table
-      i++;                                   // LZW min code size
-      while (i < b.length && b[i] !== 0) i += b[i] + 1;
-      i++;
-    } else if (k === 0x3B) break;           // trailer
-    else i++;
-  }
-  return ms;
-}
- 
-// Measures `src` and calls onMeasured(ms) with a sensible "show this long"
-// duration. Plays at least one full loop (more if the loop is very short),
-// capped by GIF_MAX_MS. Never calls back if the file can't be fetched.
-function measureGif(src, onMeasured) {
-  if (_gifDurCache[src] != null) { onMeasured(_gifDurCache[src]); return; }
-  fetch(src)
-    .then(r => r.arrayBuffer())
-    .then(buf => {
-      const loop = _parseGifMs(buf);
-      let total = 2600;
-      if (loop > 0) {
-        const loops = Math.max(1, Math.ceil(GIF_MIN_MS / loop)); // whole loops only
-        total = Math.min(loops * loop, GIF_MAX_MS) + 150;
-      }
-      _gifDurCache[src] = total;
-      onMeasured(total);
-    })
-    .catch(() => { /* leave the caller's fallback timer in place */ });
-}
- 
-/* =====================================================================
    FALLING-IMAGE "CONFETTI" (shared) — rains photos/icons down BEHIND the
    gif popup. Replace the filenames in CONFETTI_IMAGES with your own images
    (hearts, faces, little photos, whatever). Call rainImages() to trigger.
@@ -275,7 +215,7 @@ const CAPTCHA_POOL = [
     caption: "Crazy even as a human 😭" },
   { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
     caption: "I'm not afraid of a little blood either 😈" },
-  { src: "Cherry.jpg", label: "Cherry", fx: "cherry",
+  { src: "Cherry.jpg", label: "Cherry",
     caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro", worm: true,
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
@@ -455,7 +395,7 @@ function initCaptcha() {
     stage:   { emojis: ["🎭", "⭐", "✨", "🌟"],            mode: "rain",      tint: "rgba(120,60,140,0.22)", count: 24 }, // Allie — aspiring actress
     charm:   { emojis: ["💫", "💸", "😏", "💛"],            mode: "burst",     tint: "rgba(120,90,30,0.18)", count: 24 }, // Dean — rich playboy
     knives:  { emojis: ["🔪", "🍓", "💔"],                  mode: "rain",      tint: "rgba(120,20,30,0.28)", count: 22 }, // Love Quinn — "You"
-    cherry:  { emojis: ["🍒", "❤️", "✨"],                  mode: "rain",      tint: "rgba(170,15,40,0.22)", count: 26 }, // Cherry
+    cherry:  { emojis: ["🍒", "🌸", "🍒"],                  mode: "rain",      tint: "rgba(170,15,40,0.22)", count: 28 }, // Cherry — no hearts
     roses:   { emojis: ["🌹", "✨", "💕"],                  mode: "rain",      tint: "rgba(190,60,90,0.18)", count: 26 }, // Tamaki / Twins — Host Club
     pawdust: { emojis: ["🐾", "🍂", "✨"],                  mode: "sideBurst", tint: "rgba(150,110,40,0.22)", count: 22 }, // Kovu — Pride Lands
     hextech: { emojis: ["🔷", "✨", "🎯"],                  mode: "rain",      tint: "rgba(30,90,150,0.28)", count: 24 }, // Caitlyn — Piltover
@@ -1146,15 +1086,9 @@ function initCaptcha() {
           } else {
             msgEl.textContent = ""; msgEl.className = "cap-msg";
           }
-          if (tile.dataset.label === "Cherry") {
-            // reveal her cherry image into falling cherries (gif now lives on the
-            // me + Cherry verify combo). The cherry fx adds emoji + tint on top.
-            rainImages(["CherryConfetti.jpg"]);
-          } else {
-            if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
-            if (tile.dataset.swim) swimAcross(tile.dataset.swim);
-            if (tile.dataset.worm) wormAcross(tile.dataset.worm);
-          }
+          if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
+          if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+          if (tile.dataset.worm) wormAcross(tile.dataset.worm);
           if (snd && !gif) playSound(snd);   // no animation to match → play it in full
           // per-character background powers
           if (tile.dataset.effect === "radio") triggerAlastorPowers();
@@ -1237,10 +1171,12 @@ function initCaptcha() {
       fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
       return;
     }
-    // Michael + Cherry => her gif (only shows up for this pairing) + Cherry.mp3
+    // Michael + Cherry => her cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
-      showGif("Cherry.gif", "Cherry.mp3");   // sound lasts as long as the gif
-      fail("Yo Y Cherry?? 🍒 Buen intento — pero el único que se queda eres yo 😌");
+      rainImages(["CherryConfetti.jpg"]);     // her cherry image confetti
+      triggerCharFx("cherry");                // cherries + blossoms raining (no hearts)
+      showGif("Cherry.gif", "Cherry.mp3");    // sound lasts as long as the gif
+      fail("Acho baby es que tu eres bien afrenta'");
       return;
     }
     // BabyMiko + Rauw Alejandro together => their crossover gif
