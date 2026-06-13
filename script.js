@@ -1,10 +1,3 @@
-// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
-const DUET = {
-  line: `Baby, qué afrenta'
-Tú quieres con do' y no sé si va' a aguantar (Ey)`,
-  song:   "Party",
-  artist: "Rauw Alejandro & Bad Bunny",
-};
 /* =====================================================================
    GIF DURATION (shared) — so reaction-gif popups stay up until the gif
    actually finishes a loop, instead of a fixed timer cutting it short.
@@ -12,7 +5,7 @@ Tú quieres con do' y no sé si va' a aguantar (Ey)`,
    If the gif can't be fetched (e.g. opened as a local file:// in some
    browsers), the caller keeps its fallback duration.
    ===================================================================== */
-const GIF_MIN_MS = 1800;    // never flash by faster than this
+const GIF_MIN_MS = 1800;    // floor so a very short gif doesn't just flash by
 const GIF_MAX_MS = 12000;   // safety cap for very long gifs
 const _gifDurCache = {};
  
@@ -163,6 +156,20 @@ function playSound(src, volume) {
     const p = a.play();
     if (p && p.catch) p.catch(() => {});   // ignore "interrupted"/blocked errors
   } catch (e) { /* audio unavailable */ }
+}
+// Stop a sound early (with a quick fade so it doesn't click). Used to make a
+// clip last exactly as long as the animation it's paired with.
+function stopSound(src) {
+  const a = _audioCache[src];
+  if (!a || a.paused) return;
+  try {
+    const v0 = a.volume, steps = 5; let i = 0;
+    const iv = setInterval(() => {
+      i++;
+      a.volume = Math.max(0, v0 * (1 - i / steps));
+      if (i >= steps) { clearInterval(iv); a.pause(); a.currentTime = 0; a.volume = v0; }
+    }, 35);
+  } catch (e) { /* ignore */ }
 }
  
 /* =====================================================================
@@ -876,8 +883,12 @@ function initCaptcha() {
     gifPop.innerHTML = '<img alt="">';
     document.body.appendChild(gifPop);
   }
-  let gifTimer;
-  function showGif(src) {
+  let gifTimer, gifSound = null;
+  function hideGifPop() {
+    gifPop.classList.remove("show");
+    if (gifSound) { stopSound(gifSound); gifSound = null; }   // sound ends with the gif
+  }
+  function showGif(src, sound) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     if (src.includes("AllieAndDean.gif")) {
@@ -889,12 +900,16 @@ function initCaptcha() {
     img.removeAttribute("src");
     img.src = src;
     gifPop.classList.add("show");
+    // pair an optional sound: it plays now and is cut when the gif hides
+    if (gifSound && gifSound !== sound) stopSound(gifSound);
+    gifSound = sound || null;
+    if (sound) playSound(sound);
     // start with a fallback, then extend to the gif's real length once measured
     clearTimeout(gifTimer);
-    gifTimer = setTimeout(() => gifPop.classList.remove("show"), 2600);
+    gifTimer = setTimeout(hideGifPop, 2600);
     measureGif(src, (ms) => {
       clearTimeout(gifTimer);
-      gifTimer = setTimeout(() => gifPop.classList.remove("show"), ms);
+      gifTimer = setTimeout(hideGifPop, ms);
     });
   }
  
@@ -1101,7 +1116,7 @@ function initCaptcha() {
       tile.addEventListener("click", () => {
         const on = tile.classList.toggle("selected");
         if (on) {
-          if (tile.dataset.sound) playSound(tile.dataset.sound);
+          const snd = tile.dataset.sound, gif = tile.dataset.gif;
           // show this tile's caption right away — neutral hint, not an error yet
           if (tile.dataset.caption) {
             msgEl.textContent = tile.dataset.caption;
@@ -1112,13 +1127,14 @@ function initCaptcha() {
           if (tile.dataset.label === "Cherry") {
             // reveal the cherry image, pop it into falling cherries, THEN her gif
             rainImages(["CherryConfetti.jpg"], {
-              onPop: () => { if (tile.dataset.gif) showGif(tile.dataset.gif); }
+              onPop: () => { if (gif) showGif(gif, snd); }
             });
           } else {
-            if (tile.dataset.gif)  showGif(tile.dataset.gif);
+            if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
             if (tile.dataset.swim) swimAcross(tile.dataset.swim);
             if (tile.dataset.worm) wormAcross(tile.dataset.worm);
           }
+          if (snd && !gif) playSound(snd);   // no animation to match → play it in full
           // per-character background powers
           if (tile.dataset.effect === "radio") triggerAlastorPowers();
           if (tile.dataset.effect === "blood") triggerBlood();
@@ -1202,8 +1218,7 @@ function initCaptcha() {
     }
     // BabyMiko + Rauw Alejandro together => their crossover gif
     if (picked.includes("BabyMiko") && picked.includes("RauwAlejandro")) {
-      showGif("MikoRauw.gif");
-      playSound("MikoAndRauw.mp3");
+      showGif("MikoRauw.gif", "MikoAndRauw.mp3");
       fail("Lamento decirte Rauw que yo se la quiero quitar a ambos 🥱");
       return;
     }
