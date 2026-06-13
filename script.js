@@ -206,9 +206,9 @@ const CAPTCHA_POOL = [
   // Any entry with  gif: "file.gif"  pops that gif up when the tile is picked.
   { src: "MikeBefore.jpg", label: "Mike",
     caption: "NOW he's your boyfriend?!?! 😭 That's me BEFORE I met you." },
-  { src: "rhysand.jpg", label: "Rhysand",
+  { src: "rhysand.jpg", label: "Rhysand", fx: "night",
     caption: "Rhysand? He is literaly head over heels for Feyre, so I don't see this working." },
-  { src: "Feyre.jpg", label: "Feyre",
+  { src: "Feyre.jpg", label: "Feyre", fx: "magic",
     caption: "Feyre? She is literaly head over heels for Rhysand, so I don't see this working." },
   { src: "xaden.jpg", label: "Xaden", effect: "thunder",
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag." },
@@ -218,11 +218,11 @@ const CAPTCHA_POOL = [
     caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
   { src: "BabyMiko.jpg", label: "BabyMiko",
     caption: "Te va a tener de tamagotchi 🕹️" },
-  { src: "Garrett.jpg", label: "Garrett",
+  { src: "Garrett.jpg", label: "Garrett", fx: "hockey",
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒" },
-  { src: "Allie.jpg", label: "Allie", gif: "AllieHayes.gif",
+  { src: "Allie.jpg", label: "Allie", fx: "stage", gif: "AllieHayes.gif",
     caption: "Allie Hayes or JLO? 🤔" },
-  { src: "Dean.jpg", label: "Dean", gif: "Dean.gif",
+  { src: "Dean.jpg", label: "Dean", fx: "charm", gif: "Dean.gif",
     caption: "Quote: 1) Stupid Dean & his stipid awesome dick. -random bathroom girl 2) We don't actually need him -second random batroom girl" },
       { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif",
     caption: "I also have big boobs 👀" },
@@ -236,41 +236,41 @@ const CAPTCHA_POOL = [
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift",
     caption: "Do you wanna get swifted? 💀" },
-  { src: "Anthony.jpg", label: "Anthony",
+  { src: "Anthony.jpg", label: "Anthony", fx: "bees",
     caption: "Anthony Bridgerton: brooding, emotionally constipated." },
-  { src: "Benedict.jpg", label: "Benedict",
+  { src: "Benedict.jpg", label: "Benedict", fx: "paint",
     caption: "His mistress?! Really?!" },
-  { src: "Colin.jpg", label: "Colin",
+  { src: "Colin.jpg", label: "Colin", fx: "ink",
     caption: "Colin took eight seasons to notice the girl right in front of him. I noticed you instantly 😌" },
-  { src: "HitachiinTwins.jpg", label: "HitachiinTwins", gif: "HitachiinTwins.gif",
+  { src: "HitachiinTwins.jpg", label: "HitachiinTwins", fx: "roses", gif: "HitachiinTwins.gif",
     caption: "I... have no words..." },
-  { src: "Tamaki.jpg", label: "Tamaki", gif: "Tamaki.gif",
+  { src: "Tamaki.jpg", label: "Tamaki", fx: "roses", gif: "Tamaki.gif",
     caption: "Even Tamaki knows who your daddy is 😏. Now pick him." },
-  { src: "Kovu.jpg", label: "Kovu", gif: "Kovu.gif",
+  { src: "Kovu.jpg", label: "Kovu", fx: "pawdust", gif: "Kovu.gif",
     caption: "Rawr — he's feisty today and doesn't seem to want you. But I do 🙂🦁" },
-  { src: "Neytiri.jpg", label: "Neytiri",
+  { src: "Neytiri.jpg", label: "Neytiri", fx: "pandora",
     caption: "Okay I heard you out, but stil. 😭" },
-  { src: "JakeSully.jpg", label: "JakeSully",
+  { src: "JakeSully.jpg", label: "JakeSully", fx: "pandora",
     caption: "Okay I heard you out, but stil. 😭" },
-  { src: "Varang.jpg", label: "Varang",
+  { src: "Varang.jpg", label: "Varang", fx: "fire",
     caption: "Bitch will literally burn you alive." },
   { src: "Lola.jpg", label: "Lola", swim: true,
     caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
-  { src: "LenaLuthor.jpg", label: "LenaLuthor",
+  { src: "LenaLuthor.jpg", label: "LenaLuthor", fx: "krypton",
     caption: "Lena Luthor: genius billionaire with a last name that screams trust and daddy issues." },
-  { src: "LoveQuinn.jpg", label: "LoveQuinn", gif: "Love.gif",
+  { src: "LoveQuinn.jpg", label: "LoveQuinn", fx: "knives", gif: "Love.gif",
     caption: "Do you really wanna play with fire like that? 😭🔪" },
   { src: "RheaRipley.jpg", label: "RheaRipley", gif: "RheaRipley.gif",
     caption: "Rhea Ripley would suplex me for looking at you wrong. Massive respect — but id still win 😎" },
   { src: "Chicas.jpg", label: "Chicas", gif: "Chicas.gif",
     caption: "YOU 🫵 said no friends 😡 so no empieces ahora jaja" },
-  { src: "Caitlyn.jpg", label: "Caitlyn", gif: "Caitlyn.gif",
+  { src: "Caitlyn.jpg", label: "Caitlyn", fx: "hextech", gif: "Caitlyn.gif",
     caption: "Not bad, but I can do better." },
-  { src: "VI.jpg", label: "VI", gif: "VI.gif",
+  { src: "VI.jpg", label: "VI", fx: "impact", gif: "VI.gif",
     caption: "Will literally betray you for her sister everytime 😈" },
-  { src: "MegaMind.jpg", label: "MegaMind", gif: "MegaMind.gif",
+  { src: "MegaMind.jpg", label: "MegaMind", fx: "zap", gif: "MegaMind.gif",
     caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you!" },
-  { src: "Zuko.jpg", label: "Zuko", gif: "Zuko.gif",
+  { src: "Zuko.jpg", label: "Zuko", fx: "fire", gif: "Zuko.gif",
     caption: "It is really is Zuko 🙃" },
 ];
  
@@ -387,6 +387,116 @@ function initCaptcha() {
     bloodFx = document.createElement("div");
     bloodFx.className = "blood-fx";
     document.body.appendChild(bloodFx);
+  }
+ 
+  // ----- Character "powers" engine (themed particle bursts + screen tint) -----
+  // A lightweight, data-driven version of the Alastor effect: each book/anime/
+  // animated character points at one preset below via  fx: "name"  in the pool.
+  // Add a preset here and reference it — no new function needed per character.
+  //   mode: "rain" (fall), "rise" (embers up), "burst" (out from center),
+  //         "sideBurst" (streak across), "drift" (float + twinkle in place)
+  const CHAR_FX = {
+    night:   { emojis: ["🌙", "✨", "⭐", "🌟"],            mode: "drift",     tint: "rgba(22,18,64,0.45)",  count: 26 }, // Rhysand — Night Court
+    magic:   { emojis: ["✨", "💫", "🌈", "🔮"],            mode: "burst",     tint: "rgba(86,42,128,0.30)", count: 30 }, // Feyre — all-court magic
+    hockey:  { emojis: ["🏒", "🥅", "🧊"],                  mode: "sideBurst", tint: "rgba(120,170,210,0.25)", count: 22 }, // Garrett — hockey
+    bees:    { emojis: ["🐝", "🌼", "🍯"],                  mode: "drift",     tint: "rgba(220,180,40,0.18)", count: 20 }, // Anthony — the bee
+    paint:   { emojis: ["🎨", "🖌️", "🟣", "🔵", "🟡"],      mode: "burst",     tint: "rgba(60,40,90,0.20)",  count: 26 }, // Benedict — the artist
+    ink:     { emojis: ["✍️", "📜", "💌", "🪶"],            mode: "rain",      tint: "rgba(70,60,90,0.20)",  count: 22 }, // Colin — the writer
+    krypton: { emojis: ["☢️", "💚", "✨"],                  mode: "rise",      tint: "rgba(20,120,40,0.30)", count: 24 }, // Lena Luthor
+    pandora: { emojis: ["🌿", "💠", "🍃", "✨"],            mode: "drift",     tint: "rgba(10,60,110,0.40)", count: 28 }, // Neytiri / Jake — Pandora
+    fire:    { emojis: ["🔥", "🧡", "✨"],                  mode: "rise",      tint: "rgba(150,40,10,0.32)", count: 30 }, // Varang / Zuko — fire
+    stage:   { emojis: ["🎭", "⭐", "✨", "🌟"],            mode: "rain",      tint: "rgba(120,60,140,0.22)", count: 24 }, // Allie — aspiring actress
+    charm:   { emojis: ["💫", "💸", "😏", "💛"],            mode: "burst",     tint: "rgba(120,90,30,0.18)", count: 24 }, // Dean — rich playboy
+    knives:  { emojis: ["🔪", "🍓", "💔"],                  mode: "rain",      tint: "rgba(120,20,30,0.28)", count: 22 }, // Love Quinn — "You"
+    roses:   { emojis: ["🌹", "✨", "💕"],                  mode: "rain",      tint: "rgba(190,60,90,0.18)", count: 26 }, // Tamaki / Twins — Host Club
+    pawdust: { emojis: ["🐾", "🍂", "✨"],                  mode: "sideBurst", tint: "rgba(150,110,40,0.22)", count: 22 }, // Kovu — Pride Lands
+    hextech: { emojis: ["🔷", "✨", "🎯"],                  mode: "rain",      tint: "rgba(30,90,150,0.28)", count: 24 }, // Caitlyn — Piltover
+    impact:  { emojis: ["👊", "💥", "⭐"],                  mode: "burst",     tint: "rgba(150,40,90,0.25)", count: 24 }, // Vi — Zaun brawler
+    zap:     { emojis: ["⚡", "🔵", "💠"],                  mode: "burst",     tint: "rgba(30,60,160,0.28)", count: 24 }, // Megamind — tech
+  };
+ 
+  let charFx = document.querySelector(".char-fx");
+  if (!charFx) {
+    charFx = document.createElement("div");
+    charFx.className = "char-fx";
+    document.body.appendChild(charFx);
+  }
+ 
+  function triggerCharFx(name) {
+    const cfg = CHAR_FX[name];
+    if (!cfg) return;
+    if (cfg.tint) {
+      charFx.style.setProperty("--tint", cfg.tint);
+      charFx.classList.remove("show"); void charFx.offsetWidth; charFx.classList.add("show");
+      setTimeout(() => charFx.classList.remove("show"), 2600);
+    }
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const count = cfg.count || 24;
+    const emojis = cfg.emojis || ["✨"];
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("span");
+      s.className = "char-particle";
+      s.textContent = emojis[i % emojis.length];
+      s.style.fontSize = (20 + Math.random() * 26) + "px";
+      charFx.appendChild(s);
+ 
+      const delay = Math.random() * 700;
+      let frames, dur;
+ 
+      if (cfg.mode === "rain") {
+        s.style.left = (Math.random() * 100) + "%"; s.style.top = "-8%";
+        const dx = Math.random() * 40 - 20, rot = Math.random() * 720 - 360;
+        frames = [
+          { transform: "translate(0,0) rotate(0deg)", opacity: 0 },
+          { opacity: 1, offset: 0.12 },
+          { transform: `translate(${dx}px, ${vh * 1.15}px) rotate(${rot}deg)`, opacity: 0.85 },
+        ];
+        dur = 2200 + Math.random() * 1400;
+      } else if (cfg.mode === "rise") {
+        s.style.left = (Math.random() * 100) + "%"; s.style.top = "100%";
+        const dx = Math.random() * 80 - 40;
+        frames = [
+          { transform: "translate(0,0) scale(.7)", opacity: 0 },
+          { opacity: 1, offset: 0.18 },
+          { transform: `translate(${dx}px, ${-vh * 1.1}px) scale(1.1)`, opacity: 0 },
+        ];
+        dur = 1900 + Math.random() * 1200;
+      } else if (cfg.mode === "sideBurst") {
+        const fromLeft = Math.random() < 0.5;
+        s.style.top = (10 + Math.random() * 80) + "%";
+        s.style.left = fromLeft ? "-10%" : "110%";
+        const end = fromLeft ? vw * 1.25 : -vw * 1.25;
+        frames = [
+          { transform: "translate(0,0) rotate(0deg)", opacity: 0 },
+          { opacity: 1, offset: 0.1 },
+          { transform: `translate(${end}px, ${Math.random() * 80 - 40}px) rotate(${Math.random() * 1080 - 540}deg)`, opacity: 0.9 },
+        ];
+        dur = 1500 + Math.random() * 1000;
+      } else if (cfg.mode === "drift") {
+        s.style.left = (5 + Math.random() * 90) + "%";
+        s.style.top = (8 + Math.random() * 84) + "%";
+        const dx = Math.random() * 60 - 30, dy = Math.random() * 60 - 30;
+        frames = [
+          { transform: "translate(0,0) scale(.6)", opacity: 0 },
+          { opacity: 1, offset: 0.2 },
+          { opacity: 1, offset: 0.7 },
+          { transform: `translate(${dx}px, ${dy}px) scale(1.15)`, opacity: 0 },
+        ];
+        dur = 2200 + Math.random() * 800;
+      } else { // "burst"
+        s.style.left = "50%"; s.style.top = "50%";
+        const ang = Math.random() * Math.PI * 2, dist = 120 + Math.random() * Math.min(vw, vh) * 0.5;
+        frames = [
+          { transform: "translate(-50%,-50%) scale(.4)", opacity: 0 },
+          { opacity: 1, offset: 0.15 },
+          { transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${Math.sin(ang) * dist}px)) scale(1.1) rotate(${Math.random() * 360}deg)`, opacity: 0 },
+        ];
+        dur = 1400 + Math.random() * 900;
+      }
+ 
+      const anim = s.animate(frames, { duration: dur, delay, easing: "ease-out", fill: "forwards" });
+      anim.onfinish = () => s.remove();
+    }
   }
   // eldritch glyphs (pentagram, radio dial, broadcast waves) drawn as SVG
   const AL_GLYPHS = [
@@ -679,6 +789,7 @@ function initCaptcha() {
       if (item.gif)     tile.dataset.gif      = item.gif;
       if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
       if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
+      if (item.fx)      tile.dataset.fx       = item.fx;
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -712,6 +823,7 @@ function initCaptcha() {
           // per-character background powers
           if (tile.dataset.effect === "radio") triggerAlastorPowers();
           if (tile.dataset.effect === "blood") triggerBlood();
+          if (tile.dataset.fx) triggerCharFx(tile.dataset.fx);
         } else {
           // deselected — fall back to another selected tile's caption, or clear
           const other = grid.querySelector(".cap-tile.selected");
