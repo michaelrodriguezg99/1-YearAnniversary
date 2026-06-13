@@ -855,3 +855,75 @@ body {
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.25));
   user-select: none;
 }
+ 
+/* =====================================================================
+   UNIQUE CHARACTER EFFECTS — Xaden (shadow), Violet (lightning reuses
+   .thunder-flash), Hannah (music), Zuko (bespoke fire). All sit behind
+   the gif popup (z 10000) like the Alastor/blood overlays.
+   ===================================================================== */
+ 
+/* --- Xaden: shadow tendrils --- */
+.shadow-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
+.shadow-fx::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(10,4,24,0.72) 100%);
+  opacity: 0; transition: opacity .4s ease;
+}
+.shadow-fx.show::before { opacity: 1; }
+.shadow-wisp {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(24,10,46,0.95), rgba(10,4,24,0.6) 55%, transparent 72%);
+  filter: blur(14px); will-change: transform, opacity;
+}
+ 
+/* --- Hannah: singer — equalizer + floating notes + warm glow --- */
+.music-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
+.music-glow {
+  position: absolute; inset: 0; opacity: 0; transition: opacity .4s ease;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255,170,90,0.40), transparent 60%);
+}
+.music-fx.show .music-glow { opacity: 1; }
+.music-eq {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 30vh;
+  display: flex; align-items: flex-end; gap: 2.5%; padding: 0 3%;
+}
+.music-bar {
+  flex: 1; height: 8%;
+  background: linear-gradient(to top, #ff5fa2, #ffb15f);
+  border-radius: 6px 6px 0 0; opacity: .85;
+  animation: music-bounce .7s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+.music-fx.show .music-bar { height: var(--h, 60%); }
+@keyframes music-bounce { from { transform: scaleY(.35); } to { transform: scaleY(1); } }
+.music-notes { position: absolute; inset: 0; }
+.music-note { position: absolute; bottom: 8%; will-change: transform, opacity;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.25)); }
+ 
+/* --- Zuko: bespoke firebending — flame wall + embers + heat flash --- */
+.fire-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
+.fire-flash {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255,120,30,0.45), rgba(150,20,10,0.25) 55%, transparent 75%);
+  transition: opacity .25s ease;
+}
+.fire-fx.show .fire-flash { opacity: 1; }
+.fire-wall { position: absolute; left: 0; right: 0; bottom: -10px; height: 40vh; }
+.flame {
+  position: absolute; bottom: 0; width: var(--fw, 50px); height: var(--fh, 180px);
+  margin-left: calc(var(--fw, 50px) / -2);
+  background: linear-gradient(to top, #ffd24d 0%, #ff8a1e 35%, #ff3b1e 70%, rgba(255,59,30,0) 100%);
+  border-radius: 50% 50% 48% 48% / 70% 70% 30% 30%;
+  filter: blur(3px); transform-origin: bottom center; mix-blend-mode: screen;
+  animation: flame-flicker var(--fd, 0.7s) ease-in-out infinite alternate;
+}
+@keyframes flame-flicker {
+  from { transform: scaleY(.82) scaleX(1.05) skewX(-3deg); opacity: .82; }
+  to   { transform: scaleY(1.12) scaleX(.92) skewX(4deg);  opacity: 1; }
+}
+.fire-embers { position: absolute; inset: 0; }
+.ember {
+  position: absolute; bottom: 6%; border-radius: 50%;
+  background: radial-gradient(circle, #ffe08a, #ff7a1e 60%, rgba(255,60,20,0) 100%);
+  will-change: transform, opacity;
+}

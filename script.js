@@ -210,9 +210,9 @@ const CAPTCHA_POOL = [
     caption: "Rhysand? He is literaly head over heels for Feyre, so I don't see this working." },
   { src: "Feyre.jpg", label: "Feyre", fx: "magic",
     caption: "Feyre? She is literaly head over heels for Rhysand, so I don't see this working." },
-  { src: "xaden.jpg", label: "Xaden", effect: "thunder",
+  { src: "xaden.jpg", label: "Xaden", effect: "thunder", power: "shadow",
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag." },
-  { src: "violet.jpg", label: "Violet", effect: "thunder",
+  { src: "violet.jpg", label: "Violet", effect: "thunder", power: "lightning",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper." },
   { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
     caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
@@ -224,7 +224,7 @@ const CAPTCHA_POOL = [
     caption: "Allie Hayes or JLO? 🤔" },
   { src: "Dean.jpg", label: "Dean", fx: "charm", gif: "Dean.gif",
     caption: "Quote: 1) Stupid Dean & his stipid awesome dick. -random bathroom girl 2) We don't actually need him -second random batroom girl" },
-      { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif",
+      { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif", power: "music",
     caption: "I also have big boobs 👀" },
   { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "radio",
     caption: "Crazy even as a human 😭" },
@@ -270,7 +270,7 @@ const CAPTCHA_POOL = [
     caption: "Will literally betray you for her sister everytime 😈" },
   { src: "MegaMind.jpg", label: "MegaMind", fx: "zap", gif: "MegaMind.gif",
     caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you!" },
-  { src: "Zuko.jpg", label: "Zuko", fx: "fire", gif: "Zuko.gif",
+  { src: "Zuko.jpg", label: "Zuko", power: "zukofire", gif: "Zuko.gif",
     caption: "It is really is Zuko 🙃" },
 ];
  
@@ -572,6 +572,150 @@ function initCaptcha() {
     setTimeout(() => bloodFx.classList.remove("show"), 4200);
   }
  
+  // ----- Xaden: shadow tendrils creeping in from the edges (his signet) -----
+  let shadowFx = document.querySelector(".shadow-fx");
+  if (!shadowFx) {
+    shadowFx = document.createElement("div");
+    shadowFx.className = "shadow-fx";
+    document.body.appendChild(shadowFx);
+  }
+  function triggerShadows() {
+    shadowFx.innerHTML = "";
+    shadowFx.classList.remove("show"); void shadowFx.offsetWidth; shadowFx.classList.add("show");
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const edges = ["top", "bottom", "left", "right"];
+    for (let k = 0; k < 14; k++) {
+      const w = document.createElement("div");
+      w.className = "shadow-wisp";
+      const edge = edges[k % 4];
+      const sz = 160 + Math.random() * 220;
+      w.style.width = sz + "px"; w.style.height = sz + "px";
+      let sx, sy, ex, ey;
+      if (edge === "top")    { sx = Math.random() * vw; sy = -sz; ex = sx + (Math.random() * 200 - 100); ey = vh * (0.3 + Math.random() * 0.4); }
+      if (edge === "bottom") { sx = Math.random() * vw; sy = vh + sz; ex = sx + (Math.random() * 200 - 100); ey = vh * (0.3 + Math.random() * 0.4); }
+      if (edge === "left")   { sx = -sz; sy = Math.random() * vh; ex = vw * (0.3 + Math.random() * 0.4); ey = sy + (Math.random() * 200 - 100); }
+      if (edge === "right")  { sx = vw + sz; sy = Math.random() * vh; ex = vw * (0.3 + Math.random() * 0.4); ey = sy + (Math.random() * 200 - 100); }
+      w.style.left = "0"; w.style.top = "0";
+      const anim = w.animate([
+        { transform: `translate(${sx}px, ${sy}px) scale(.6)`, opacity: 0 },
+        { opacity: .85, offset: 0.35 },
+        { transform: `translate(${ex}px, ${ey}px) scale(1.5)`, opacity: .7, offset: 0.6 },
+        { transform: `translate(${sx}px, ${sy}px) scale(.7)`, opacity: 0 },
+      ], { duration: 2200 + Math.random() * 900, delay: Math.random() * 500, easing: "ease-in-out", fill: "forwards" });
+      shadowFx.appendChild(w);
+      anim.onfinish = () => w.remove();
+    }
+    setTimeout(() => shadowFx.classList.remove("show"), 2800);
+  }
+ 
+  // ----- Violet: a focused lightning crackle (reuses the bolt + crack) -----
+  function triggerLightning() {
+    const n = 4;
+    strike();
+    for (let k = 1; k < n; k++) setTimeout(strike, 120 + Math.random() * 600);
+    rumble(1.4);
+  }
+ 
+  // ----- Hannah: she's a singer — sound-wave bars + floating notes + glow -----
+  let musicFx = document.querySelector(".music-fx");
+  if (!musicFx) {
+    musicFx = document.createElement("div");
+    musicFx.className = "music-fx";
+    musicFx.innerHTML = '<div class="music-glow"></div><div class="music-eq"></div><div class="music-notes"></div>';
+    document.body.appendChild(musicFx);
+  }
+  function triggerMusic() {
+    const eq    = musicFx.querySelector(".music-eq");
+    const notes = musicFx.querySelector(".music-notes");
+    eq.innerHTML = ""; notes.innerHTML = "";
+    musicFx.classList.remove("show"); void musicFx.offsetWidth; musicFx.classList.add("show");
+    // equalizer bars across the bottom
+    const bars = 22;
+    for (let i = 0; i < bars; i++) {
+      const b = document.createElement("div");
+      b.className = "music-bar";
+      b.style.setProperty("--d", (Math.random() * 0.4).toFixed(2) + "s");
+      b.style.setProperty("--h", (30 + Math.random() * 70) + "%");
+      eq.appendChild(b);
+    }
+    // notes floating up
+    const glyphs = ["🎵", "🎶", "🎤", "💖"];
+    for (let i = 0; i < 18; i++) {
+      const note = document.createElement("span");
+      note.className = "music-note";
+      note.textContent = glyphs[i % glyphs.length];
+      note.style.left = (Math.random() * 100) + "%";
+      note.style.fontSize = (20 + Math.random() * 22) + "px";
+      const dx = Math.random() * 80 - 40;
+      const anim = note.animate([
+        { transform: "translate(0,0) rotate(0deg)", opacity: 0 },
+        { opacity: 1, offset: 0.2 },
+        { transform: `translate(${dx}px, ${-window.innerHeight * 0.95}px) rotate(${Math.random() * 80 - 40}deg)`, opacity: 0 },
+      ], { duration: 2000 + Math.random() * 1200, delay: Math.random() * 700, easing: "ease-out", fill: "forwards" });
+      notes.appendChild(note);
+      anim.onfinish = () => note.remove();
+    }
+    setTimeout(() => musicFx.classList.remove("show"), 2800);
+  }
+ 
+  // ----- Zuko: bespoke firebending — flame wall + rising embers + heat flash -----
+  let fireFx = document.querySelector(".fire-fx");
+  if (!fireFx) {
+    fireFx = document.createElement("div");
+    fireFx.className = "fire-fx";
+    fireFx.innerHTML = '<div class="fire-flash"></div><div class="fire-wall"></div><div class="fire-embers"></div>';
+    document.body.appendChild(fireFx);
+  }
+  function triggerZukoFire() {
+    const wall   = fireFx.querySelector(".fire-wall");
+    const embers = fireFx.querySelector(".fire-embers");
+    wall.innerHTML = ""; embers.innerHTML = "";
+    fireFx.classList.remove("show"); void fireFx.offsetWidth; fireFx.classList.add("show");
+    // a wall of flickering flame tongues rising from the bottom edge
+    const tongues = 26;
+    for (let i = 0; i < tongues; i++) {
+      const f = document.createElement("div");
+      f.className = "flame";
+      f.style.left = (i / tongues * 100) + "%";
+      f.style.setProperty("--fw", (40 + Math.random() * 60) + "px");
+      f.style.setProperty("--fh", (120 + Math.random() * 220) + "px");
+      f.style.setProperty("--fd", (0.5 + Math.random() * 0.5).toFixed(2) + "s");
+      f.style.animationDelay = "-" + (Math.random() * 0.6).toFixed(2) + "s";
+      wall.appendChild(f);
+    }
+    // embers/sparks drifting upward
+    for (let i = 0; i < 34; i++) {
+      const e = document.createElement("span");
+      e.className = "ember";
+      e.style.left = (Math.random() * 100) + "%";
+      const sz = 4 + Math.random() * 8;
+      e.style.width = sz + "px"; e.style.height = sz + "px";
+      const dx = Math.random() * 120 - 60;
+      const anim = e.animate([
+        { transform: "translate(0,0) scale(1)", opacity: 1 },
+        { transform: `translate(${dx}px, ${-window.innerHeight * (0.6 + Math.random() * 0.5)}px) scale(.2)`, opacity: 0 },
+      ], { duration: 1400 + Math.random() * 1400, delay: Math.random() * 900, easing: "ease-out", fill: "forwards" });
+      embers.appendChild(e);
+      anim.onfinish = () => e.remove();
+    }
+    // synthesized fire "whoosh" if audio is on
+    if (THUNDER_SOUND) {
+      try {
+        const ctx = audioCtx();
+        const dur = 1.1, len = Math.floor(ctx.sampleRate * dur);
+        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) { const t = i / len; d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 1.5) * 0.4; }
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 900;
+        const g = ctx.createGain(); g.gain.value = 0.3;
+        src.connect(lp); lp.connect(g); g.connect(ctx.destination);
+        src.start();
+      } catch (e) {}
+    }
+    setTimeout(() => fireFx.classList.remove("show"), 2600);
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -790,6 +934,7 @@ function initCaptcha() {
       if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
       if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
       if (item.fx)      tile.dataset.fx       = item.fx;
+      if (item.power)   tile.dataset.power    = item.power;
       const h = hue(item.label || "x");
       tile.innerHTML = `
         <img alt="">
@@ -824,6 +969,10 @@ function initCaptcha() {
           if (tile.dataset.effect === "radio") triggerAlastorPowers();
           if (tile.dataset.effect === "blood") triggerBlood();
           if (tile.dataset.fx) triggerCharFx(tile.dataset.fx);
+          if (tile.dataset.power === "shadow")    triggerShadows();
+          if (tile.dataset.power === "lightning") triggerLightning();
+          if (tile.dataset.power === "music")     triggerMusic();
+          if (tile.dataset.power === "zukofire")  triggerZukoFire();
         } else {
           // deselected — fall back to another selected tile's caption, or clear
           const other = grid.querySelector(".cap-tile.selected");
