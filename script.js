@@ -13,6 +13,66 @@ Y que se atreve con Benito y con Rauw, jeje`,
   artist: "Rauw Alejandro & Bad Bunny",
 };
 /* =====================================================================
+   GIF DURATION (shared) — so reaction-gif popups stay up until the gif
+   actually finishes a loop, instead of a fixed timer cutting it short.
+   Reads the file's frame delays directly; caches the result per file.
+   If the gif can't be fetched (e.g. opened as a local file:// in some
+   browsers), the caller keeps its fallback duration.
+   ===================================================================== */
+const GIF_MIN_MS = 1800;    // floor so a very short gif doesn't just flash by
+const GIF_MAX_MS = 12000;   // safety cap for very long gifs
+const _gifDurCache = {};
+ 
+function _parseGifMs(buf) {
+  const b = new Uint8Array(buf);
+  if (b.length < 13 || b[0] !== 0x47 || b[1] !== 0x49 || b[2] !== 0x46) return 0; // "GIF"
+  let ms = 0, i = 13;
+  if (b[10] & 0x80) i += 3 * (1 << ((b[10] & 7) + 1));          // skip global color table
+  while (i < b.length) {
+    const k = b[i];
+    if (k === 0x21) {                       // extension block
+      if (b[i + 1] === 0xF9) {              // graphic control ext -> frame delay
+        let d = (b[i + 4] | (b[i + 5] << 8)); // delay stored in 1/100 s (centiseconds)
+        if (d < 2) d = 10;                   // browsers render 0/1-delay frames at ~100ms
+        ms += d * 10;
+      }
+      i += 2;
+      while (i < b.length && b[i] !== 0) i += b[i] + 1;          // skip sub-blocks
+      i++;
+    } else if (k === 0x2C) {                // image descriptor
+      const lp = b[i + 9];
+      i += 10;
+      if (lp & 0x80) i += 3 * (1 << ((lp & 7) + 1));            // skip local color table
+      i++;                                   // LZW min code size
+      while (i < b.length && b[i] !== 0) i += b[i] + 1;
+      i++;
+    } else if (k === 0x3B) break;           // trailer
+    else i++;
+  }
+  return ms;
+}
+ 
+// Measures `src` and calls onMeasured(ms) with a sensible "show this long"
+// duration. Plays at least one full loop (more if the loop is very short),
+// capped by GIF_MAX_MS. Never calls back if the file can't be fetched.
+function measureGif(src, onMeasured) {
+  if (_gifDurCache[src] != null) { onMeasured(_gifDurCache[src]); return; }
+  fetch(src)
+    .then(r => r.arrayBuffer())
+    .then(buf => {
+      const loop = _parseGifMs(buf);
+      let total = 2600;
+      if (loop > 0) {
+        const loops = Math.max(1, Math.ceil(GIF_MIN_MS / loop)); // whole loops only
+        total = Math.min(loops * loop, GIF_MAX_MS) + 150;
+      }
+      _gifDurCache[src] = total;
+      onMeasured(total);
+    })
+    .catch(() => { /* leave the caller's fallback timer in place */ });
+}
+ 
+/* =====================================================================
    FALLING-IMAGE "CONFETTI" (shared) — rains photos/icons down BEHIND the
    gif popup. Replace the filenames in CONFETTI_IMAGES with your own images
    (hearts, faces, little photos, whatever). Call rainImages() to trigger.
@@ -1086,9 +1146,13 @@ function initCaptcha() {
           } else {
             msgEl.textContent = ""; msgEl.className = "cap-msg";
           }
-          if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
-          if (tile.dataset.swim) swimAcross(tile.dataset.swim);
-          if (tile.dataset.worm) wormAcross(tile.dataset.worm);
+          if (tile.dataset.label === "Cherry") {
+            rainImages(["CherryConfetti.jpg"]);   // she appears + rains down
+          } else {
+            if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
+            if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+            if (tile.dataset.worm) wormAcross(tile.dataset.worm);
+          }
           if (snd && !gif) playSound(snd);   // no animation to match → play it in full
           // per-character background powers
           if (tile.dataset.effect === "radio") triggerAlastorPowers();
@@ -1171,9 +1235,8 @@ function initCaptcha() {
       fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
       return;
     }
-    // Michael + Cherry => her cherry effect + gif + Cherry.mp3 (this pairing only)
+    // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
-      rainImages(["CherryConfetti.jpg"]);     // her cherry image confetti
       triggerCharFx("cherry");                // cherries + blossoms raining (no hearts)
       showGif("Cherry.gif", "Cherry.mp3");    // sound lasts as long as the gif
       fail("Acho baby es que tu eres bien afrenta'");
