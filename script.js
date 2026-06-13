@@ -142,6 +142,30 @@ function rainImages(images, opts) {
 }
  
 /* =====================================================================
+   SOUND (shared) — play an audio file on tap. Works for any screen.
+   HOW TO USE:
+     1) Drop an audio file (.mp3 / .m4a / .ogg / .wav) next to index.html.
+     2) Add  sound: "yourfile.mp3"  to a CAPTCHA_POOL entry (or call
+        playSound("yourfile.mp3") from anywhere). It plays when tapped.
+   Because it fires on a tap (a user gesture), browser autoplay rules are
+   satisfied. A gif itself can't carry audio, so pair gif + sound on the
+   same entry and they trigger together.
+   ===================================================================== */
+const _audioCache = {};
+function playSound(src, volume) {
+  if (!src) return;
+  try {
+    let a = _audioCache[src];
+    if (!a) { a = new Audio(src); _audioCache[src] = a; }
+    a.pause();
+    a.currentTime = 0;
+    a.volume = (volume == null ? 1 : volume);
+    const p = a.play();
+    if (p && p.catch) p.catch(() => {});   // ignore "interrupted"/blocked errors
+  } catch (e) { /* audio unavailable */ }
+}
+ 
+/* =====================================================================
    SCREEN MANAGER CORE (shared)
    Add a screen by appending to SCREENS. Remove one by commenting it out.
    Reorder by moving lines. Order lives ONLY here.
@@ -196,9 +220,9 @@ function initEnvelope() {
    ===================================================================== */
 const CAPTCHA_POOL = [
   // ----- YOU (the ONLY correct answers) -----
-  { src: "me1.jpeg", label: "Michael", correct: true },
-  { src: "me2.jpeg", label: "Michael", correct: true },
-  { src: "me3.jpeg", label: "Michael", correct: true },
+  { src: "me1.jpeg", label: "Michael", correct: true, sound: "love_me.mp3" },
+  { src: "me2.jpeg", label: "Michael", correct: true, sound: "love_me.mp3" },
+  { src: "me3.jpeg", label: "Michael", correct: true, sound: "love_me.mp3" },
  
   // ----- Book boyfriends / celebrity crushes / decoys (each picked => its own funny error) -----
   // Any entry with  effect: "thunder"  joins the lightning storm when
@@ -212,7 +236,7 @@ const CAPTCHA_POOL = [
     caption: "Feyre? She is literaly head over heels for Rhysand, so I don't see this working." },
   { src: "xaden.jpg", label: "Xaden", effect: "thunder", power: "shadow",
     caption: "Xaden Riorson?? He'd literally let you fall to prove a point. I'd catch you AND carry your bag." },
-  { src: "violet.jpg", label: "Violet", effect: "thunder", power: "lightning",
+  { src: "violet.jpg", label: "Violet", effect: "thunder", power: "timestop",
     caption: "Violet Sorrengail — elite taste, but she's (a) taken by Xaden and (b) made of paper." },
   { src: "BadBunny.jpg", label: "BadBunny", gif: "BadBunny.gif",
     caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
@@ -272,6 +296,8 @@ const CAPTCHA_POOL = [
     caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you!" },
   { src: "Zuko.jpg", label: "Zuko", power: "zukofire", gif: "Zuko.gif",
     caption: "It is really is Zuko 🙃" },
+  { src: "Cassian.jpg", label: "Cassian", power: "blades",
+    caption: "Cassian — Lord of Bloodshed, 500+ years old, and STILL can't admit his feelings to Nesta. I sorted mine out in a year 😌🗡️" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -605,15 +631,140 @@ function initCaptcha() {
       shadowFx.appendChild(w);
       anim.onfinish = () => w.remove();
     }
+    // low, dark "whoosh" — filtered noise swelling in and out
+    if (THUNDER_SOUND) {
+      try {
+        const ctx = audioCtx();
+        const dur = 1.8, len = Math.floor(ctx.sampleRate * dur);
+        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) {
+          const t = i / len;
+          const env = Math.sin(Math.PI * t);          // swell up then fade
+          d[i] = (Math.random() * 2 - 1) * env * 0.5;
+        }
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass";
+        const now = ctx.currentTime;
+        lp.frequency.setValueAtTime(200, now);
+        lp.frequency.linearRampToValueAtTime(900, now + 0.7);   // sweep = the "whoosh"
+        lp.frequency.linearRampToValueAtTime(150, now + dur);
+        const g = ctx.createGain(); g.gain.value = 0.32;
+        src.connect(lp); lp.connect(g); g.connect(ctx.destination);
+        src.start();
+      } catch (e) {}
+    }
     setTimeout(() => shadowFx.classList.remove("show"), 2800);
   }
  
-  // ----- Violet: a focused lightning crackle (reuses the bolt + crack) -----
-  function triggerLightning() {
-    const n = 4;
-    strike();
-    for (let k = 1; k < n; k++) setTimeout(strike, 120 + Math.random() * 600);
-    rumble(1.4);
+  // ----- Violet: Andarna's gift — time grinds to a halt -----
+  // Screen desaturates + a shockwave ring freezes, clocks pop and hold,
+  // and a tone glides down in pitch like everything is slowing to a stop.
+  let timeFx = document.querySelector(".time-fx");
+  if (!timeFx) {
+    timeFx = document.createElement("div");
+    timeFx.className = "time-fx";
+    timeFx.innerHTML = '<div class="time-rings"></div><div class="time-clocks"></div>';
+    document.body.appendChild(timeFx);
+  }
+  function triggerTimeStop() {
+    const rings  = timeFx.querySelector(".time-rings");
+    const clocks = timeFx.querySelector(".time-clocks");
+    rings.innerHTML = ""; clocks.innerHTML = "";
+    timeFx.classList.remove("show"); void timeFx.offsetWidth; timeFx.classList.add("show");
+    // expanding shockwave rings from center
+    for (let k = 0; k < 3; k++) {
+      const r = document.createElement("div");
+      r.className = "time-ring";
+      rings.appendChild(r);
+      const anim = r.animate([
+        { transform: "translate(-50%,-50%) scale(.1)", opacity: .9 },
+        { transform: "translate(-50%,-50%) scale(2.4)", opacity: 0 },
+      ], { duration: 1500, delay: k * 220, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
+      anim.onfinish = () => r.remove();
+    }
+    // clock glyphs that pop in and "freeze" mid-air
+    const glyphs = ["⏰", "⏳", "🕰️", "⌛"];
+    for (let i = 0; i < 9; i++) {
+      const c = document.createElement("span");
+      c.className = "time-clock";
+      c.textContent = glyphs[i % glyphs.length];
+      c.style.left = (8 + Math.random() * 84) + "%";
+      c.style.top  = (10 + Math.random() * 78) + "%";
+      c.style.fontSize = (24 + Math.random() * 24) + "px";
+      const anim = c.animate([
+        { transform: "scale(0) rotate(-30deg)", opacity: 0 },
+        { transform: "scale(1.1) rotate(0deg)", opacity: 1, offset: 0.25 },
+        { transform: "scale(1) rotate(0deg)",   opacity: 1, offset: 0.78 }, // held = frozen
+        { transform: "scale(1) rotate(0deg)",   opacity: 0 },
+      ], { duration: 2400, delay: Math.random() * 250, easing: "ease-out", fill: "forwards" });
+      clocks.appendChild(c);
+      anim.onfinish = () => c.remove();
+    }
+    // pitch-bend "slowing down" tone
+    if (THUNDER_SOUND) {
+      try {
+        const ctx = audioCtx();
+        const o = ctx.createOscillator(); o.type = "sine";
+        const g = ctx.createGain(); g.gain.value = 0.0001;
+        o.connect(g); g.connect(ctx.destination);
+        const t = ctx.currentTime;
+        o.frequency.setValueAtTime(520, t);
+        o.frequency.exponentialRampToValueAtTime(70, t + 1.1);   // glide down = time slowing
+        g.gain.exponentialRampToValueAtTime(0.18, t + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.3);
+        o.start(t); o.stop(t + 1.35);
+      } catch (e) {}
+    }
+    setTimeout(() => timeFx.classList.remove("show"), 2600);
+  }
+ 
+  // ----- Cassian: Lord of Bloodshed — twin-blade slashes + red Siphon flash -----
+  let slashFx = document.querySelector(".slash-fx");
+  if (!slashFx) {
+    slashFx = document.createElement("div");
+    slashFx.className = "slash-fx";
+    slashFx.innerHTML = '<div class="slash-flash"></div><div class="slash-lines"></div>';
+    document.body.appendChild(slashFx);
+  }
+  function triggerCassian() {
+    const lines = slashFx.querySelector(".slash-lines");
+    lines.innerHTML = "";
+    slashFx.classList.remove("show"); void slashFx.offsetWidth; slashFx.classList.add("show");
+    const n = 7;
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("div");
+      s.className = "slash";
+      const angle = (Math.random() < 0.5 ? 1 : -1) * (28 + Math.random() * 24);
+      s.style.top  = (8 + Math.random() * 74) + "%";
+      s.style.left = (Math.random() * 30 - 15) + "%";
+      s.style.setProperty("--ang", angle + "deg");
+      lines.appendChild(s);
+      const anim = s.animate([
+        { transform: `rotate(${angle}deg) scaleX(0)`, opacity: 0, transformOrigin: "left center" },
+        { transform: `rotate(${angle}deg) scaleX(1)`, opacity: 1, offset: 0.35 },
+        { transform: `rotate(${angle}deg) scaleX(1)`, opacity: 0 },
+      ], { duration: 650 + Math.random() * 350, delay: i * 90 + Math.random() * 80, easing: "ease-out", fill: "forwards" });
+      anim.onfinish = () => s.remove();
+    }
+    // sharp "shing" per slash if audio is on
+    if (THUNDER_SOUND) {
+      try {
+        const ctx = audioCtx();
+        for (let i = 0; i < 3; i++) {
+          const dur = 0.18, len = Math.floor(ctx.sampleRate * dur);
+          const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let j = 0; j < len; j++) { const t = j / len; d[j] = (Math.random() * 2 - 1) * Math.pow(1 - t, 4); }
+          const src = ctx.createBufferSource(); src.buffer = buf;
+          const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 2600;
+          const g = ctx.createGain(); g.gain.value = 0.18;
+          src.connect(hp); hp.connect(g); g.connect(ctx.destination);
+          src.start(ctx.currentTime + i * 0.12);
+        }
+      } catch (e) {}
+    }
+    setTimeout(() => slashFx.classList.remove("show"), 1600);
   }
  
   // ----- Hannah: she's a singer — sound-wave bars + floating notes + glow -----
@@ -713,7 +864,8 @@ function initCaptcha() {
         src.start();
       } catch (e) {}
     }
-    setTimeout(() => fireFx.classList.remove("show"), 2600);
+    setTimeout(() => fireFx.classList.remove("show"), 4200);          // match the blood effect's length
+    setTimeout(() => { wall.innerHTML = ""; embers.innerHTML = ""; }, 4900); // stop the looping flames once hidden
   }
  
   // ----- Reaction GIF popup (overlay created once, reused) -----
@@ -934,6 +1086,7 @@ function initCaptcha() {
       if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
       if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
       if (item.fx)      tile.dataset.fx       = item.fx;
+      if (item.sound)   tile.dataset.sound    = item.sound;
       if (item.power)   tile.dataset.power    = item.power;
       const h = hue(item.label || "x");
       tile.innerHTML = `
@@ -948,6 +1101,7 @@ function initCaptcha() {
       tile.addEventListener("click", () => {
         const on = tile.classList.toggle("selected");
         if (on) {
+          if (tile.dataset.sound) playSound(tile.dataset.sound);
           // show this tile's caption right away — neutral hint, not an error yet
           if (tile.dataset.caption) {
             msgEl.textContent = tile.dataset.caption;
@@ -970,9 +1124,10 @@ function initCaptcha() {
           if (tile.dataset.effect === "blood") triggerBlood();
           if (tile.dataset.fx) triggerCharFx(tile.dataset.fx);
           if (tile.dataset.power === "shadow")    triggerShadows();
-          if (tile.dataset.power === "lightning") triggerLightning();
+          if (tile.dataset.power === "timestop")  triggerTimeStop();
           if (tile.dataset.power === "music")     triggerMusic();
           if (tile.dataset.power === "zukofire")  triggerZukoFire();
+          if (tile.dataset.power === "blades")    triggerCassian();
         } else {
           // deselected — fall back to another selected tile's caption, or clear
           const other = grid.querySelector(".cap-tile.selected");
@@ -1015,7 +1170,8 @@ function initCaptcha() {
     );
     if (thunderPicked.size >= 2) {
       triggerThunder();
-      fail("Xaden AND Violet?! You summoned a whole storm. Both fictional, both taken — by each other. Pick me ⚡⚡");
+      triggerShadows();          // her lightning + his darkness, together
+      fail("Xaden AND Violet?! Lightning AND shadow — you summoned the whole storm. Both fictional, both taken (by each other). Pick me ⚡🌑");
       return;
     }
     // Allie + Dean (and ONLY those two) selected => their couple gif
