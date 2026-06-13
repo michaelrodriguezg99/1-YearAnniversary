@@ -1,3 +1,10 @@
+// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
+const DUET = {
+  line: `Baby, qué afrenta'
+Tú quieres con do' y no sé si va' a aguantar (Ey) `,
+  song:   "Party",
+  artist: "Rauw Alejandro & Bad Bunny",
+};
 /* =====================================================================
    GIF DURATION (shared) — so reaction-gif popups stay up until the gif
    actually finishes a loop, instead of a fixed timer cutting it short.
@@ -1051,14 +1058,21 @@ function initCaptcha() {
       '<span class="lyric-text"></span><span class="lyric-meta"></span></div>';
     document.body.appendChild(lyricBox);
   }
-  let lyricTimer;
-  function showLyric(duet) {
+  let lyricTimer, lyricSound = null;
+  function hideLyric() {
+    lyricBox.classList.remove("show");
+    if (lyricSound) { stopSound(lyricSound); lyricSound = null; }   // sound ends with the text
+  }
+  function showLyric(duet, ms, sound) {
     lyricBox.querySelector(".lyric-text").textContent = duet.line || "";
     lyricBox.querySelector(".lyric-meta").textContent =
       [duet.song, duet.artist].filter(Boolean).join(" — ");
     lyricBox.classList.add("show");
+    if (lyricSound && lyricSound !== sound) stopSound(lyricSound);
+    lyricSound = sound || null;
+    if (sound) playSound(sound);
     clearTimeout(lyricTimer);
-    lyricTimer = setTimeout(() => lyricBox.classList.remove("show"), 4200);
+    lyricTimer = setTimeout(hideLyric, ms || 4200);
   }
  
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
@@ -1187,7 +1201,7 @@ function initCaptcha() {
     if (thunderPicked.size >= 2) {
       triggerThunder();
       triggerShadows();          // her lightning + his darkness, together
-      fail("Xaden AND Violet?! Lightning AND shadow — you summoned the whole storm. Both fictional, both taken (by each other). Pick me ⚡🌑");
+      fail("Xaden AND Violet?! Yo también te puedo electrocutar si quieres ⚡🔫");
       return;
     }
     // Allie + Dean (and ONLY those two) selected => their couple gif
@@ -1229,9 +1243,9 @@ function initCaptcha() {
       fail(mikoTile.dataset.caption || "Te va a tener de tamagotchi 🕹️");
       return;
     }
-    // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line
+    // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line + play it
     if (picked.length === 2 && picked.includes("RauwAlejandro") && picked.includes("BadBunny")) {
-      showLyric(DUET);
+      showLyric(DUET, 19000, "Party.mp3");   // text + clip last exactly 19s
       fail("A whole duet?? 🎶 Iconic taste — but they don't know your name. I do 🎤");
       return;
     }
