@@ -1,7 +1,14 @@
 // ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
 const DUET = {
   line: `Baby, qué afrenta'
-Tú quieres con do' y no sé si va' a aguantar (Ey) `,
+Tú quieres con do' y no sé si va' a aguantar (Ey)
+Tanto asiento que hay
+Y encima de mi bicho e' que te quiere' sentar
+Te tengo el toto sentimental, uh
+El panty moja'o
+La nota en alta, no me ha baja'o
+Dice que está soltera y todavía no se ha deja'o
+Y que se atreve con Benito y con Rauw, jeje`,
   song:   "Party",
   artist: "Rauw Alejandro & Bad Bunny",
 };
