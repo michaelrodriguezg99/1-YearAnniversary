@@ -199,6 +199,7 @@ const SCREENS = [
   { id: "login-screen",    init: initLogin, onShow: focusLoginPass },
   { id: "quiz-screen",     init: initQuiz },
   { id: "wrapped-screen",  init: initWrapped, onShow: showWrapped },
+  { id: "sleep-screen",    init: initSleep },
   { id: "scrapbook-screen", init: initScrapbook, onShow: showScrapbook },
   { id: "terms-screen",    init: initTerms, onShow: showTerms },
   { id: "date-screen",     init: initDatePicker, onShow: showDatePicker },
@@ -1747,6 +1748,82 @@ function initWrapped() {
 }
 // onShow: always start the deck from the first card
 function showWrapped() { if (initWrapped._reset) initWrapped._reset(); }
+ 
+/* =====================================================================
+   SCREEN 5.5 — SLEEP ARCHIVE  ("caught in 4K")
+   ---------------------------------------------------------------------
+   ✏️  FILL ME IN:
+   - SLEEP.speedrun.src : your compiled speed-run gif of her sleeping.
+   - SLEEP.photos[]     : one entry per sleeping photo. Drop the files next
+     to index.html and put the filename in `src`. `caption` is optional.
+   Add/remove as many photos as you like — the grid adapts. Until a real
+   file exists, a 💤 placeholder tile shows so you can test the layout now.
+   ===================================================================== */
+const SLEEP = {
+  title: "Caught in 4K 😴",
+  sub: "You're a championship-level heavy sleeper… so I catch you. Every. Single. Time. Here's the evidence — I even compiled the speed-run. 🎬",
+  galHead: "The full collection 💤",
+  speedrun: {
+    src: "sleep_speedrun.gif",
+    caption: "Every catch, back to back — a Mike Production 🎬",
+  },
+  photos: [
+    { src: "sleep1.jpg", caption: "Exhibit A" },
+    { src: "sleep2.jpg", caption: "Out cold 💤" },
+    { src: "sleep3.jpg", caption: "Didn't even flinch" },
+    { src: "sleep4.jpg", caption: "Mid-dream (about me, surely)" },
+    { src: "sleep5.jpg", caption: "Zero witnesses… except me" },
+    { src: "sleep6.jpg", caption: "Certified heavy sleeper" },
+  ],
+};
+ 
+function initSleep() {
+  const titleEl = document.getElementById("sleep-title");
+  const subEl   = document.getElementById("sleep-sub");
+  const feat    = document.getElementById("sleep-feature");
+  const galHead = document.getElementById("sleep-galhead");
+  const grid    = document.getElementById("sleep-grid");
+  const nextBtn = document.getElementById("sleep-next");
+ 
+  titleEl.textContent = SLEEP.title || "";
+  subEl.textContent   = SLEEP.sub || "";
+ 
+  // featured speed-run gif (the centerpiece)
+  feat.innerHTML = "";
+  if (SLEEP.speedrun && SLEEP.speedrun.src) {
+    const card = document.createElement("div");
+    card.className = "sleep-feat";
+    card.innerHTML =
+      '<span class="sleep-badge">▶ SPEED-RUN</span>' +
+      '<div class="sleep-feat-media"><img alt=""><span class="sleep-feat-ph">😴💨</span></div>' +
+      (SLEEP.speedrun.caption ? '<div class="sleep-feat-cap">' + SLEEP.speedrun.caption + '</div>' : "");
+    const img = card.querySelector("img");
+    img.onload = () => card.classList.add("has-img");
+    img.src = SLEEP.speedrun.src;
+    feat.appendChild(card);
+  }
+ 
+  // counter + gallery of individual catches
+  const shots = SLEEP.photos || [];
+  galHead.textContent = (SLEEP.galHead || "The collection") +
+    (shots.length ? "  ·  " + shots.length + " confirmed sightings" : "");
+  grid.innerHTML = "";
+  shots.forEach((p, i) => {
+    const cell = document.createElement("div");
+    cell.className = "sleep-shot";
+    const rot = (i % 2 ? 1 : -1) * (1 + (i % 3));     // gentle scattered tilt
+    cell.style.setProperty("--rot", rot + "deg");
+    cell.innerHTML =
+      '<div class="sleep-shot-media"><img alt=""><span class="sleep-shot-ph">💤</span></div>' +
+      (p.caption ? '<div class="sleep-shot-cap">' + p.caption + "</div>" : "");
+    const img = cell.querySelector("img");
+    img.onload = () => cell.classList.add("has-img");
+    if (p.src) img.src = p.src;
+    grid.appendChild(cell);
+  });
+ 
+  nextBtn.addEventListener("click", nextScreen);
+}
  
 /* =====================================================================
    SCREEN 6 — DIGITAL SCRAPBOOK  (a stack of polaroids she flips through)
