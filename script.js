@@ -904,24 +904,27 @@ function initCaptcha() {
   }
   function triggerThreeBoys(src, sound) {
     threeFx.innerHTML = "";
-    const xs = [22, 50, 78];          // three lanes across the screen
-    const dance = 9700;               // ~10s total once the stagger is added
-    const cycles = Math.max(5, Math.round(dance / 850));  // keep the wiggle lively the whole time
-    let maxEnd = 0;
+    const xs = [22, 50, 78];          // three scattered lanes (already in place)
+    const total = 11000;              // whole sequence lasts 11s
+    const gap = 3500;                 // ~3.5s between each "boom" entrance
     xs.forEach((x, i) => {
       const img = document.createElement("img");
       img.className = "three-img";
       img.style.left = x + "%";
       img.src = src;
       threeFx.appendChild(img);
-      const delay = i * 150;          // out-of-phase so they bob independently
+      const delay = i * gap;          // boom in one-by-one
+      const dur = total - delay;      // then dance until the shared finish at 11s
       const dir = (i === 1) ? -1 : 1; // middle one leans the other way
-      // quick pop-in, many bob/wiggle cycles across the middle, quick pop-out
+      const inFrac  = Math.min(0.16, 550 / dur);   // snappy pop-in regardless of length
+      const outFrac = Math.min(0.16, 500 / dur);   // quick pop-out at the very end
+      const cycles  = Math.max(3, Math.round((dur * (1 - inFrac - outFrac)) / 850));
+      // pop-in, bob/wiggle cycles, pop-out — same dance as before
       const frames = [
         { transform: "translate(-50%,-50%) scale(.4) rotate(0deg)", opacity: 0, offset: 0 },
-        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",  opacity: 1, offset: 0.06 },
+        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",  opacity: 1, offset: inFrac },
       ];
-      const start = 0.06, end = 0.94, span = end - start, steps = cycles * 2;
+      const start = inFrac, end = 1 - outFrac, span = end - start, steps = cycles * 2;
       for (let k = 1; k <= steps; k++) {
         const up = (k % 2 === 1);
         frames.push({
@@ -931,11 +934,10 @@ function initCaptcha() {
         });
       }
       frames.push({ transform: "translate(-50%,-50%) scale(.5) rotate(0deg)", opacity: 0, offset: 1 });
-      const anim = img.animate(frames, { duration: dance, delay, easing: "ease-in-out", fill: "forwards" });
+      const anim = img.animate(frames, { duration: dur, delay, easing: "ease-in-out", fill: "forwards" });
       anim.onfinish = () => img.remove();
-      maxEnd = Math.max(maxEnd, delay + dance);
     });
-    if (sound) { playSound(sound); setTimeout(() => stopSound(sound), maxEnd); } // audio = animation length
+    if (sound) { playSound(sound); setTimeout(() => stopSound(sound), total); } // audio = animation length
   }
  
   // ----- Reaction GIF popup (overlay created once, reused) -----
