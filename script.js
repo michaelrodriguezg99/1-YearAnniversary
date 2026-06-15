@@ -1931,7 +1931,7 @@ const TERMS_OPTIONS = [
   "I am entitled to the last bite of every dessert 🍰",
   "At home dinner night once a week 🍝",
   "He handles all bugs, spiders, and scary noises 🕷️",
-  "Do at a random public place once a year 🚻",
+  "Do it at a random public place once a year 🚻",
   "I get to steal his hoodies indefinitely 🧥",
   "He must hype me up at least once a day 📣",
   "Cuddles are non-negotiable after a long day 🫂",
