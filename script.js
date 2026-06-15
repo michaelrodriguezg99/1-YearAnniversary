@@ -346,6 +346,7 @@ const CAPTCHA_COMBOS = [
   ["RauwAlejandro", "BadBunny"],         // the duet
   ["Anthony", "Benedict", "Colin"],      // 3 Bridgerton brothers
   ["Neytiri", "JakeSully", "Varang"],    // all of Pandora
+  { Michael: 3, Mike: 1 },               // 4 → God Tier: all of me + the "before" Mike
 ];
 const RARITY = {
   1: { key: "common",    label: "Common" },
@@ -1200,15 +1201,26 @@ function initCaptcha() {
                '</span>';
       }).join("");
   }
+  // a combo may be an array of labels (each needs ≥1) OR a { label: count } map.
+  // tier size = total labels required (so 3× Michael + 1× Mike = 4 = God Tier).
+  function comboNeeds(combo) {
+    if (Array.isArray(combo)) {
+      const o = {}; combo.forEach(l => o[l] = (o[l] || 0) + 1); return o;
+    }
+    return combo;
+  }
+  function comboSize(combo) {
+    return Object.values(comboNeeds(combo)).reduce((a, b) => a + b, 0);
+  }
   function scanRarity(items) {
     if (!rarityBar) return;
-    const labels = new Set(items.map(it => it.label));
+    const have = {};                                  // how many of each label are shown
+    items.forEach(it => { have[it.label] = (have[it.label] || 0) + 1; });
     const counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
-    CAPTCHA_COMBOS.forEach(need => {
-      if (need.every(l => labels.has(l))) {
-        const n = Math.min(4, need.length);
-        counts[n] += 1;
-      }
+    CAPTCHA_COMBOS.forEach(combo => {
+      const need = comboNeeds(combo);
+      const present = Object.keys(need).every(l => (have[l] || 0) >= need[l]);
+      if (present) counts[Math.min(4, comboSize(combo))] += 1;
     });
     rarityBar.querySelectorAll(".rar-chip").forEach(chip => {
       const n = +chip.dataset.size, c = counts[n] || 0;
@@ -1405,6 +1417,16 @@ function initCaptcha() {
     if (picked.length === 2 && picked.includes("RauwAlejandro") && picked.includes("BadBunny")) {
       showLyric(DUET, 19000, "Party.mp3");   // text + clip last exactly 19s
       fail("A whole duet?? 🎶 Iconic taste — but they don't know your name. I do 🎤");
+      return;
+    }
+    // 🏆 GOD TIER — all three Michael photos AND the "before" Mike selected
+    // ✏️ swap the gif/sound/caption below for whatever you want this to do.
+    const mikeCount = selected.filter(t => t.dataset.label === "Michael").length;
+    const hasBefore = selected.some(t => t.dataset.label === "Mike");
+    if (mikeCount >= 3 && hasBefore) {
+      rainImages(["me1.jpeg", "me2.jpeg", "me3.jpeg", "MikeBefore.jpg"]); // every version of me
+      showGif("AllMikes.gif", "AllMikes.mp3");   // placeholder — drop these files (or remove this line)
+      fail("🏆 GOD TIER UNLOCKED — every version of me, even the 'before'. You collected them all 😭❤️");
       return;
     }
     const wrong = selected.find(t => t.dataset.correct !== "true");
