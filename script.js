@@ -241,9 +241,9 @@ function initEnvelope() {
    ===================================================================== */
 const CAPTCHA_POOL = [
   // ----- YOU (the ONLY correct answers) -----
-  { src: "me1.jpeg", label: "Michael", correct: true, sound: "love_me.mp3" },
-  { src: "me2.jpeg", label: "Michael", correct: true, sound: "love_me.mp3" },
-  { src: "me3.jpeg", label: "Michael", correct: true, sound: "love_me.mp3" },
+  { src: "me1.jpeg", label: "Michael", correct: true, gif: "Me1.gif", sound: "love_me.mp3" },
+  { src: "me2.jpeg", label: "Michael", correct: true, gif: "Me1.gif", sound: "love_me.mp3" },
+  { src: "me3.jpeg", label: "Michael", correct: true, gif: "Me1.gif", sound: "love_me.mp3" },
  
   // ----- Book boyfriends / celebrity crushes / decoys (each picked => its own funny error) -----
   // Any entry with  effect: "thunder"  joins the lightning storm when
