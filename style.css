@@ -1005,3 +1005,51 @@ body {
 @media (max-width: 560px) {
   .three-img { height: 24vh; max-width: 31vw; border-width: 3px; }
 }
+ 
+/* =====================================================================
+   CAPTCHA — rarity legend (flags which hidden combos are in the shown set)
+   Dim chip = that rarity isn't currently possible; lit chip = it is.
+   ===================================================================== */
+.cap-rarity {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 6px; margin: 11px 0 1px; font-size: 11px;
+}
+.rar-key {
+  text-transform: uppercase; letter-spacing: 1.2px;
+  font-size: 10px; color: var(--ink-soft); opacity: .85; margin-right: 3px;
+}
+.rar-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: 999px;
+  border: 1.5px solid var(--panel-2); background: var(--panel);
+  color: var(--ink-soft); opacity: .4;             /* dim = combo not available */
+  transition: opacity .25s ease, transform .2s ease, box-shadow .25s ease,
+              background .25s ease, color .25s ease, border-color .25s ease;
+  white-space: nowrap;
+}
+.rar-dot   { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .7; }
+.rar-count { font-weight: 700; }
+ 
+/* per-tier accent + glow (used when active) */
+.rar-common    { --rar: var(--frame); --rar-glow: rgba(199,92,82,.5); }
+.rar-rare      { --rar: #3f78c4;      --rar-glow: rgba(63,120,196,.5); }
+.rar-ultrarare { --rar: #8a4fd0;      --rar-glow: rgba(138,79,208,.5); }
+.rar-godtier   { --rar: #d4a017;      --rar-glow: rgba(212,160,23,.55); }
+ 
+/* lit = a combo of this size is present in the current tiles */
+.rar-chip.active {
+  opacity: 1; transform: translateY(-1px); color: #fff;
+  background: var(--rar, var(--frame)); border-color: var(--rar, var(--frame));
+  box-shadow: 0 2px 12px var(--rar-glow, rgba(199,92,82,.5));
+}
+.rar-chip.active .rar-dot { background: #fff; opacity: .95; }
+.rar-godtier.active {
+  background: linear-gradient(120deg, #f0c14b, #d4900f);
+  color: #4a2e00; text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+.rar-godtier.active .rar-dot { background: #4a2e00; }
+ 
+@media (max-width: 460px) {
+  .cap-rarity { font-size: 10px; gap: 5px; }
+  .rar-key { width: 100%; text-align: center; margin: 0 0 2px; }
+}

@@ -331,6 +331,29 @@ const CAPTCHA_NUDGES = [
   "Bestie. Select the boyfriend.",
 ];
  
+// ----- Hidden combos (the easter eggs that fire on Verify) -----
+// Each entry lists the labels that combo needs. The number of labels sets the
+// rarity shown in the legend: 1 = Common, 2 = Rare, 3 = Ultra Rare, 4 = God Tier.
+// (Keep these in sync with the combos handled in the Verify click handler.)
+const CAPTCHA_COMBOS = [
+  ["BabyMiko"],                          // tamagotchi
+  ["Chicas"],                            // las chicas
+  ["Xaden", "Violet"],                   // the storm
+  ["Allie", "Dean"],                     // their couple gif
+  ["AlastorDemon", "AlastorHuman"],      // both Alastors
+  ["Michael", "Cherry"],                 // you + Cherry
+  ["BabyMiko", "RauwAlejandro"],         // their crossover
+  ["RauwAlejandro", "BadBunny"],         // the duet
+  ["Anthony", "Benedict", "Colin"],      // 3 Bridgerton brothers
+  ["Neytiri", "JakeSully", "Varang"],    // all of Pandora
+];
+const RARITY = {
+  1: { key: "common",    label: "Common" },
+  2: { key: "rare",      label: "Rare" },
+  3: { key: "ultrarare", label: "Ultra Rare" },
+  4: { key: "godtier",   label: "God Tier" },
+};
+ 
 function initCaptcha() {
   const grid   = document.getElementById("cap-grid");
   const msgEl  = document.getElementById("cap-msg");
@@ -1163,87 +1186,142 @@ function initCaptcha() {
     return ((w[0] ? w[0][0] : "") + (w[1] ? w[1][0] : "")).toUpperCase() || "?";
   };
  
-  function pickVisible() {
-    const correct = CAPTCHA_POOL.filter(p => p.correct);
-    const decoys  = CAPTCHA_POOL.filter(p => !p.correct);
-    const sc = shuffle(correct), sd = shuffle(decoys);
-    const need = Math.min(CAPTCHA_CORRECT_MIN, sc.length);
-    let chosen = sc.slice(0, need);
-    const rest = shuffle([...sd, ...sc.slice(need)]);
-    while (chosen.length < CAPTCHA_VISIBLE && rest.length) chosen.push(rest.shift());
-    if (!chosen.some(p => p.correct))
-      console.warn("CAPTCHA: no correct photo visible — add at least one {correct:true}.");
-    return shuffle(chosen).slice(0, CAPTCHA_VISIBLE);
+  // ----- Rarity legend: flags which combos are present in the shown tiles -----
+  const rarityBar = document.getElementById("cap-rarity");
+  function buildRarityBar() {
+    if (!rarityBar) return;
+    rarityBar.innerHTML =
+      '<span class="rar-key">combos in play</span>' +
+      [1, 2, 3, 4].map(n => {
+        const r = RARITY[n];
+        return '<span class="rar-chip rar-' + r.key + '" data-size="' + n + '">' +
+                 '<span class="rar-dot"></span>' + r.label +
+                 '<span class="rar-count"></span>' +
+               '</span>';
+      }).join("");
+  }
+  function scanRarity(items) {
+    if (!rarityBar) return;
+    const labels = new Set(items.map(it => it.label));
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    CAPTCHA_COMBOS.forEach(need => {
+      if (need.every(l => labels.has(l))) {
+        const n = Math.min(4, need.length);
+        counts[n] += 1;
+      }
+    });
+    rarityBar.querySelectorAll(".rar-chip").forEach(chip => {
+      const n = +chip.dataset.size, c = counts[n] || 0;
+      chip.classList.toggle("active", c > 0);
+      chip.querySelector(".rar-count").textContent = c > 1 ? " ×" + c : "";
+    });
   }
  
-  function render() {
-    msgEl.textContent = ""; msgEl.className = "cap-msg";
-    grid.innerHTML = "";
-    pickVisible().forEach(item => {
-      const tile = document.createElement("button");
-      tile.className = "cap-tile";
-      tile.title = prettify(item.label || "");
-      tile.dataset.correct = item.correct ? "true" : "false";
-      if (item.caption) tile.dataset.caption = item.caption;
-      if (item.effect)  tile.dataset.effect  = item.effect;
-      if (item.label)   tile.dataset.label   = item.label;
-      if (item.gif)     tile.dataset.gif      = item.gif;
-      if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
-      if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
-      if (item.fx)      tile.dataset.fx       = item.fx;
-      if (item.sound)   tile.dataset.sound    = item.sound;
-      if (item.power)   tile.dataset.power    = item.power;
-      const h = hue(item.label || "x");
-      tile.innerHTML = `
-        <img alt="">
-        <div class="tile-ph" style="--ph-h:${h}">
-          <span class="ph-avatar">${initials(item.label)}</span>
-          <span class="ph-name">${prettify(item.label)}</span>
-        </div>`;
-      const img = tile.querySelector("img");
-      img.onload = () => tile.classList.add("has-img");
-      if (item.src) img.src = item.src;
-      tile.addEventListener("click", () => {
-        const on = tile.classList.toggle("selected");
-        if (on) {
-          const snd = tile.dataset.sound, gif = tile.dataset.gif;
-          // show this tile's caption right away — neutral hint, not an error yet
-          if (tile.dataset.caption) {
-            msgEl.textContent = tile.dataset.caption;
-            msgEl.className = "cap-msg hint";
-          } else {
-            msgEl.textContent = ""; msgEl.className = "cap-msg";
-          }
-          if (tile.dataset.label === "Cherry") {
-            rainImages(["CherryConfetti.jpg"]);   // she appears + rains down
-          } else {
-            if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
-            if (tile.dataset.swim) swimAcross(tile.dataset.swim);
-            if (tile.dataset.worm) wormAcross(tile.dataset.worm);
-          }
-          if (snd && !gif) playSound(snd);   // no animation to match → play it in full
-          // per-character background powers
-          if (tile.dataset.effect === "radio") triggerAlastorPowers();
-          if (tile.dataset.effect === "blood") triggerBlood();
-          if (tile.dataset.fx) triggerCharFx(tile.dataset.fx);
-          if (tile.dataset.power === "shadow")    triggerShadows();
-          if (tile.dataset.power === "timestop")  triggerTimeStop();
-          if (tile.dataset.power === "music")     triggerMusic();
-          if (tile.dataset.power === "zukofire")  triggerZukoFire();
-          if (tile.dataset.power === "blades")    triggerCassian();
+  // the pool entries behind the currently selected tiles (for keep-on-refresh)
+  function selectedItems() {
+    return [...grid.querySelectorAll(".cap-tile.selected")].map(t => t._item).filter(Boolean);
+  }
+ 
+  // Pick the visible set. Any items in `keep` are retained; the remaining slots
+  // are re-rolled from the rest of the pool (so selections survive a shuffle).
+  function pickVisible(keep) {
+    keep = (keep || []).slice(0, CAPTCHA_VISIBLE);
+    const keepSet = new Set(keep);
+    const pool    = CAPTCHA_POOL.filter(p => !keepSet.has(p));
+    const correct = shuffle(pool.filter(p => p.correct));
+    const decoys  = shuffle(pool.filter(p => !p.correct));
+    const slots   = Math.max(0, CAPTCHA_VISIBLE - keep.length);
+    // guarantee at least CAPTCHA_CORRECT_MIN of YOUR photos across keep + new
+    const haveCorrect = keep.filter(p => p.correct).length;
+    const needCorrect = Math.max(0, Math.min(CAPTCHA_CORRECT_MIN, correct.length) - haveCorrect);
+    let chosen = correct.slice(0, Math.min(needCorrect, slots));
+    const rest = shuffle([...decoys, ...correct.slice(chosen.length)]);
+    while (chosen.length < slots && rest.length) chosen.push(rest.shift());
+    const all = shuffle([...keep, ...chosen]).slice(0, CAPTCHA_VISIBLE);
+    if (!all.some(p => p.correct))
+      console.warn("CAPTCHA: no correct photo visible — add at least one {correct:true}.");
+    return all;
+  }
+ 
+  function makeTile(item, selected) {
+    const tile = document.createElement("button");
+    tile.className = "cap-tile" + (selected ? " selected" : "");
+    tile._item = item;                       // remember the pool entry (keep-on-refresh)
+    tile.title = prettify(item.label || "");
+    tile.dataset.correct = item.correct ? "true" : "false";
+    if (item.caption) tile.dataset.caption = item.caption;
+    if (item.effect)  tile.dataset.effect  = item.effect;
+    if (item.label)   tile.dataset.label   = item.label;
+    if (item.gif)     tile.dataset.gif      = item.gif;
+    if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
+    if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
+    if (item.fx)      tile.dataset.fx       = item.fx;
+    if (item.sound)   tile.dataset.sound    = item.sound;
+    if (item.power)   tile.dataset.power    = item.power;
+    const h = hue(item.label || "x");
+    tile.innerHTML = `
+      <img alt="">
+      <div class="tile-ph" style="--ph-h:${h}">
+        <span class="ph-avatar">${initials(item.label)}</span>
+        <span class="ph-name">${prettify(item.label)}</span>
+      </div>`;
+    const img = tile.querySelector("img");
+    img.onload = () => tile.classList.add("has-img");
+    if (item.src) img.src = item.src;
+    tile.addEventListener("click", () => {
+      const on = tile.classList.toggle("selected");
+      if (on) {
+        const snd = tile.dataset.sound, gif = tile.dataset.gif;
+        // show this tile's caption right away — neutral hint, not an error yet
+        if (tile.dataset.caption) {
+          msgEl.textContent = tile.dataset.caption;
+          msgEl.className = "cap-msg hint";
         } else {
-          // deselected — fall back to another selected tile's caption, or clear
-          const other = grid.querySelector(".cap-tile.selected");
-          if (other && other.dataset.caption) {
-            msgEl.textContent = other.dataset.caption;
-            msgEl.className = "cap-msg hint";
-          } else {
-            msgEl.textContent = ""; msgEl.className = "cap-msg";
-          }
+          msgEl.textContent = ""; msgEl.className = "cap-msg";
         }
-      });
-      grid.appendChild(tile);
+        if (tile.dataset.label === "Cherry") {
+          rainImages(["CherryConfetti.jpg"]);   // she appears + rains down
+        } else {
+          if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
+          if (tile.dataset.swim) swimAcross(tile.dataset.swim);
+          if (tile.dataset.worm) wormAcross(tile.dataset.worm);
+        }
+        if (snd && !gif) playSound(snd);   // no animation to match → play it in full
+        // per-character background powers
+        if (tile.dataset.effect === "radio") triggerAlastorPowers();
+        if (tile.dataset.effect === "blood") triggerBlood();
+        if (tile.dataset.fx) triggerCharFx(tile.dataset.fx);
+        if (tile.dataset.power === "shadow")    triggerShadows();
+        if (tile.dataset.power === "timestop")  triggerTimeStop();
+        if (tile.dataset.power === "music")     triggerMusic();
+        if (tile.dataset.power === "zukofire")  triggerZukoFire();
+        if (tile.dataset.power === "blades")    triggerCassian();
+      } else {
+        // deselected — fall back to another selected tile's caption, or clear
+        const other = grid.querySelector(".cap-tile.selected");
+        if (other && other.dataset.caption) {
+          msgEl.textContent = other.dataset.caption;
+          msgEl.className = "cap-msg hint";
+        } else {
+          msgEl.textContent = ""; msgEl.className = "cap-msg";
+        }
+      }
     });
+    return tile;
+  }
+ 
+  // render(keep): keep = pool entries to retain (kept selected); rest re-rolled.
+  function render(keep) {
+    keep = keep || [];
+    const items   = pickVisible(keep);
+    const keepSet = new Set(keep);
+    grid.innerHTML = "";
+    items.forEach(item => grid.appendChild(makeTile(item, keepSet.has(item))));
+    // message: echo the last kept selection's caption (if any), else clear
+    const lastKept = keep.filter(k => k.caption).slice(-1)[0];
+    if (lastKept) { msgEl.textContent = lastKept.caption; msgEl.className = "cap-msg hint"; }
+    else          { msgEl.textContent = "";               msgEl.className = "cap-msg"; }
+    scanRarity(items);
   }
  
   function fail(text) {
@@ -1340,10 +1418,11 @@ function initCaptcha() {
     setTimeout(nextScreen, 1200);
   });
  
-  // shuffle button: re-pick a fresh random set of 9 (clears selection + message)
+  // shuffle button: KEEP whatever is selected, re-roll the rest (build combos fast)
   const refreshBtn = document.getElementById("cap-refresh");
-  if (refreshBtn) refreshBtn.addEventListener("click", render);
+  if (refreshBtn) refreshBtn.addEventListener("click", () => render(selectedItems()));
  
+  buildRarityBar();
   render();
 }
  
