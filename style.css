@@ -238,6 +238,9 @@ body {
 }
 @keyframes al-flicker { 0% { transform: translate(0,0); } 50% { transform: translate(-3px,2px); } 100% { transform: translate(2px,-2px); } }
 .al-symbols { position: absolute; inset: 0; }
+/* don't run the radio static/vignette loops forever while hidden */
+.alastor-fx:not(.show) .al-vignette,
+.alastor-fx:not(.show) .al-static { animation-play-state: paused; }
 .al-glyph {
   position: absolute; width: var(--gsz, 60px); height: var(--gsz, 60px);
   transform: translate(-50%, -50%) rotate(var(--grot, 0deg)) scale(.4);
@@ -877,7 +880,8 @@ body {
 }
  
 /* --- Hannah: singer — equalizer + floating notes + warm glow --- */
-.music-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
+.music-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity .4s ease; }
+.music-fx.show { opacity: 1; }
 .music-glow {
   position: absolute; inset: 0; opacity: 0; transition: opacity .4s ease;
   background: radial-gradient(ellipse at 50% 100%, rgba(255,170,90,0.40), transparent 60%);

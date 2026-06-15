@@ -829,6 +829,9 @@ function initCaptcha() {
       anim.onfinish = () => note.remove();
     }
     setTimeout(() => musicFx.classList.remove("show"), 2800);
+    // remove the infinitely-bouncing bars (and any stray notes) once hidden,
+    // otherwise the equalizer keeps animating at the bottom of the screen forever
+    setTimeout(() => { eq.innerHTML = ""; notes.innerHTML = ""; }, 3300);
   }
  
   // ----- Zuko: bespoke firebending — flame wall + rising embers + heat flash -----
@@ -909,23 +912,41 @@ function initCaptcha() {
     if (src.includes("AllieAndDean.gif")) {
       img.classList.add("cropped-allie");
     }
-    // hide the previous gif's last frame until the new one has loaded
-    img.style.visibility = "hidden";
-    img.onload = () => { img.style.visibility = "visible"; };
-    img.removeAttribute("src");
-    img.src = src;
     gifPop.classList.add("show");
-    // pair an optional sound: it plays now and is cut when the gif hides
+ 
+    // stop any previous paired sound; remember the new one (started on reveal)
     if (gifSound && gifSound !== sound) stopSound(gifSound);
     gifSound = sound || null;
-    if (sound) playSound(sound);
-    // start with a fallback, then extend to the gif's real length once measured
+ 
     clearTimeout(gifTimer);
-    gifTimer = setTimeout(hideGifPop, 2600);
-    measureGif(src, (ms) => {
+    let measured = 0, shown = false, revealed = false;
+ 
+    function scheduleHide() {                 // (re)start the display clock
       clearTimeout(gifTimer);
-      gifTimer = setTimeout(hideGifPop, ms);
-    });
+      gifTimer = setTimeout(hideGifPop, measured || 2600);
+    }
+    function reveal() {                        // the gif is actually on screen now
+      if (revealed) return;
+      revealed = true; shown = true;
+      img.style.visibility = "visible";
+      if (sound) playSound(sound);             // start audio WHEN the gif appears (kept in sync)
+      scheduleHide();                          // ...and only now start counting its on-screen time
+    }
+ 
+    // hide the old frame until the new gif has decoded
+    img.style.visibility = "hidden";
+    img.onload  = reveal;
+    img.onerror = hideGifPop;                  // broken src -> don't leave the box stuck
+    img.removeAttribute("src");
+ 
+    // safety net: if onload never fires, don't hang the overlay
+    gifTimer = setTimeout(hideGifPop, 6000);
+ 
+    img.src = src;
+    if (img.complete && img.naturalWidth > 0) reveal();   // already cached -> show immediately
+ 
+    // measure the real loop length in parallel; retime once known (if visible)
+    measureGif(src, (ms) => { measured = ms; if (shown) scheduleHide(); });
   }
  
   // ----- Swim-across effect (an image glides over the screen with a bob) -----
@@ -1486,17 +1507,27 @@ function initQuiz() {
   function popGif(src, minMs) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
-    img.style.visibility = "hidden";
-    img.onload = () => { img.style.visibility = "visible"; };
-    img.removeAttribute("src");
-    img.src = src;
     gifPop.classList.add("show");
-    let gTimer = setTimeout(() => gifPop.classList.remove("show"), minMs || 2600);
-    measureGif(src, (ms) => {
-      const dur = Math.max(ms, minMs || 0); // passed value acts as a floor
-      clearTimeout(gTimer);
-      gTimer = setTimeout(() => gifPop.classList.remove("show"), dur);
-    });
+ 
+    let gTimer, measured = 0, shown = false, revealed = false;
+    const dur = () => Math.max(measured, minMs || 0) || 2600;   // minMs acts as a floor
+    function hideIt() { clearTimeout(gTimer); gifPop.classList.remove("show"); }
+    function scheduleHide() { clearTimeout(gTimer); gTimer = setTimeout(hideIt, dur()); }
+    function reveal() {
+      if (revealed) return;
+      revealed = true; shown = true;
+      img.style.visibility = "visible";
+      scheduleHide();                          // count on-screen time from when it's visible
+    }
+ 
+    img.style.visibility = "hidden";
+    img.onload  = reveal;
+    img.onerror = hideIt;
+    img.removeAttribute("src");
+    gTimer = setTimeout(hideIt, 6000);         // safety net if onload never fires
+    img.src = src;
+    if (img.complete && img.naturalWidth > 0) reveal();   // cached -> show now
+    measureGif(src, (ms) => { measured = ms; if (shown) scheduleHide(); });
   }
  
   const shuffle  = a => a.slice().sort(() => Math.random() - 0.5);
