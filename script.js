@@ -893,6 +893,43 @@ function initCaptcha() {
     setTimeout(() => { wall.innerHTML = ""; embers.innerHTML = ""; }, 4900); // stop the looping flames once hidden
   }
  
+  // ----- Bridgerton brothers: show the picture 3 times, dancing & clear -----
+  // Three clean copies pop in across the screen and do a little wiggle/bob.
+  // Self-cleaning (no infinite loop). Optional sound is cut to the animation.
+  let threeFx = document.querySelector(".three-fx");
+  if (!threeFx) {
+    threeFx = document.createElement("div");
+    threeFx.className = "three-fx";
+    document.body.appendChild(threeFx);
+  }
+  function triggerThreeBoys(src, sound) {
+    threeFx.innerHTML = "";
+    const xs = [22, 50, 78];          // three lanes across the screen
+    const dance = 3600;               // each copy's full routine
+    let maxEnd = 0;
+    xs.forEach((x, i) => {
+      const img = document.createElement("img");
+      img.className = "three-img";
+      img.style.left = x + "%";
+      img.src = src;
+      threeFx.appendChild(img);
+      const delay = i * 150;          // out-of-phase so they bob independently
+      const dir = (i === 1) ? -1 : 1; // middle one leans the other way
+      const anim = img.animate([
+        { transform: "translate(-50%,-50%) scale(.4) rotate(0deg)",        opacity: 0 },
+        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",         opacity: 1, offset: 0.12 },
+        { transform: `translate(-50%,-58%) scale(1.03) rotate(${7*dir}deg)`,           offset: 0.32 },
+        { transform: `translate(-50%,-50%) scale(1) rotate(${-6*dir}deg)`,             offset: 0.50 },
+        { transform: `translate(-50%,-58%) scale(1.03) rotate(${6*dir}deg)`,           offset: 0.68 },
+        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",         opacity: 1, offset: 0.88 },
+        { transform: "translate(-50%,-50%) scale(.5) rotate(0deg)",        opacity: 0 },
+      ], { duration: dance, delay, easing: "ease-in-out", fill: "forwards" });
+      anim.onfinish = () => img.remove();
+      maxEnd = Math.max(maxEnd, delay + dance);
+    });
+    if (sound) { playSound(sound); setTimeout(() => stopSound(sound), maxEnd); } // audio = animation length
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1216,7 +1253,7 @@ function initCaptcha() {
     // the 3 Bridgerton brothers together => AloStraws confetti
     const allPicked = selected.map(t => t.dataset.label);
     if (allPicked.includes("Anthony") && allPicked.includes("Benedict") && allPicked.includes("Colin")) {
-      rainImages(["AloStraws.jpg"]);
+      triggerThreeBoys("AloStraws.jpg", "three.mp3");
       fail("All three Bridgerton brothers?! That's a whole regency scandal. They're fictional AND taken — I'm real AND yours 🍓");
       return;
     }
