@@ -905,7 +905,8 @@ function initCaptcha() {
   function triggerThreeBoys(src, sound) {
     threeFx.innerHTML = "";
     const xs = [22, 50, 78];          // three lanes across the screen
-    const dance = 3600;               // each copy's full routine
+    const dance = 9700;               // ~10s total once the stagger is added
+    const cycles = Math.max(5, Math.round(dance / 850));  // keep the wiggle lively the whole time
     let maxEnd = 0;
     xs.forEach((x, i) => {
       const img = document.createElement("img");
@@ -915,15 +916,22 @@ function initCaptcha() {
       threeFx.appendChild(img);
       const delay = i * 150;          // out-of-phase so they bob independently
       const dir = (i === 1) ? -1 : 1; // middle one leans the other way
-      const anim = img.animate([
-        { transform: "translate(-50%,-50%) scale(.4) rotate(0deg)",        opacity: 0 },
-        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",         opacity: 1, offset: 0.12 },
-        { transform: `translate(-50%,-58%) scale(1.03) rotate(${7*dir}deg)`,           offset: 0.32 },
-        { transform: `translate(-50%,-50%) scale(1) rotate(${-6*dir}deg)`,             offset: 0.50 },
-        { transform: `translate(-50%,-58%) scale(1.03) rotate(${6*dir}deg)`,           offset: 0.68 },
-        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",         opacity: 1, offset: 0.88 },
-        { transform: "translate(-50%,-50%) scale(.5) rotate(0deg)",        opacity: 0 },
-      ], { duration: dance, delay, easing: "ease-in-out", fill: "forwards" });
+      // quick pop-in, many bob/wiggle cycles across the middle, quick pop-out
+      const frames = [
+        { transform: "translate(-50%,-50%) scale(.4) rotate(0deg)", opacity: 0, offset: 0 },
+        { transform: "translate(-50%,-50%) scale(1) rotate(0deg)",  opacity: 1, offset: 0.06 },
+      ];
+      const start = 0.06, end = 0.94, span = end - start, steps = cycles * 2;
+      for (let k = 1; k <= steps; k++) {
+        const up = (k % 2 === 1);
+        frames.push({
+          transform: `translate(-50%,${up ? -58 : -50}%) scale(${up ? 1.03 : 1}) rotate(${(up ? 7 : -6) * dir}deg)`,
+          opacity: 1,
+          offset: start + span * (k / steps),
+        });
+      }
+      frames.push({ transform: "translate(-50%,-50%) scale(.5) rotate(0deg)", opacity: 0, offset: 1 });
+      const anim = img.animate(frames, { duration: dance, delay, easing: "ease-in-out", fill: "forwards" });
       anim.onfinish = () => img.remove();
       maxEnd = Math.max(maxEnd, delay + dance);
     });
