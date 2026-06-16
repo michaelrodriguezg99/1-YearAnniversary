@@ -268,7 +268,7 @@ const CAPTCHA_POOL = [
   { src: "Allie.jpg", label: "Allie", fx: "stage", gif: "AllieHayes.gif",
     caption: "Allie Hayes or JLO? 🤔" },
   { src: "Dean.jpg", label: "Dean", fx: "charm", gif: "Dean.gif",
-    caption: "Quote: 1) Stupid Dean & his stipid awesome dick. -random bathroom girl 2) We don't actually need him -second random batroom girl" },
+    caption: "Quote: 1) Stupid Dean & his stupid awesome dick. -random bathroom girl 2) We don't actually need him -second random bathroom girl" },
       { src: "Hannah.jpg", label: "Hannah", gif: "Hannah.gif", power: "music",
     caption: "I also have big boobs 👀" },
   { src: "AlastorDemon.jpg", label: "AlastorDemon", effect: "radio",
@@ -1370,7 +1370,7 @@ function initCaptcha() {
     // Allie + Dean (and ONLY those two) selected => their couple gif
     const picked = selected.map(t => t.dataset.label);
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
-      showGif("AllieAndDean.gif");
+      showGif("AllieAndDean.gif", "JLO.mp3");   // sound lasts as long as the gif
       fail("Honestly... I get it JAJAJAJA. Pero invita!");
       return;
     }
