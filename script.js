@@ -265,7 +265,7 @@ const CAPTCHA_POOL = [
     caption: "Yo no me quiero casaL. Lalalalalalala -Badbo" },
   { src: "BabyMiko.jpg", label: "BabyMiko", gif: "BabyMiko.gif", sound: "BabyMiko.mp3",
     caption: "Yo si te puedo tener de Tamagotchi 🕹️ (Si no me crees verificalo)" },
-  { src: "Garrett.jpg", label: "Garrett", fx: "hockey",
+  { src: "Garrett.jpg", label: "Garrett", fx: "hockey", gif: "Garrett.gif",
     caption: "Garrett Graham had to bribe a girl into a fake-dating deal just to get a date. I didn't need a deal — you said yes for real 🏒" },
   { src: "Allie.jpg", label: "Allie", fx: "stage", gif: "AllieHayes.gif",
     caption: "Allie Hayes or JLO? 🤔" },
@@ -342,6 +342,7 @@ const CAPTCHA_COMBOS = [
   ["Chicas"],                            // las chicas
   ["Xaden", "Violet"],                   // the storm
   ["Allie", "Dean"],                     // their couple gif
+  ["Allie", "Hannah"],                   // their gif
   ["AlastorDemon", "AlastorHuman"],      // both Alastors
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
@@ -974,14 +975,12 @@ function initCaptcha() {
     gifPop.innerHTML = '<img alt="">';
     document.body.appendChild(gifPop);
   }
-  let gifTimer, gifSound = null, gifReplays = [];
-  function clearReplays() { gifReplays.forEach(clearTimeout); gifReplays = []; }
+  let gifTimer, gifSound = null;
   function hideGifPop() {
     gifPop.classList.remove("show");
-    clearReplays();
     if (gifSound) { stopSound(gifSound); gifSound = null; }   // sound ends with the gif
   }
-  function showGif(src, sound, loops) {
+  function showGif(src, sound, loops, loopHintMs) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     if (src.includes("AllieAndDean.gif")) {
@@ -993,31 +992,23 @@ function initCaptcha() {
     if (gifSound && gifSound !== sound) stopSound(gifSound);
     gifSound = sound || null;
  
-    clearTimeout(gifTimer); clearReplays();
-    let measured = 0, loopMs = 0, shown = false, revealed = false;
+    clearTimeout(gifTimer);
+    let measured = 0, loopMs = loopHintMs || 0, shown = false, revealed = false;
  
-    function applyTiming() {                   // how long to show + whether to replay
-      if (!shown) return;
-      clearTimeout(gifTimer); clearReplays();
-      if (loops && loops > 1 && loopMs > 0) {
-        // restart the gif at each loop boundary so it truly plays `loops` times
-        // (covers gifs encoded to play only once and then freeze)
-        for (let k = 1; k < loops; k++) {
-          gifReplays.push(setTimeout(() => {
-            img.src = src + (src.indexOf("?") < 0 ? "?" : "&") + "loop=" + Date.now();
-          }, k * loopMs));
-        }
-        gifTimer = setTimeout(hideGifPop, loops * loopMs + 80);
-      } else {
-        gifTimer = setTimeout(hideGifPop, measured || 2600);
-      }
+    function scheduleHide() {                  // (re)start the on-screen clock
+      clearTimeout(gifTimer);
+      // if a loop count is given and we know one loop's length, hold for exactly
+      // that many loops (the gif loops on its own, so this stays seamless)
+      const dur = (loops && loops > 1 && loopMs > 0) ? loops * loopMs + 80
+                                                     : (measured || 2600);
+      gifTimer = setTimeout(hideGifPop, dur);
     }
     function reveal() {                        // the gif is actually on screen now
       if (revealed) return;
       revealed = true; shown = true;
       img.style.visibility = "visible";
       if (sound) playSound(sound);             // start audio WHEN the gif appears (kept in sync)
-      applyTiming();                           // ...and start its on-screen clock now
+      scheduleHide();                          // ...and start its on-screen clock now
     }
  
     // hide the old frame until the new gif has decoded
@@ -1032,8 +1023,12 @@ function initCaptcha() {
     img.src = src;
     if (img.complete && img.naturalWidth > 0) reveal();   // already cached -> show immediately
  
-    // measure single-loop length in parallel; retime once known (if visible)
-    measureGif(src, (ms, lp) => { measured = ms; loopMs = lp || 0; applyTiming(); });
+    // measure single-loop length too; prefer the explicit hint when given
+    measureGif(src, (ms, lp) => {
+      measured = ms;
+      if (!loopHintMs) loopMs = lp || 0;
+      if (shown) scheduleHide();
+    });
   }
  
   // ----- Swim-across effect (an image glides over the screen with a bob) -----
@@ -1386,8 +1381,14 @@ function initCaptcha() {
     // Allie + Dean (and ONLY those two) selected => their couple gif
     const picked = selected.map(t => t.dataset.label);
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
-      showGif("AllieAndDean.gif", "JLO.mp3", 2);   // play this gif exactly twice
+      showGif("AllieAndDean.gif", "JLO.mp3", 2, 2200);   // 2 loops (2.2s each)
       fail("Honestly... I get it JAJAJAJA. Pero invita!");
+      return;
+    }
+    // Allie + Hannah (and ONLY those two) => their gif
+    if (picked.length === 2 && picked.includes("Allie") && picked.includes("Hannah")) {
+      showGif("AllieAndHannah.gif");
+      fail("Allie AND Hannah?? 🎭🎤 Dos divas — pero ninguna de las dos te conoce como yo 😌");
       return;
     }
     // both Alastors (demon form + human form) selected => Danny.gif
