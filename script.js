@@ -22,6 +22,7 @@ Y que se atreve con Benito y con Rauw, jeje`,
 const GIF_MIN_MS = 1800;    // floor so a very short gif doesn't just flash by
 const GIF_MAX_MS = 12000;   // safety cap for very long gifs
 const _gifDurCache = {};
+const _gifLoopCache = {};   // raw single-loop length (ms) per gif, 0 if unknown
  
 function _parseGifMs(buf) {
   const b = new Uint8Array(buf);
@@ -52,11 +53,11 @@ function _parseGifMs(buf) {
   return ms;
 }
  
-// Measures `src` and calls onMeasured(ms) with a sensible "show this long"
-// duration. Plays at least one full loop (more if the loop is very short),
-// capped by GIF_MAX_MS. Never calls back if the file can't be fetched.
+// Measures `src` and calls onMeasured(ms, loopMs) — ms = sensible default
+// "show this long" duration; loopMs = one full loop (so a caller can force an
+// exact number of loops). Never calls back if the file can't be fetched.
 function measureGif(src, onMeasured) {
-  if (_gifDurCache[src] != null) { onMeasured(_gifDurCache[src]); return; }
+  if (_gifDurCache[src] != null) { onMeasured(_gifDurCache[src], _gifLoopCache[src] || 0); return; }
   fetch(src)
     .then(r => r.arrayBuffer())
     .then(buf => {
@@ -66,8 +67,9 @@ function measureGif(src, onMeasured) {
         const loops = Math.max(1, Math.ceil(GIF_MIN_MS / loop)); // whole loops only
         total = Math.min(loops * loop, GIF_MAX_MS) + 150;
       }
-      _gifDurCache[src] = total;
-      onMeasured(total);
+      _gifDurCache[src]  = total;
+      _gifLoopCache[src] = loop;
+      onMeasured(total, loop);
     })
     .catch(() => { /* leave the caller's fallback timer in place */ });
 }
@@ -972,12 +974,14 @@ function initCaptcha() {
     gifPop.innerHTML = '<img alt="">';
     document.body.appendChild(gifPop);
   }
-  let gifTimer, gifSound = null;
+  let gifTimer, gifSound = null, gifReplays = [];
+  function clearReplays() { gifReplays.forEach(clearTimeout); gifReplays = []; }
   function hideGifPop() {
     gifPop.classList.remove("show");
+    clearReplays();
     if (gifSound) { stopSound(gifSound); gifSound = null; }   // sound ends with the gif
   }
-  function showGif(src, sound) {
+  function showGif(src, sound, loops) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     if (src.includes("AllieAndDean.gif")) {
@@ -989,19 +993,31 @@ function initCaptcha() {
     if (gifSound && gifSound !== sound) stopSound(gifSound);
     gifSound = sound || null;
  
-    clearTimeout(gifTimer);
-    let measured = 0, shown = false, revealed = false;
+    clearTimeout(gifTimer); clearReplays();
+    let measured = 0, loopMs = 0, shown = false, revealed = false;
  
-    function scheduleHide() {                 // (re)start the display clock
-      clearTimeout(gifTimer);
-      gifTimer = setTimeout(hideGifPop, measured || 2600);
+    function applyTiming() {                   // how long to show + whether to replay
+      if (!shown) return;
+      clearTimeout(gifTimer); clearReplays();
+      if (loops && loops > 1 && loopMs > 0) {
+        // restart the gif at each loop boundary so it truly plays `loops` times
+        // (covers gifs encoded to play only once and then freeze)
+        for (let k = 1; k < loops; k++) {
+          gifReplays.push(setTimeout(() => {
+            img.src = src + (src.indexOf("?") < 0 ? "?" : "&") + "loop=" + Date.now();
+          }, k * loopMs));
+        }
+        gifTimer = setTimeout(hideGifPop, loops * loopMs + 80);
+      } else {
+        gifTimer = setTimeout(hideGifPop, measured || 2600);
+      }
     }
     function reveal() {                        // the gif is actually on screen now
       if (revealed) return;
       revealed = true; shown = true;
       img.style.visibility = "visible";
       if (sound) playSound(sound);             // start audio WHEN the gif appears (kept in sync)
-      scheduleHide();                          // ...and only now start counting its on-screen time
+      applyTiming();                           // ...and start its on-screen clock now
     }
  
     // hide the old frame until the new gif has decoded
@@ -1016,8 +1032,8 @@ function initCaptcha() {
     img.src = src;
     if (img.complete && img.naturalWidth > 0) reveal();   // already cached -> show immediately
  
-    // measure the real loop length in parallel; retime once known (if visible)
-    measureGif(src, (ms) => { measured = ms; if (shown) scheduleHide(); });
+    // measure single-loop length in parallel; retime once known (if visible)
+    measureGif(src, (ms, lp) => { measured = ms; loopMs = lp || 0; applyTiming(); });
   }
  
   // ----- Swim-across effect (an image glides over the screen with a bob) -----
@@ -1370,7 +1386,7 @@ function initCaptcha() {
     // Allie + Dean (and ONLY those two) selected => their couple gif
     const picked = selected.map(t => t.dataset.label);
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
-      showGif("AllieAndDean.gif", "JLO.mp3");   // sound lasts as long as the gif
+      showGif("AllieAndDean.gif", "JLO.mp3", 2);   // play this gif exactly twice
       fail("Honestly... I get it JAJAJAJA. Pero invita!");
       return;
     }
