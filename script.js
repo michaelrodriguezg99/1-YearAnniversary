@@ -1386,7 +1386,7 @@ function initCaptcha() {
     // Allie + Dean (and ONLY those two) selected => their couple gif
     const picked = selected.map(t => t.dataset.label);
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Dean")) {
-      showGif("AllieAndDean.gif", "JLO.mp3", 3);   // play this gif exactly twice
+      showGif("AllieAndDean.gif", "JLO.mp3", 2);   // play this gif exactly twice
       fail("Honestly... I get it JAJAJAJA. Pero invita!");
       return;
     }
