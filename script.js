@@ -281,7 +281,7 @@ const CAPTCHA_POOL = [
     caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro", worm: true,
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
-  { src: "TaylorSwift.jpg", label: "TaylorSwift",
+  { src: "TaylorSwift.jpg", label: "TaylorSwift", gif: "TaylorSwift.gif", sound: "TaylorSwift.mp3",
     caption: "Do you wanna get swifted? 💀" },
   { src: "Anthony.jpg", label: "Anthony", fx: "bees",
     caption: "Anthony Bridgerton: brooding, emotionally constipated." },
