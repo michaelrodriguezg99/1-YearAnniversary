@@ -970,7 +970,7 @@ function initCaptcha() {
   // ----- Cherry fireworks (canvas): rockets that burst into a cherry shape -----
   // Adapted from the provided sketch. Runs for a bounded window then tears down
   // (clears the loop + removes the canvas) so nothing animates forever.
-  let cherryCanvas = null, cherryRAF = 0;
+  let cherryCanvas = null, cherryRAF = 0, cherryLaunch = false;
   function triggerCherryBurst() {
     if (cherryCanvas) { cancelAnimationFrame(cherryRAF); cherryCanvas.remove(); cherryCanvas = null; }
  
@@ -1095,13 +1095,15 @@ function initCaptcha() {
       });
     }
  
-    const DURATION = 5200;                     // keep launching rockets for this long
+    const SAFETY = 12000;                      // hard cap so it can never run forever
     const startT = performance.now();
+    cherryLaunch = true;                       // keep launching until the gif hides
     let last = 0;
     function loop(now) {
       ctx.clearRect(0, 0, W, H);
       const elapsed = now - startT;
-      if (elapsed < DURATION && now - last > 650) {   // launch a rocket
+      const launching = cherryLaunch && elapsed < SAFETY;
+      if (launching && now - last > 650) {     // launch a rocket
         const x = W * (0.12 + Math.random() * 0.76);
         const v = 0.8 + Math.random() * 0.4;
         const ty = H * (1 - 70 * v / 100);
@@ -1114,7 +1116,7 @@ function initCaptcha() {
         else if (!result) objects.splice(i, 1);
         else objects[i].draw();
       }
-      if (elapsed >= DURATION && objects.length === 0) {   // done -> tear down
+      if (!launching && objects.length === 0) {   // stopped + faded -> tear down
         canvas.remove();
         if (cherryCanvas === canvas) cherryCanvas = null;
         return;
@@ -1123,6 +1125,8 @@ function initCaptcha() {
     }
     cherryRAF = requestAnimationFrame(loop);
   }
+  // called when the Cherry gif hides, so the fireworks last exactly as long as it
+  function stopCherryBurst() { cherryLaunch = false; }
  
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
@@ -1132,18 +1136,20 @@ function initCaptcha() {
     gifPop.innerHTML = '<img alt="">';
     document.body.appendChild(gifPop);
   }
-  let gifTimer, gifSound = null;
+  let gifTimer, gifSound = null, gifOnHide = null;
   function hideGifPop() {
     gifPop.classList.remove("show");
     if (gifSound) { stopSound(gifSound); gifSound = null; }   // sound ends with the gif
+    if (gifOnHide) { const f = gifOnHide; gifOnHide = null; f(); }  // notify companion fx
   }
-  function showGif(src, sound, loops, loopHintMs) {
+  function showGif(src, sound, loops, loopHintMs, onHide) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     if (src.includes("AllieAndDean.gif")) {
       img.classList.add("cropped-allie");
     }
     gifPop.classList.add("show");
+    gifOnHide = onHide || null;
  
     // stop any previous paired sound; remember the new one (started on reveal)
     if (gifSound && gifSound !== sound) stopSound(gifSound);
@@ -1569,8 +1575,8 @@ function initCaptcha() {
     }
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
-      triggerCherryBurst();                   // cherry fireworks across the screen
-      showGif("Cherry.gif", "Cherry.mp3");    // sound lasts as long as the gif
+      triggerCherryBurst();                                            // cherry fireworks
+      showGif("Cherry.gif", "Cherry.mp3", 2, undefined, stopCherryBurst); // loop x2; fireworks end with it
       fail("Acho baby es que tu eres bien afrenta'");
       return;
     }
