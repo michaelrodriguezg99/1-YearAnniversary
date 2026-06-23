@@ -281,7 +281,7 @@ const CAPTCHA_POOL = [
     caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro", worm: true,
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
-  { src: "TaylorSwift.jpg", label: "TaylorSwift", gif: "TaylorSwift.gif",
+  { src: "TaylorSwift.jpg", label: "TaylorSwift", gif: "TaylorSwift.gif", sound: "TaylorSwift.mp3",
     caption: "Do you wanna get swifted? 💀" },
   { src: "Anthony.jpg", label: "Anthony", fx: "bees",
     caption: "Anthony Bridgerton: brooding, emotionally constipated." },
@@ -967,6 +967,63 @@ function initCaptcha() {
     if (sound) { playSound(sound); setTimeout(() => stopSound(sound), total); } // audio = animation length
   }
  
+  // ----- Cherry firework: two pink cherry bursts + a green stem burst -----
+  // A real particle effect (no looping/leaks): sparks explode outward, then
+  // gravity drags them down and they fade, like the reference firework cherry.
+  let cherryFx = document.querySelector(".cherryburst-fx");
+  if (!cherryFx) {
+    cherryFx = document.createElement("div");
+    cherryFx.className = "cherryburst-fx";
+    document.body.appendChild(cherryFx);
+  }
+  function triggerCherryBurst() {
+    cherryFx.innerHTML = "";
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const cx = vw * 0.5, cy = vh * 0.34;            // upper-centre, like the image
+    const r  = Math.min(vw, vh) * 0.12;             // size / separation of the cherries
+    const PINK  = ["#ff5a8a", "#ff2e63", "#ff8fb0", "#e01e5a", "#ffd1dc"];
+    const GREEN = ["#2ecc40", "#39e75f", "#1faa3a", "#7CFC00"];
+ 
+    function spark(x, y, ang, dist, color, size, dur, delay, drop) {
+      const s = document.createElement("span");
+      s.className = "cb-spark";
+      s.style.left = x + "px"; s.style.top = y + "px";
+      s.style.width = s.style.height = size + "px";
+      s.style.background = color;
+      s.style.boxShadow = "0 0 " + (size * 2) + "px " + color;
+      cherryFx.appendChild(s);
+      const ex = Math.cos(ang) * dist;
+      const ey = Math.sin(ang) * dist + drop;       // drop = gravity pulling sparks down
+      const anim = s.animate([
+        { transform: "translate(-50%,-50%) scale(1)",   opacity: 1, offset: 0 },
+        { opacity: 1, offset: 0.12 },
+        { transform: `translate(calc(-50% + ${ex}px), calc(-50% + ${ey}px)) scale(.35)`, opacity: 0, offset: 1 },
+      ], { duration: dur, delay, easing: "cubic-bezier(.15,.65,.3,1)", fill: "forwards" });
+      anim.onfinish = () => s.remove();
+    }
+ 
+    // two round pink bursts = the two cherries
+    [{ x: cx - r * 0.9, y: cy + r * 0.5 }, { x: cx + r * 0.9, y: cy + r * 0.2 }].forEach((c, ci) => {
+      const n = 48;
+      for (let i = 0; i < n; i++) {
+        const ang  = (Math.PI * 2) * (i / n) + Math.random() * 0.25;
+        const dist = r * (0.7 + Math.random() * 0.7);
+        spark(c.x, c.y, ang, dist, PINK[i % PINK.length],
+              3 + Math.random() * 4, 1500 + Math.random() * 900,
+              ci * 170 + Math.random() * 160, r * 1.1);     // sparks rain downward
+      }
+    });
+    // green burst sweeping up = the stem
+    const stem = { x: cx + r * 0.2, y: cy - r * 0.1 };
+    for (let i = 0; i < 24; i++) {
+      const ang  = -Math.PI / 2 + (Math.random() * 0.7 - 0.35);   // mostly upward
+      const dist = r * (0.8 + Math.random() * 0.9);
+      spark(stem.x, stem.y, ang, dist, GREEN[i % GREEN.length],
+            3 + Math.random() * 4, 1400 + Math.random() * 800,
+            120 + Math.random() * 220, r * 0.2);
+    }
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1412,7 +1469,7 @@ function initCaptcha() {
     }
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
-      triggerCharFx("cherry");                // cherries + blossoms raining (no hearts)
+      triggerCherryBurst();                   // firework cherry (pink bursts + green stem)
       showGif("Cherry.gif", "Cherry.mp3");    // sound lasts as long as the gif
       fail("Acho baby es que tu eres bien afrenta'");
       return;

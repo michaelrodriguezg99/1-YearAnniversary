@@ -1054,3 +1054,7 @@ body {
   .cap-rarity { font-size: 10px; gap: 5px 6px; }
   .rar-chip { padding: 3px 8px; }
 }
+ 
+/* ---- Cherry firework (Me + Cherry verify): pink cherry bursts + green stem ---- */
+.cherryburst-fx { position: fixed; inset: 0; z-index: 9500; pointer-events: none; overflow: hidden; }
+.cb-spark { position: absolute; border-radius: 50%; will-change: transform, opacity; }
