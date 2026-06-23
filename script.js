@@ -976,21 +976,22 @@ function initCaptcha() {
     cherryFx.className = "cherryburst-fx";
     document.body.appendChild(cherryFx);
   }
+  // positioning set inline so it never depends on the stylesheet being loaded
+  cherryFx.style.cssText =
+    "position:fixed;inset:0;z-index:10050;pointer-events:none;overflow:hidden;";
   function triggerCherryBurst() {
     cherryFx.innerHTML = "";
     const vw = window.innerWidth, vh = window.innerHeight;
-    const cx = vw * 0.5, cy = vh * 0.34;            // upper-centre, like the image
-    const r  = Math.min(vw, vh) * 0.12;             // size / separation of the cherries
     const PINK  = ["#ff5a8a", "#ff2e63", "#ff8fb0", "#e01e5a", "#ffd1dc"];
     const GREEN = ["#2ecc40", "#39e75f", "#1faa3a", "#7CFC00"];
  
     function spark(x, y, ang, dist, color, size, dur, delay, drop) {
       const s = document.createElement("span");
       s.className = "cb-spark";
-      s.style.left = x + "px"; s.style.top = y + "px";
-      s.style.width = s.style.height = size + "px";
-      s.style.background = color;
-      s.style.boxShadow = "0 0 " + (size * 2) + "px " + color;
+      s.style.cssText =
+        "position:absolute;border-radius:50%;left:" + x + "px;top:" + y + "px;" +
+        "width:" + size + "px;height:" + size + "px;background:" + color + ";" +
+        "box-shadow:0 0 " + (size * 2) + "px " + color + ";";
       cherryFx.appendChild(s);
       const ex = Math.cos(ang) * dist;
       const ey = Math.sin(ang) * dist + drop;       // drop = gravity pulling sparks down
@@ -1002,25 +1003,32 @@ function initCaptcha() {
       anim.onfinish = () => s.remove();
     }
  
-    // two round pink bursts = the two cherries
-    [{ x: cx - r * 0.9, y: cy + r * 0.5 }, { x: cx + r * 0.9, y: cy + r * 0.2 }].forEach((c, ci) => {
-      const n = 48;
+    // one cherry burst (pink radial body + a little green stem accent) at (x,y)
+    function cherryAt(x, y, rad, delay) {
+      const n = 30;
       for (let i = 0; i < n; i++) {
-        const ang  = (Math.PI * 2) * (i / n) + Math.random() * 0.25;
-        const dist = r * (0.7 + Math.random() * 0.7);
-        spark(c.x, c.y, ang, dist, PINK[i % PINK.length],
-              3 + Math.random() * 4, 1500 + Math.random() * 900,
-              ci * 170 + Math.random() * 160, r * 1.1);     // sparks rain downward
+        const ang  = (Math.PI * 2) * (i / n) + Math.random() * 0.3;
+        const dist = rad * (0.8 + Math.random() * 0.9);
+        spark(x, y, ang, dist, PINK[i % PINK.length],
+              3 + Math.random() * 4, 1400 + Math.random() * 800,
+              delay + Math.random() * 120, rad * 1.2);     // sparks rain downward
       }
-    });
-    // green burst sweeping up = the stem
-    const stem = { x: cx + r * 0.2, y: cy - r * 0.1 };
-    for (let i = 0; i < 24; i++) {
-      const ang  = -Math.PI / 2 + (Math.random() * 0.7 - 0.35);   // mostly upward
-      const dist = r * (0.8 + Math.random() * 0.9);
-      spark(stem.x, stem.y, ang, dist, GREEN[i % GREEN.length],
-            3 + Math.random() * 4, 1400 + Math.random() * 800,
-            120 + Math.random() * 220, r * 0.2);
+      for (let i = 0; i < 8; i++) {                         // green stem accent, sweeps up
+        const ang  = -Math.PI / 2 + (Math.random() * 0.8 - 0.4);
+        const dist = rad * (0.7 + Math.random() * 0.6);
+        spark(x, y, ang, dist, GREEN[i % GREEN.length],
+              3 + Math.random() * 3, 1300 + Math.random() * 600,
+              delay + Math.random() * 120, rad * 0.25);
+      }
+    }
+ 
+    // scatter several bursts across the WHOLE screen, staggered like a finale
+    const big = Math.min(vw, vh);
+    const bursts = 7;
+    for (let b = 0; b < bursts; b++) {
+      const bx = vw * (0.10 + Math.random() * 0.80);
+      const by = vh * (0.12 + Math.random() * 0.66);
+      cherryAt(bx, by, big * (0.10 + Math.random() * 0.06), b * 200 + Math.random() * 160);
     }
   }
  
