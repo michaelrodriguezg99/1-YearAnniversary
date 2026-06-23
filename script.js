@@ -967,69 +967,161 @@ function initCaptcha() {
     if (sound) { playSound(sound); setTimeout(() => stopSound(sound), total); } // audio = animation length
   }
  
-  // ----- Cherry firework: two pink cherry bursts + a green stem burst -----
-  // A real particle effect (no looping/leaks): sparks explode outward, then
-  // gravity drags them down and they fade, like the reference firework cherry.
-  let cherryFx = document.querySelector(".cherryburst-fx");
-  if (!cherryFx) {
-    cherryFx = document.createElement("div");
-    cherryFx.className = "cherryburst-fx";
-    document.body.appendChild(cherryFx);
-  }
-  // positioning set inline so it never depends on the stylesheet being loaded
-  cherryFx.style.cssText =
-    "position:fixed;inset:0;z-index:10050;pointer-events:none;overflow:hidden;";
+  // ----- Cherry fireworks (canvas): rockets that burst into a cherry shape -----
+  // Adapted from the provided sketch. Runs for a bounded window then tears down
+  // (clears the loop + removes the canvas) so nothing animates forever.
+  let cherryCanvas = null, cherryRAF = 0;
   function triggerCherryBurst() {
-    cherryFx.innerHTML = "";
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const PINK  = ["#ff5a8a", "#ff2e63", "#ff8fb0", "#e01e5a", "#ffd1dc"];
-    const GREEN = ["#2ecc40", "#39e75f", "#1faa3a", "#7CFC00"];
+    if (cherryCanvas) { cancelAnimationFrame(cherryRAF); cherryCanvas.remove(); cherryCanvas = null; }
  
-    function spark(x, y, ang, dist, color, size, dur, delay, drop) {
-      const s = document.createElement("span");
-      s.className = "cb-spark";
-      s.style.cssText =
-        "position:absolute;border-radius:50%;left:" + x + "px;top:" + y + "px;" +
-        "width:" + size + "px;height:" + size + "px;background:" + color + ";" +
-        "box-shadow:0 0 " + (size * 2) + "px " + color + ";";
-      cherryFx.appendChild(s);
-      const ex = Math.cos(ang) * dist;
-      const ey = Math.sin(ang) * dist + drop;       // drop = gravity pulling sparks down
-      const anim = s.animate([
-        { transform: "translate(-50%,-50%) scale(1)",   opacity: 1, offset: 0 },
-        { opacity: 1, offset: 0.12 },
-        { transform: `translate(calc(-50% + ${ex}px), calc(-50% + ${ey}px)) scale(.35)`, opacity: 0, offset: 1 },
-      ], { duration: dur, delay, easing: "cubic-bezier(.15,.65,.3,1)", fill: "forwards" });
-      anim.onfinish = () => s.remove();
-    }
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;z-index:10050;pointer-events:none;";
+    document.body.appendChild(canvas);
+    cherryCanvas = canvas;
+    const ctx = canvas.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
  
-    // one cherry burst (pink radial body + a little green stem accent) at (x,y)
-    function cherryAt(x, y, rad, delay) {
-      const n = 30;
-      for (let i = 0; i < n; i++) {
-        const ang  = (Math.PI * 2) * (i / n) + Math.random() * 0.3;
-        const dist = rad * (0.8 + Math.random() * 0.9);
-        spark(x, y, ang, dist, PINK[i % PINK.length],
-              3 + Math.random() * 4, 1400 + Math.random() * 800,
-              delay + Math.random() * 120, rad * 1.2);     // sparks rain downward
+    const CHERRY = ["#e8294a", "#cc1133", "#ff4466", "#ff6688", "#dd1144"];
+    const STEM = "#2ecc52", LEAF = "#25a840";
+    const DRAG = 0.97, GRAVITY = 0.10, EXPAND = 0.13;
+ 
+    function cherryShape(sc) {
+      const out = [];
+      const R = sc * 0.80, gap = sc * 0.17;
+      const lx = -(R + gap / 2), rx = (R + gap / 2), fy = sc * 0.28;
+      for (let i = 0; i < 60; i++) {
+        const a = 2 * Math.PI * i / 60;
+        out.push({ vx: lx + Math.cos(a) * R, vy: fy + Math.sin(a) * R * 0.93, type: "f" });
+        out.push({ vx: rx + Math.cos(a) * R, vy: fy + Math.sin(a) * R * 0.93, type: "f" });
       }
-      for (let i = 0; i < 8; i++) {                         // green stem accent, sweeps up
-        const ang  = -Math.PI / 2 + (Math.random() * 0.8 - 0.4);
-        const dist = rad * (0.7 + Math.random() * 0.6);
-        spark(x, y, ang, dist, GREEN[i % GREEN.length],
-              3 + Math.random() * 3, 1300 + Math.random() * 600,
-              delay + Math.random() * 120, rad * 0.25);
+      for (let i = 0; i < 36; i++) {
+        const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * R * 0.80;
+        out.push({ vx: lx + Math.cos(a) * r, vy: fy + Math.sin(a) * r * 0.93, type: "f" });
+        out.push({ vx: rx + Math.cos(a) * r, vy: fy + Math.sin(a) * r * 0.93, type: "f" });
       }
+      for (let i = 0; i < 8; i++) {
+        const a = Math.PI + Math.random() * 0.85, r = R * (0.2 + Math.random() * 0.26);
+        out.push({ vx: lx + Math.cos(a) * r, vy: fy + Math.sin(a) * r * 0.65, type: "s" });
+        out.push({ vx: rx + Math.cos(a) * r, vy: fy + Math.sin(a) * r * 0.65, type: "s" });
+      }
+      const joinY = fy - R * 1.80, stalkY = fy - R * 3.10;
+      const ltx = lx, lty = fy - R * 0.93, rtx = rx, rty = fy - R * 0.93;
+      for (let i = 0; i <= 30; i++) {
+        const t = i / 30;
+        out.push({ vx: Math.sin(t * Math.PI) * sc * 0.07, vy: joinY + (stalkY - joinY) * t, type: "st" });
+      }
+      for (let i = 0; i <= 22; i++) {
+        const t = i / 22, c1x = 0, c1y = joinY + sc * 0.12, c2x = ltx, c2y = lty - sc * 0.22;
+        const bx = 3 * Math.pow(1 - t, 2) * t * c1x + 3 * (1 - t) * t * t * c2x + t * t * t * ltx;
+        const by = Math.pow(1 - t, 3) * joinY + 3 * Math.pow(1 - t, 2) * t * c1y + 3 * (1 - t) * t * t * c2y + t * t * t * lty;
+        out.push({ vx: bx, vy: by, type: "st" });
+      }
+      for (let i = 0; i <= 22; i++) {
+        const t = i / 22, c1x = 0, c1y = joinY + sc * 0.12, c2x = rtx, c2y = rty - sc * 0.22;
+        const bx = 3 * Math.pow(1 - t, 2) * t * c1x + 3 * (1 - t) * t * t * c2x + t * t * t * rtx;
+        const by = Math.pow(1 - t, 3) * joinY + 3 * Math.pow(1 - t, 2) * t * c1y + 3 * (1 - t) * t * t * c2y + t * t * t * rty;
+        out.push({ vx: bx, vy: by, type: "st" });
+      }
+      const lcx = sc * 0.50, lcy = fy - R * 1.95, lA = sc * 0.50, lB = sc * 0.22, la = -0.52;
+      for (let i = 0; i < 32; i++) {
+        const a = 2 * Math.PI * i / 32, ex = lA * Math.cos(a), ey = lB * Math.sin(a);
+        out.push({ vx: lcx + ex * Math.cos(la) - ey * Math.sin(la), vy: lcy + ex * Math.sin(la) + ey * Math.cos(la), type: "l" });
+      }
+      for (let i = 0; i < 14; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const ex = lA * 0.65 * Math.cos(a) * Math.random(), ey = lB * 0.65 * Math.sin(a) * Math.random();
+        out.push({ vx: lcx + ex * Math.cos(la) - ey * Math.sin(la), vy: lcy + ex * Math.sin(la) + ey * Math.cos(la), type: "l" });
+      }
+      for (let i = 0; i < 12; i++) {
+        const t = i / 11 - 0.5;
+        out.push({ vx: lcx + t * lA * Math.cos(la), vy: lcy + t * lA * Math.sin(la), type: "l" });
+      }
+      return out;
     }
  
-    // scatter several bursts across the WHOLE screen, staggered like a finale
-    const big = Math.min(vw, vh);
-    const bursts = 7;
-    for (let b = 0; b < bursts; b++) {
-      const bx = vw * (0.10 + Math.random() * 0.80);
-      const by = vh * (0.12 + Math.random() * 0.66);
-      cherryAt(bx, by, big * (0.10 + Math.random() * 0.06), b * 200 + Math.random() * 160);
+    function Particle(x, y, col, vx, vy, rocket, life, targetY, size) {
+      this.x = x; this.y = y; this.col = col; this.vx = vx; this.vy = vy;
+      this.rocket = rocket; this.alpha = 1; this.life = life; this.ml = life;
+      this.targetY = targetY; this.rs = 2.2; this.trail = []; this.fl = 1; this.sz = size || 1.8;
     }
+    Particle.prototype.tick = function () {
+      this.trail.unshift({ x: this.x, y: this.y });
+      if (this.trail.length > (this.rocket ? 15 : 5)) this.trail.pop();
+      if (this.rocket) {
+        this.y += this.vy;
+        const pr = Math.min(1, Math.max(0, (H - this.y) / (H - this.targetY)));
+        this.rs = 2.2 * (1 - pr * 0.4);
+        if (Math.random() > 0.9) this.fl = 0.2 + Math.random() * 0.5;
+        else this.fl += (1 - this.fl) * 0.1;
+        this.alpha = this.fl * (1 - pr * 0.3);
+        if (this.y <= this.targetY) return "explode";
+      } else {
+        this.vx *= DRAG; this.vy *= DRAG; this.vy += GRAVITY * 0.2;
+        this.x += this.vx; this.y += this.vy;
+        this.alpha -= 1 / (this.ml * 8);
+      }
+      return this.alpha > 0;
+    };
+    Particle.prototype.draw = function () {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = Math.max(0, this.alpha);
+      const self = this;
+      this.trail.forEach(function (p, i) {
+        const ratio = 1 - i / self.trail.length;
+        ctx.fillStyle = self.col;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(0.3, (self.rocket ? self.rs : self.sz) * ratio), 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    };
+ 
+    let objects = [];
+    function explode(cx, cy, life) {
+      const base = CHERRY[Math.floor(Math.random() * CHERRY.length)];
+      const sc = 16 + Math.random() * 5;
+      cherryShape(sc).forEach(function (p) {
+        let col, sz;
+        if (p.type === "f") { col = Math.random() > 0.82 ? "#ff99bb" : base; sz = 1.85; }
+        else if (p.type === "st") { col = STEM; sz = 2.4; }
+        else if (p.type === "l") { col = LEAF; sz = 1.8; }
+        else { col = "#ffffff"; sz = 1.0; }
+        const jx = (Math.random() - 0.5) * 0.5, jy = (Math.random() - 0.5) * 0.5;
+        objects.push(new Particle(cx, cy, col, p.vx * EXPAND + jx, p.vy * EXPAND + jy, false, life * (0.85 + Math.random() * 0.3), 0, sz));
+      });
+    }
+ 
+    const DURATION = 5200;                     // keep launching rockets for this long
+    const startT = performance.now();
+    let last = 0;
+    function loop(now) {
+      ctx.clearRect(0, 0, W, H);
+      const elapsed = now - startT;
+      if (elapsed < DURATION && now - last > 650) {   // launch a rocket
+        const x = W * (0.12 + Math.random() * 0.76);
+        const v = 0.8 + Math.random() * 0.4;
+        const ty = H * (1 - 70 * v / 100);
+        objects.push(new Particle(x, H, "#FFE0A0", 0, -9, true, 11, ty));
+        last = now;
+      }
+      for (let i = objects.length - 1; i >= 0; i--) {
+        const result = objects[i].tick();
+        if (result === "explode") { explode(objects[i].x, objects[i].y, objects[i].life); objects.splice(i, 1); }
+        else if (!result) objects.splice(i, 1);
+        else objects[i].draw();
+      }
+      if (elapsed >= DURATION && objects.length === 0) {   // done -> tear down
+        canvas.remove();
+        if (cherryCanvas === canvas) cherryCanvas = null;
+        return;
+      }
+      cherryRAF = requestAnimationFrame(loop);
+    }
+    cherryRAF = requestAnimationFrame(loop);
   }
  
   // ----- Reaction GIF popup (overlay created once, reused) -----
@@ -1477,7 +1569,7 @@ function initCaptcha() {
     }
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
-      triggerCherryBurst();                   // firework cherry (pink bursts + green stem)
+      triggerCherryBurst();                   // cherry fireworks across the screen
       showGif("Cherry.gif", "Cherry.mp3");    // sound lasts as long as the gif
       fail("Acho baby es que tu eres bien afrenta'");
       return;
