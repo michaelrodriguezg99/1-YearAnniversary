@@ -1128,6 +1128,56 @@ function initCaptcha() {
   // called when the Cherry gif hides, so the fireworks last exactly as long as it
   function stopCherryBurst() { cherryLaunch = false; }
  
+  // ----- Make-it-rain: tap or scroll throws money onto the screen -----
+  // Active only while the God-Tier gif is up; listeners are removed on stop so
+  // nothing lingers. Bills "jump" up from the action point then fall away.
+  const MONEY = ["💵", "💸", "🤑", "💴", "💶", "💷", "🪙"];
+  let moneyLayer = null, moneyActive = false, moneyOnDown = null, moneyOnWheel = null;
+  function throwMoney(x, y, n) {
+    if (!moneyLayer) return;
+    for (let i = 0; i < n; i++) {
+      const bill = document.createElement("span");
+      bill.textContent = MONEY[Math.floor(Math.random() * MONEY.length)];
+      bill.style.cssText =
+        "position:fixed;left:" + x + "px;top:" + y + "px;pointer-events:none;" +
+        "font-size:" + (22 + Math.random() * 24) + "px;will-change:transform,opacity;";
+      moneyLayer.appendChild(bill);
+      const ang   = -Math.PI / 2 + (Math.random() * 1.6 - 0.8);   // mostly upward, fanned out
+      const speed = 90 + Math.random() * 210;
+      const vx    = Math.cos(ang) * speed;
+      const up    = Math.sin(ang) * speed;                        // negative = jumps up
+      const rot   = (Math.random() * 2 - 1) * 720;
+      const dur   = 1500 + Math.random() * 1000;
+      const anim = bill.animate([
+        { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg)", opacity: 1, offset: 0 },
+        { transform: `translate(-50%,-50%) translate(${vx * 0.5}px, ${up}px) rotate(${rot * 0.5}deg)`, opacity: 1, offset: 0.4 },
+        { transform: `translate(-50%,-50%) translate(${vx}px, ${Math.abs(up) + 260}px) rotate(${rot}deg)`, opacity: 0, offset: 1 },
+      ], { duration: dur, easing: "cubic-bezier(.25,.6,.4,1)", fill: "forwards" });
+      anim.onfinish = () => bill.remove();
+    }
+  }
+  function launchMoneyThrow() {
+    if (!moneyLayer) {
+      moneyLayer = document.createElement("div");
+      moneyLayer.style.cssText = "position:fixed;inset:0;z-index:10060;pointer-events:none;overflow:hidden;";
+      document.body.appendChild(moneyLayer);
+    }
+    moneyLayer.innerHTML = "";
+    moneyActive = true;
+    moneyOnDown  = (e) => { if (moneyActive) throwMoney(e.clientX, e.clientY, 6); };           // toss from the tap
+    moneyOnWheel = ()  => { if (moneyActive) throwMoney(window.innerWidth * (0.2 + Math.random() * 0.6), window.innerHeight * 0.92, 6); }; // fling up on scroll
+    document.addEventListener("pointerdown", moneyOnDown);
+    document.addEventListener("wheel", moneyOnWheel, { passive: true });
+    throwMoney(window.innerWidth / 2, window.innerHeight * 0.5, 10);   // an opening toss
+  }
+  function stopMoneyThrow() {
+    moneyActive = false;
+    if (moneyOnDown)  document.removeEventListener("pointerdown", moneyOnDown);
+    if (moneyOnWheel) document.removeEventListener("wheel", moneyOnWheel);
+    moneyOnDown = moneyOnWheel = null;
+    setTimeout(() => { if (moneyLayer && !moneyActive) { moneyLayer.remove(); moneyLayer = null; } }, 2800);
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1604,8 +1654,9 @@ function initCaptcha() {
     const mikeCount = selected.filter(t => t.dataset.label === "Michael").length;
     const hasBefore = selected.some(t => t.dataset.label === "Mike");
     if (mikeCount >= 3 && hasBefore) {
-      rainImages(["me1.jpeg", "me2.jpeg", "me3.jpeg", "MikeBefore.jpg"]); // every version of me
-      showGif("AllMikes.gif", "AllMikes.mp3");   // placeholder — drop these files (or remove this line)
+      rainImages(["me1.jpeg", "me2.jpeg", "me3.jpeg", "MikeBefore.jpg"], { preview: false }); // rain, no single-image reveal
+      launchMoneyThrow();                          // tap or scroll = throw money at the screen
+      showGif("AllMikes.gif", "AllMikes.mp3", undefined, undefined, stopMoneyThrow); // money lasts as long as the gif
       fail("🏆 GOD TIER UNLOCKED — every version of me, even the 'before'. You collected them all 😭❤️");
       return;
     }
