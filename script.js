@@ -1219,6 +1219,37 @@ function initCaptcha() {
     setTimeout(() => { if (moneyLayer && !moneyActive) { moneyLayer.remove(); moneyLayer = null; } }, 2800);
   }
  
+  // ----- God-Tier heads-up modal (shown before the all-Mikes animations) -----
+  function showDaddyModal(onContinue) {
+    const old = document.querySelector(".daddy-modal");
+    if (old) old.remove();
+    const ov = document.createElement("div");
+    ov.className = "daddy-modal";
+    ov.innerHTML =
+      '<div class="daddy-card">' +
+        '<div class="daddy-imgwrap"><img alt=""><span class="daddy-ph">🧔💙</span></div>' +
+        '<div class="daddy-title">⚠️ IMPORTANT</div>' +
+        '<div class="daddy-text">Remember to <b>scroll</b> or <b>click</b> to show Daddy some love 💸💵</div>' +
+        '<button type="button" class="daddy-go">click enter to continue ⏎</button>' +
+      '</div>';
+    document.body.appendChild(ov);
+    const wrap = ov.querySelector(".daddy-imgwrap");
+    const img  = wrap.querySelector("img");
+    img.onload = () => wrap.classList.add("has-img");
+    img.src = "DaddyMike.jpg";                    // your face on the "Daddy" shirt
+    let done = false;
+    function go() {
+      if (done) return; done = true;
+      document.removeEventListener("keydown", onKey);
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 200);
+      if (typeof onContinue === "function") onContinue();
+    }
+    function onKey(e) { if (e.key === "Enter") { e.preventDefault(); go(); } }
+    ov.querySelector(".daddy-go").addEventListener("click", go);
+    document.addEventListener("keydown", onKey);
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1695,10 +1726,12 @@ function initCaptcha() {
     const mikeCount = selected.filter(t => t.dataset.label === "Michael").length;
     const hasBefore = selected.some(t => t.dataset.label === "Mike");
     if (mikeCount >= 3 && hasBefore) {
-      rainImages(["me1.jpeg", "me2.jpeg", "me3.jpeg", "MikeBefore.jpg"], { preview: false }); // rain, no single-image reveal
-      launchMoneyThrow();                          // tap or scroll = throw money at the screen
-      showGif("AllMikes.gif", "AllMikes.mp3", undefined, undefined, stopMoneyThrow); // money lasts as long as the gif
-      fail("🏆 GOD TIER UNLOCKED — every version of me, even the 'before'. You collected them all 😭❤️");
+      showDaddyModal(() => {                        // heads-up first, then the show
+        rainImages(["me1.jpeg", "me2.jpeg", "me3.jpeg", "MikeBefore.jpg"], { preview: false });
+        launchMoneyThrow();                          // tap or scroll = throw money at the screen
+        showGif("AllMikes.gif", "AllMikes.mp3", undefined, undefined, stopMoneyThrow);
+        fail("🏆 GOD TIER UNLOCKED — every version of me, even the 'before'. You collected them all 😭❤️");
+      });
       return;
     }
     const wrong = selected.find(t => t.dataset.correct !== "true");
