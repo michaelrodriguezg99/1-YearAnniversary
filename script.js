@@ -1128,26 +1128,65 @@ function initCaptcha() {
   // called when the Cherry gif hides, so the fireworks last exactly as long as it
   function stopCherryBurst() { cherryLaunch = false; }
  
-  // ----- Make-it-rain: tap or scroll throws money onto the screen -----
-  // Active only while the God-Tier gif is up; listeners are removed on stop so
-  // nothing lingers. Bills "jump" up from the action point then fall away.
-  const MONEY = ["💵", "💸", "🤑", "💴", "💶", "💷", "🪙"];
+  // ----- Make-it-rain: tap throws money AT the gif; scroll flings it up -----
+  // Active only while the God-Tier gif is up; listeners removed + tiles unlocked
+  // on stop so nothing lingers.
+  const MONEY = ["💸", "💵"];
   let moneyLayer = null, moneyActive = false, moneyOnDown = null, moneyOnWheel = null;
-  function throwMoney(x, y, n) {
+ 
+  function mkBill(x, y) {
+    const b = document.createElement("span");
+    b.textContent = MONEY[Math.floor(Math.random() * MONEY.length)];
+    b.style.cssText =
+      "position:fixed;left:" + x + "px;top:" + y + "px;pointer-events:none;" +
+      "font-size:" + (22 + Math.random() * 22) + "px;will-change:transform,opacity;";
+    moneyLayer.appendChild(b);
+    return b;
+  }
+  // where the gif actually is on screen (so money can stop short of it)
+  function gifTarget() {
+    const img = gifPop.querySelector("img");
+    const r = img ? img.getBoundingClientRect() : null;
+    if (r && r.width > 10 && r.height > 10)
+      return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, R: Math.max(r.width, r.height) / 2 + 30 };
+    return { cx: window.innerWidth / 2, cy: window.innerHeight / 2, R: Math.min(window.innerWidth, window.innerHeight) * 0.22 };
+  }
+  // CLICK: bills fly toward the gif and fade out before reaching it (gif stays clear)
+  function throwToGif(px, py, n) {
+    if (!moneyLayer) return;
+    const t = gifTarget();
+    for (let i = 0; i < n; i++) {
+      let sx = px + (Math.random() * 50 - 25), sy = py + (Math.random() * 50 - 25);
+      // if the tap is on/near the gif, launch from a screen edge instead so it flies inward
+      if (Math.hypot(sx - t.cx, sy - t.cy) < t.R * 1.25) {
+        const a = Math.random() * Math.PI * 2;
+        const far = t.R * 1.5 + Math.random() * Math.max(window.innerWidth, window.innerHeight) * 0.35;
+        sx = t.cx + Math.cos(a) * far; sy = t.cy + Math.sin(a) * far;
+      }
+      const bill = mkBill(sx, sy);
+      const dx = sx - t.cx, dy = sy - t.cy, D = Math.hypot(dx, dy) || 1;
+      const ux = dx / D, uy = dy / D;
+      const sp = Math.random() * 0.34 - 0.17, c = Math.cos(sp), s = Math.sin(sp);  // slight fan
+      const nx = ux * c - uy * s, ny = ux * s + uy * c;
+      const Rt = t.R * (1 + Math.random() * 0.12);                  // stop just outside the gif
+      const mx = (t.cx + nx * Rt) - sx, my = (t.cy + ny * Rt) - sy;
+      const rot = (Math.random() * 2 - 1) * 540, dur = 800 + Math.random() * 600;
+      const anim = bill.animate([
+        { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg)",   opacity: 1, offset: 0 },
+        { opacity: 1, offset: 0.7 },
+        { transform: `translate(-50%,-50%) translate(${mx}px, ${my}px) rotate(${rot}deg)`, opacity: 0, offset: 1 },
+      ], { duration: dur, easing: "cubic-bezier(.2,.65,.3,1)", fill: "forwards" });
+      anim.onfinish = () => bill.remove();
+    }
+  }
+  // SCROLL: a quick fling — bills jump up from the action point then fall away
+  function flingMoney(px, py, n) {
     if (!moneyLayer) return;
     for (let i = 0; i < n; i++) {
-      const bill = document.createElement("span");
-      bill.textContent = MONEY[Math.floor(Math.random() * MONEY.length)];
-      bill.style.cssText =
-        "position:fixed;left:" + x + "px;top:" + y + "px;pointer-events:none;" +
-        "font-size:" + (22 + Math.random() * 24) + "px;will-change:transform,opacity;";
-      moneyLayer.appendChild(bill);
-      const ang   = -Math.PI / 2 + (Math.random() * 1.6 - 0.8);   // mostly upward, fanned out
-      const speed = 90 + Math.random() * 210;
-      const vx    = Math.cos(ang) * speed;
-      const up    = Math.sin(ang) * speed;                        // negative = jumps up
-      const rot   = (Math.random() * 2 - 1) * 720;
-      const dur   = 1500 + Math.random() * 1000;
+      const bill = mkBill(px, py);
+      const ang = -Math.PI / 2 + (Math.random() * 1.6 - 0.8), speed = 90 + Math.random() * 210;
+      const vx = Math.cos(ang) * speed, up = Math.sin(ang) * speed;
+      const rot = (Math.random() * 2 - 1) * 720, dur = 1500 + Math.random() * 1000;
       const anim = bill.animate([
         { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg)", opacity: 1, offset: 0 },
         { transform: `translate(-50%,-50%) translate(${vx * 0.5}px, ${up}px) rotate(${rot * 0.5}deg)`, opacity: 1, offset: 0.4 },
@@ -1164,14 +1203,16 @@ function initCaptcha() {
     }
     moneyLayer.innerHTML = "";
     moneyActive = true;
-    moneyOnDown  = (e) => { if (moneyActive) throwMoney(e.clientX, e.clientY, 6); };           // toss from the tap
-    moneyOnWheel = ()  => { if (moneyActive) throwMoney(window.innerWidth * (0.2 + Math.random() * 0.6), window.innerHeight * 0.92, 6); }; // fling up on scroll
+    grid.style.pointerEvents = "none";          // lock the tiles so taps don't toggle them
+    moneyOnDown  = (e) => { if (moneyActive) throwToGif(e.clientX, e.clientY, 6); };
+    moneyOnWheel = ()  => { if (moneyActive) flingMoney(window.innerWidth * (0.2 + Math.random() * 0.6), window.innerHeight * 0.92, 6); };
     document.addEventListener("pointerdown", moneyOnDown);
     document.addEventListener("wheel", moneyOnWheel, { passive: true });
-    throwMoney(window.innerWidth / 2, window.innerHeight * 0.5, 10);   // an opening toss
+    throwToGif(window.innerWidth / 2, window.innerHeight * 0.9, 12);   // opening toss toward the gif
   }
   function stopMoneyThrow() {
     moneyActive = false;
+    grid.style.pointerEvents = "";              // unlock the tiles
     if (moneyOnDown)  document.removeEventListener("pointerdown", moneyOnDown);
     if (moneyOnWheel) document.removeEventListener("wheel", moneyOnWheel);
     moneyOnDown = moneyOnWheel = null;
