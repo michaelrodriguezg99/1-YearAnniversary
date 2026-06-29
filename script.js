@@ -1698,7 +1698,7 @@ function initCaptcha() {
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
       triggerCherryBurst();                                            // cherry fireworks
-      showGif("Cherry.gif", "Cherry.mp3", 2, undefined, stopCherryBurst); // loop x2; fireworks end with it
+      showGif("Cherry.gif", "Cherry.mp3", 1, undefined, stopCherryBurst); // loop x2; fireworks end with it
       fail("Acho baby es que tu eres bien afrenta'");
       return;
     }
