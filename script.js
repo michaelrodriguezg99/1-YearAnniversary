@@ -203,6 +203,7 @@ const SCREENS = [
   { id: "wrapped-screen",  init: initWrapped, onShow: showWrapped },
   { id: "scrapbook-screen", init: initScrapbook, onShow: showScrapbook },
   { id: "terms-screen",    init: initTerms, onShow: showTerms },
+  { id: "trip-screen",     init: initTrip, onShow: showTrip },
   { id: "date-screen",     init: initDatePicker, onShow: showDatePicker },
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
@@ -1698,7 +1699,7 @@ function initCaptcha() {
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
       triggerCherryBurst();                                            // cherry fireworks
-      showGif("Cherry.gif", "Cherry.mp3", 1, undefined, stopCherryBurst); // loop x2; fireworks end with it
+      showGif("Cherry.gif", "Cherry.mp3", 2, undefined, stopCherryBurst); // loop x2; fireworks end with it
       fail("Acho baby es que tu eres bien afrenta'");
       return;
     }
@@ -2529,13 +2530,155 @@ function initTerms() {
 function showTerms() { if (initTerms._reset) initTerms._reset(); }
  
 /* =====================================================================
-   SCREEN 8 — DATE PICKER  (a calendar where only ONE day is "available")
+   SCREEN 8 — TRIP PICKER  (she showcases 3 destinations and chooses one)
    ---------------------------------------------------------------------
-   ✏️  DATE_ANSWER is the only correct day (month is 1-indexed: Nov = 11).
-   Every OTHER day shows a random funny excuse from DATE_EXCUSES (reused).
+   ✏️  FILL ME IN — one entry per destination (exactly 3, but add/remove
+   freely). Drop each photo next to index.html and put its filename in
+   `img`. Until a real file exists, a labeled placeholder shows so you can
+   test right now. `details` is a list of lines shown under the photo —
+   use it for dates, hotel, vibe, highlights, budget, whatever you want.
+ 
+   Her pick is remembered in SELECTED_TRIP (used to title the calendar)
+   and — if EmailJS is set up (it is, for the terms screen) — emailed to
+   you silently so you know which one she chose.
+   ===================================================================== */
+const TRIPS = [
+  {
+    id: "A",
+    name: "PLACEHOLDER — Destination 1 ✏️",
+    place: "City, Country ✏️",
+    img: "trip1.jpg",
+    tagline: "One-line romantic hook for this trip ✏️",
+    details: [
+      "🗓️ 3 days · Nov 7–9, 2026",
+      "🏨 Where you'll stay ✏️",
+      "✨ Highlight #1 ✏️",
+      "🍽️ Highlight #2 ✏️",
+    ],
+  },
+  {
+    id: "B",
+    name: "PLACEHOLDER — Destination 2 ✏️",
+    place: "City, Country ✏️",
+    img: "trip2.jpg",
+    tagline: "One-line romantic hook for this trip ✏️",
+    details: [
+      "🗓️ 3 days · Nov 7–9, 2026",
+      "🏨 Where you'll stay ✏️",
+      "✨ Highlight #1 ✏️",
+      "🌅 Highlight #2 ✏️",
+    ],
+  },
+  {
+    id: "C",
+    name: "PLACEHOLDER — Destination 3 ✏️",
+    place: "City, Country ✏️",
+    img: "trip3.jpg",
+    tagline: "One-line romantic hook for this trip ✏️",
+    details: [
+      "🗓️ 3 days · Nov 7–9, 2026",
+      "🏨 Where you'll stay ✏️",
+      "✨ Highlight #1 ✏️",
+      "🏖️ Highlight #2 ✏️",
+    ],
+  },
+];
+ 
+// Remembered across screens (the calendar reads this to title itself).
+let SELECTED_TRIP = null;
+ 
+function showTrip() { if (initTrip._reset) initTrip._reset(); }
+ 
+function initTrip() {
+  const listEl    = document.getElementById("trip-list");
+  const confirmEl = document.getElementById("trip-confirm");
+  let chosen = null;
+ 
+  const prettify = s => (s || "").replace(/([a-z0-9])([A-Z])/g, "$1 $2").trim();
+ 
+  function render() {
+    listEl.innerHTML = "";
+    chosen = null;
+    confirmEl.disabled = true;
+    confirmEl.textContent = "Reserve this trip →";
+ 
+    TRIPS.forEach(trip => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "trip-card";
+      card.dataset.id = trip.id;
+      const details = (trip.details || [])
+        .map(d => '<li>' + d + '</li>').join("");
+      card.innerHTML =
+        '<div class="trip-photo">' +
+          '<img alt="">' +
+          '<span class="trip-ph">✈️ ' + prettify(trip.name) + '</span>' +
+          '<span class="trip-pick">✓ Chosen</span>' +
+        '</div>' +
+        '<div class="trip-info">' +
+          '<div class="trip-name">' + trip.name + '</div>' +
+          (trip.place ? '<div class="trip-place">📍 ' + trip.place + '</div>' : '') +
+          (trip.tagline ? '<div class="trip-tag">' + trip.tagline + '</div>' : '') +
+          (details ? '<ul class="trip-details">' + details + '</ul>' : '') +
+        '</div>';
+      const img = card.querySelector("img");
+      img.onload = () => card.classList.add("has-img");
+      if (trip.img) img.src = trip.img;
+ 
+      card.addEventListener("click", () => {
+        listEl.querySelectorAll(".trip-card").forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+        chosen = trip;
+        confirmEl.disabled = false;
+        confirmEl.textContent = "Reserve this trip →";
+        card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+ 
+      listEl.appendChild(card);
+    });
+  }
+ 
+  // Best-effort silent email so you know which trip she picked (reuses the
+  // terms EmailJS template — subject/message only, like the signed agreement).
+  function emailTripChoice(trip) {
+    if (!(window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId)) return;
+    const message =
+      "She picked your anniversary trip ✈️\n\n" +
+      "Destination: " + trip.name + "\n" +
+      (trip.place ? "Location: " + trip.place + "\n" : "") +
+      "\nDetails she saw:\n" +
+      (trip.details || []).map(d => "  • " + d).join("\n") +
+      "\n\nGo book it 💖";
+    try {
+      emailjs.init({ publicKey: EMAILJS.publicKey });
+      emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
+        { to_email: RENEWAL_EMAIL_TO, subject: "✈️ She chose the trip: " + trip.name, message: message }
+      ).catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+ 
+  confirmEl.addEventListener("click", () => {
+    if (!chosen) return;
+    SELECTED_TRIP = chosen;
+    emailTripChoice(chosen);
+    confirmEl.disabled = true;
+    confirmEl.textContent = "Reserved ✓ Now let's lock the dates →";
+    setTimeout(nextScreen, 1200);
+  });
+ 
+  initTrip._reset = render;
+  render();
+}
+ 
+/* =====================================================================
+   SCREEN 9 — DATE PICKER  (reserve the trip's date RANGE, not one day)
+   ---------------------------------------------------------------------
+   ✏️  TRIP_DATES is the ONLY accepted reservation: she taps a check-in and
+   a check-out and must land on exactly this range (Nov 7 → Nov 9, 2026).
+   Any other range shows a random funny excuse from DATE_EXCUSES (reused).
    Edit the excuses freely — add/remove as many as you like.
    ===================================================================== */
-const DATE_ANSWER = { year: 2026, month: 11, day: 9 };   // November 9, 2026
+const TRIP_DATES = { year: 2026, month: 11, start: 7, end: 9 };   // Nov 7–9, 2026 (month 1-indexed)
  
 const DATE_EXCUSES = [
   "Booked solid — Cameo scheduled a very important nap that day 🐱",
@@ -2555,9 +2698,9 @@ const DATE_EXCUSES = [
  
 const DATE_HINTS = [
   "",
-  "",
-  "💡 Psst… pick a day that already means something to us 💕",
-  "💡 Our anniversary. The 9th of November. You've got this 😉",
+  "💡 It's a getaway — tap a check-in, then a check-out 🧳",
+  "💡 Think anniversary weekend… three days in November 💕",
+  "💡 Check-in November 7th, check-out November 9th, 2026 😉",
 ];
  
 function showDatePicker() { if (initDatePicker._reset) initDatePicker._reset(); }
@@ -2570,17 +2713,36 @@ function initDatePicker() {
   const msgEl   = document.getElementById("date-msg");
   const hintEl  = document.getElementById("date-hint");
   const win     = document.querySelector("#date-screen .win");
+  const titleEl = document.querySelector("#date-screen .date-title");
+  const subEl   = document.querySelector("#date-screen .date-sub");
  
   const MONTHS = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"];
  
-  let viewYear  = DATE_ANSWER.year;
-  let viewMonth = DATE_ANSWER.month - 1;   // 0-indexed for JS Date
+  let viewYear  = TRIP_DATES.year;
+  let viewMonth = TRIP_DATES.month - 1;   // 0-indexed for JS Date
+  let startDay  = null;                    // chosen check-in (day number in the trip month)
   let wrong = 0;
   let done  = false;
  
   const rand  = a => a[Math.floor(Math.random() * a.length)];
   const shake = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
+  const onTripMonth = () => viewYear === TRIP_DATES.year && viewMonth === TRIP_DATES.month - 1;
+  const cellFor = d => [...grid.querySelectorAll(".date-cell:not(.empty)")]
+    .find(c => +c.textContent === d);
+ 
+  function clearMarks() {
+    grid.querySelectorAll(".date-cell").forEach(c =>
+      c.classList.remove("picking", "range-start", "range-mid", "range-end", "correct"));
+  }
+  // paint a start→end span (used both for the pending pick and the final reserve)
+  function paintRange(a, b, reserved) {
+    for (let d = a; d <= b; d++) {
+      const c = cellFor(d); if (!c) continue;
+      if (reserved) c.classList.add("correct");
+      c.classList.add(d === a ? "range-start" : d === b ? "range-end" : "range-mid");
+    }
+  }
  
   function build() {
     monthEl.textContent = MONTHS[viewMonth] + " " + viewYear;
@@ -2601,26 +2763,25 @@ function initDatePicker() {
       cell.addEventListener("click", () => pick(d, cell));
       grid.appendChild(cell);
     }
+    // if a check-in is already pending on this month, keep it highlighted
+    if (startDay != null && onTripMonth()) { const c = cellFor(startDay); if (c) c.classList.add("picking"); }
   }
  
-  function pick(d, cell) {
-    if (done) return;
-    const isCorrect =
-      viewYear === DATE_ANSWER.year &&
-      viewMonth === DATE_ANSWER.month - 1 &&
-      d === DATE_ANSWER.day;
+  function reserve(a, b) {
+    done = true;
+    clearMarks();
+    paintRange(a, b, true);
+    grid.querySelectorAll(".date-cell").forEach(c => c.disabled = true);
+    hintEl.textContent = "";
+    const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " — " + SELECTED_TRIP.name : "";
+    msgEl.textContent = "Reserved ✈️ Nov 7–9, 2026" + dest + ". Pack your bags 💖";
+    msgEl.className = "date-msg ok";
+    setTimeout(nextScreen, 1800);
+  }
  
-    if (isCorrect) {
-      done = true;
-      grid.querySelectorAll(".date-cell").forEach(c => c.disabled = true);
-      cell.classList.add("correct");
-      hintEl.textContent = "";
-      msgEl.textContent = "It's a date 💖 See you November 9th, 2026 ✨";
-      msgEl.className = "date-msg ok";
-      setTimeout(nextScreen, 1600);
-      return;
-    }
- 
+  function reject(cell) {
+    startDay = null;
+    clearMarks();
     cell.classList.remove("wrong"); void cell.offsetWidth; cell.classList.add("wrong");
     setTimeout(() => cell.classList.remove("wrong"), 500);
     msgEl.textContent = rand(DATE_EXCUSES);
@@ -2628,6 +2789,28 @@ function initDatePicker() {
     shake();
     wrong++;
     hintEl.textContent = DATE_HINTS[Math.min(wrong, DATE_HINTS.length - 1)];
+  }
+ 
+  function pick(d, cell) {
+    if (done) return;
+ 
+    // wrong month entirely → excuse, reset any pending pick
+    if (!onTripMonth()) { reject(cell); return; }
+ 
+    // FIRST tap = check-in
+    if (startDay == null) {
+      startDay = d;
+      clearMarks();
+      cell.classList.add("picking");
+      msgEl.textContent = "Check-in: " + MONTHS[viewMonth] + " " + d + " ✈️ now pick your check-out 🧳";
+      msgEl.className = "date-msg";
+      return;
+    }
+ 
+    // SECOND tap = check-out → validate the whole range
+    const a = Math.min(startDay, d), b = Math.max(startDay, d);
+    if (a === TRIP_DATES.start && b === TRIP_DATES.end) { reserve(a, b); return; }
+    reject(cell);   // wrong span → funny excuse + reset to pick check-in again
   }
  
   prevBtn.addEventListener("click", () => {
@@ -2640,11 +2823,16 @@ function initDatePicker() {
   });
  
   initDatePicker._reset = () => {
-    viewYear  = DATE_ANSWER.year;
-    viewMonth = DATE_ANSWER.month - 1;
-    wrong = 0; done = false;
+    viewYear  = TRIP_DATES.year;
+    viewMonth = TRIP_DATES.month - 1;
+    wrong = 0; done = false; startDay = null;
     msgEl.textContent = ""; msgEl.className = "date-msg";
     hintEl.textContent = "";
+    if (titleEl) titleEl.textContent = "Reserve our trip 🧳";
+    if (subEl) {
+      const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " to " + SELECTED_TRIP.name : "";
+      subEl.textContent = "Pick your check-in and check-out" + dest + " 💕";
+    }
     build();
   };
   build();
