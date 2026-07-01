@@ -1116,6 +1116,7 @@ body {
   max-height: calc(100vh - 250px); overflow-y: auto;
 }
 .trip-card {
+  flex: 0 0 auto;                                   /* keep full height; let the LIST scroll */
   text-align: left; font-family: var(--font); cursor: pointer; padding: 0; overflow: hidden;
   background: #fff; border: 3px solid var(--frame); border-radius: 10px; color: var(--ink);
   display: flex; flex-direction: column;
@@ -1141,7 +1142,7 @@ body {
 }
 .trip-card.selected .trip-pick { opacity: 1; transform: scale(1); }
 .trip-info {
-  padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px; min-height: 0;
+  padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px; flex: none;
 }
 .trip-name { font-weight: 700; font-size: 17px; color: var(--ink); line-height: 1.15; }
 .trip-place { font-size: 13px; color: var(--ink-soft); }
@@ -1150,11 +1151,7 @@ body {
   margin: 6px 0 0; padding: 0; list-style: none;
   display: flex; flex-direction: column; gap: 3px;
   font-size: 13px; line-height: 1.35; color: var(--ink);
-  max-height: 132px; overflow-y: auto;                 /* long plans scroll here */
-  -webkit-overflow-scrolling: touch;
 }
-.trip-details::-webkit-scrollbar { width: 6px; }
-.trip-details::-webkit-scrollbar-thumb { background: var(--panel-2); border-radius: 3px; }
 .trip-confirm {
   font-family: var(--font); font-weight: 700; font-size: 16px; cursor: pointer;
   background: var(--frame); color: #fff; border: 3px solid var(--frame-dark);
@@ -1175,4 +1172,3 @@ body {
 }
 .date-confirm:hover:not(:disabled) { background: var(--frame-dark); }
 .date-confirm:disabled { opacity: .5; cursor: not-allowed; }
- 
