@@ -1840,6 +1840,20 @@ function initLogin() {
   btn.addEventListener("click", submit);
   userEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
   passEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+ 
+  // show/hide password eye (SVG icons — renders the same in every browser)
+  const eye = document.getElementById("login-eye");
+  if (eye) {
+    eye.addEventListener("click", () => {
+      const show = passEl.type === "password";   // about to reveal
+      passEl.type = show ? "text" : "password";
+      eye.classList.toggle("showing", show);
+      const lbl = show ? "Hide password" : "Show password";
+      eye.setAttribute("aria-label", lbl);
+      eye.setAttribute("title", lbl);
+      passEl.focus();
+    });
+  }
 }
  
 /* =====================================================================
@@ -2550,7 +2564,7 @@ const TRIPS = [
     img: "trip1.jpg",
     tagline: "One-line romantic hook for this trip ✏️",
     details: [
-      "🗓️ 3 days · Nov 7–9, 2026",
+      "🗓️ 7th to 9th of November, 2026",
       "🏨 Where you'll stay ✏️",
       "✨ Highlight #1 ✏️",
       "🍽️ Highlight #2 ✏️",
@@ -2563,7 +2577,7 @@ const TRIPS = [
     img: "trip2.jpg",
     tagline: "One-line romantic hook for this trip ✏️",
     details: [
-      "🗓️ 3 days · Nov 7–9, 2026",
+      "🗓️ 7th to 9th of November, 2026",
       "🏨 Where you'll stay ✏️",
       "✨ Highlight #1 ✏️",
       "🌅 Highlight #2 ✏️",
@@ -2576,7 +2590,7 @@ const TRIPS = [
     img: "trip3.jpg",
     tagline: "One-line romantic hook for this trip ✏️",
     details: [
-      "🗓️ 3 days · Nov 7–9, 2026",
+      "🗓️ 7th to 9th of November, 2026",
       "🏨 Where you'll stay ✏️",
       "✨ Highlight #1 ✏️",
       "🏖️ Highlight #2 ✏️",
@@ -2678,7 +2692,7 @@ function initTrip() {
    Any other range shows a random funny excuse from DATE_EXCUSES (reused).
    Edit the excuses freely — add/remove as many as you like.
    ===================================================================== */
-const TRIP_DATES = { year: 2026, month: 11, start: 7, end: 9 };   // Nov 7–9, 2026 (month 1-indexed)
+const TRIP_DATES = { year: 2026, month: 11, days: [7, 8, 9] };   // 7th–9th of November 2026 (month 1-indexed)
  
 const DATE_EXCUSES = [
   "Booked solid — Cameo scheduled a very important nap that day 🐱",
@@ -2698,50 +2712,44 @@ const DATE_EXCUSES = [
  
 const DATE_HINTS = [
   "",
-  "💡 It's a getaway — tap a check-in, then a check-out 🧳",
-  "💡 Think anniversary weekend… three days in November 💕",
-  "💡 Check-in November 7th, check-out November 9th, 2026 😉",
+  "💡 It's a 3-day getaway — you'll need all three days 🧳",
+  "💡 Think anniversary weekend… the 7th, 8th and 9th 💕",
+  "💡 Tap the 7th, 8th AND 9th of November, 2026 😉",
 ];
  
 function showDatePicker() { if (initDatePicker._reset) initDatePicker._reset(); }
  
 function initDatePicker() {
-  const grid    = document.getElementById("date-grid");
-  const monthEl = document.getElementById("date-month");
-  const prevBtn = document.getElementById("date-prev");
-  const nextBtn = document.getElementById("date-next");
-  const msgEl   = document.getElementById("date-msg");
-  const hintEl  = document.getElementById("date-hint");
-  const win     = document.querySelector("#date-screen .win");
-  const titleEl = document.querySelector("#date-screen .date-title");
-  const subEl   = document.querySelector("#date-screen .date-sub");
+  const grid      = document.getElementById("date-grid");
+  const monthEl   = document.getElementById("date-month");
+  const prevBtn   = document.getElementById("date-prev");
+  const nextBtn   = document.getElementById("date-next");
+  const msgEl     = document.getElementById("date-msg");
+  const hintEl    = document.getElementById("date-hint");
+  const confirmEl = document.getElementById("date-confirm");
+  const win       = document.querySelector("#date-screen .win");
+  const titleEl   = document.querySelector("#date-screen .date-title");
+  const subEl     = document.querySelector("#date-screen .date-sub");
  
   const MONTHS = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"];
  
+  const NEED = TRIP_DATES.days.slice();          // [7, 8, 9]
+  const needSet = new Set(NEED);
+  const picked = new Set();                       // required days she's turned green
   let viewYear  = TRIP_DATES.year;
-  let viewMonth = TRIP_DATES.month - 1;   // 0-indexed for JS Date
-  let startDay  = null;                    // chosen check-in (day number in the trip month)
+  let viewMonth = TRIP_DATES.month - 1;           // 0-indexed for JS Date
   let wrong = 0;
   let done  = false;
  
   const rand  = a => a[Math.floor(Math.random() * a.length)];
   const shake = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
   const onTripMonth = () => viewYear === TRIP_DATES.year && viewMonth === TRIP_DATES.month - 1;
-  const cellFor = d => [...grid.querySelectorAll(".date-cell:not(.empty)")]
-    .find(c => +c.textContent === d);
+  const cellFor = d => [...grid.querySelectorAll(".date-cell:not(.empty)")].find(c => +c.textContent === d);
+  const allPicked = () => NEED.every(d => picked.has(d));
  
-  function clearMarks() {
-    grid.querySelectorAll(".date-cell").forEach(c =>
-      c.classList.remove("picking", "range-start", "range-mid", "range-end", "correct"));
-  }
-  // paint a start→end span (used both for the pending pick and the final reserve)
-  function paintRange(a, b, reserved) {
-    for (let d = a; d <= b; d++) {
-      const c = cellFor(d); if (!c) continue;
-      if (reserved) c.classList.add("correct");
-      c.classList.add(d === a ? "range-start" : d === b ? "range-end" : "range-mid");
-    }
+  function updateConfirm() {
+    confirmEl.disabled = !allPicked();
   }
  
   function build() {
@@ -2760,28 +2768,15 @@ function initDatePicker() {
       cell.type = "button";
       cell.className = "date-cell";
       cell.textContent = d;
+      if (done) cell.disabled = true;
       cell.addEventListener("click", () => pick(d, cell));
       grid.appendChild(cell);
     }
-    // if a check-in is already pending on this month, keep it highlighted
-    if (startDay != null && onTripMonth()) { const c = cellFor(startDay); if (c) c.classList.add("picking"); }
-  }
- 
-  function reserve(a, b) {
-    done = true;
-    clearMarks();
-    paintRange(a, b, true);
-    grid.querySelectorAll(".date-cell").forEach(c => c.disabled = true);
-    hintEl.textContent = "";
-    const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " — " + SELECTED_TRIP.name : "";
-    msgEl.textContent = "Reserved ✈️ Nov 7–9, 2026" + dest + ". Pack your bags 💖";
-    msgEl.className = "date-msg ok";
-    setTimeout(nextScreen, 1800);
+    // re-paint already-chosen days green when this month is shown
+    if (onTripMonth()) picked.forEach(d => { const c = cellFor(d); if (c) c.classList.add("picked"); });
   }
  
   function reject(cell) {
-    startDay = null;
-    clearMarks();
     cell.classList.remove("wrong"); void cell.offsetWidth; cell.classList.add("wrong");
     setTimeout(() => cell.classList.remove("wrong"), 500);
     msgEl.textContent = rand(DATE_EXCUSES);
@@ -2791,26 +2786,45 @@ function initDatePicker() {
     hintEl.textContent = DATE_HINTS[Math.min(wrong, DATE_HINTS.length - 1)];
   }
  
+  function finish() {
+    done = true;
+    grid.querySelectorAll(".date-cell").forEach(c => c.disabled = true);
+    hintEl.textContent = "";
+    confirmEl.disabled = true;
+    const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " — " + SELECTED_TRIP.name : "";
+    msgEl.textContent = "Reserved ✈️ 7th to 9th of November, 2026" + dest + ". Pack your bags 💖";
+    msgEl.className = "date-msg ok";
+    setTimeout(nextScreen, 1800);
+  }
+ 
   function pick(d, cell) {
     if (done) return;
  
-    // wrong month entirely → excuse, reset any pending pick
-    if (!onTripMonth()) { reject(cell); return; }
- 
-    // FIRST tap = check-in
-    if (startDay == null) {
-      startDay = d;
-      clearMarks();
-      cell.classList.add("picking");
-      msgEl.textContent = "Check-in: " + MONTHS[viewMonth] + " " + d + " ✈️ now pick your check-out 🧳";
-      msgEl.className = "date-msg";
+    // an accepted trip day (7/8/9 on Nov 2026) → toggle it green
+    if (onTripMonth() && needSet.has(d)) {
+      if (picked.has(d)) {                 // tap again to remove
+        picked.delete(d);
+        cell.classList.remove("picked");
+      } else {
+        picked.add(d);
+        cell.classList.remove("picked"); void cell.offsetWidth; cell.classList.add("picked");
+      }
+      updateConfirm();
+      if (allPicked()) {
+        msgEl.textContent = "All three locked in 💚 hit reserve below ↓";
+        msgEl.className = "date-msg ok";
+        hintEl.textContent = "";
+      } else {
+        const left = NEED.filter(x => !picked.has(x));
+        msgEl.textContent = "Nice — " + picked.size + "/3 chosen. Still need the " +
+          left.map(x => x + "th").join(" & ") + " ✈️";
+        msgEl.className = "date-msg";
+      }
       return;
     }
  
-    // SECOND tap = check-out → validate the whole range
-    const a = Math.min(startDay, d), b = Math.max(startDay, d);
-    if (a === TRIP_DATES.start && b === TRIP_DATES.end) { reserve(a, b); return; }
-    reject(cell);   // wrong span → funny excuse + reset to pick check-in again
+    // anything else → a funny excuse (keeps the green picks she already has)
+    reject(cell);
   }
  
   prevBtn.addEventListener("click", () => {
@@ -2821,17 +2835,19 @@ function initDatePicker() {
     if (++viewMonth > 11) { viewMonth = 0; viewYear++; }
     build();
   });
+  confirmEl.addEventListener("click", () => { if (allPicked() && !done) finish(); });
  
   initDatePicker._reset = () => {
     viewYear  = TRIP_DATES.year;
     viewMonth = TRIP_DATES.month - 1;
-    wrong = 0; done = false; startDay = null;
+    wrong = 0; done = false; picked.clear();
     msgEl.textContent = ""; msgEl.className = "date-msg";
     hintEl.textContent = "";
+    confirmEl.disabled = true;
     if (titleEl) titleEl.textContent = "Reserve our trip 🧳";
     if (subEl) {
       const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " to " + SELECTED_TRIP.name : "";
-      subEl.textContent = "Pick your check-in and check-out" + dest + " 💕";
+      subEl.textContent = "Pick all three days — 7th to 9th of November" + dest + " 💕";
     }
     build();
   };
