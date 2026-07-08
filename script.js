@@ -2559,15 +2559,16 @@ function showTerms() { if (initTerms._reset) initTerms._reset(); }
 const TRIPS = [
   {
     id: "A",
-    name: "PLACEHOLDER — Destination 1 ✏️",
-    place: "City, Country ✏️",
+    name: "Salem, Massachusetts 🎃",
+    place: "Salem, Massachusetts, USA",
     img: "trip1.jpg",
-    tagline: "One-line romantic hook for this trip ✏️",
+    tagline: "Witchy vibes, cobblestone streets & peak Halloween magic 🖤",
     details: [
       "🗓️ 7th to 9th of November, 2026",
-      "🏨 Where you'll stay ✏️",
-      "✨ Highlight #1 ✏️",
-      "🍽️ Highlight #2 ✏️",
+      "🧹 Witch history, haunted lanes & spooky-cute shops",
+      "🍂 Golden fall scenery and full Halloween-season atmosphere",
+      "🕯️ Cozy nights in the most bewitching town in New England",
+      "🏨 Where we'll stay ✏️ (add later)",
     ],
   },
   {
