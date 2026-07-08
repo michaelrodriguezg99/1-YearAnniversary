@@ -2568,7 +2568,7 @@ const TRIPS = [
       "🧹 Witch history, haunted lanes & spooky-cute shops",
       "🍂 Golden fall scenery and full Halloween-season atmosphere",
       "🕯️ Cozy nights in the most bewitching town in New England",
-      "🏨 Where we'll stay ✏️ (add later)",
+      "🏡 A cozy Airbnb in the heart of town",
     ],
   },
   {
@@ -2960,3 +2960,32 @@ function initLetter() {
     if (phase === "runaway") { showFinal(); }
   });
 }
+ 
+/* =====================================================================
+   DEV SKIP — TESTING ONLY.  ⚠️ REMOVE BEFORE SENDING:
+   flip DEV_SKIP to false, or delete this whole block. Also delete the
+   matching "DEV SKIP" block in style.css. Nothing else references it.
+   ===================================================================== */
+const DEV_SKIP = true;                     // <-- set to false to hide the skip buttons
+function _devGoto(delta) {
+  const i = Math.min(SCREENS.length - 1, Math.max(0, _screen + delta));
+  if (i === _screen) return;
+  _screen = i;
+  showScreen(_screen);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  if (!DEV_SKIP) return;
+  const bar = document.createElement("div");
+  bar.id = "dev-skip";
+  bar.innerHTML =
+    '<button type="button" id="dev-prev" title="Previous screen">◀ Back</button>' +
+    '<span id="dev-label"></span>' +
+    '<button type="button" id="dev-next" title="Next screen">Skip ▶</button>';
+  document.body.appendChild(bar);
+  const label = bar.querySelector("#dev-label");
+  const upd = () => { label.textContent = (_screen + 1) + " / " + SCREENS.length; };
+  bar.querySelector("#dev-prev").addEventListener("click", () => { _devGoto(-1); upd(); });
+  bar.querySelector("#dev-next").addEventListener("click", () => { _devGoto(1); upd(); });
+  setInterval(upd, 400);                    // keep the counter fresh when normal flow advances
+  upd();
+});
