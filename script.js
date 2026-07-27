@@ -349,6 +349,7 @@ const CAPTCHA_COMBOS = [
   ["Allie", "Dean"],                     // their couple gif
   ["Allie", "Hannah"],                   // their gif
   ["AlastorDemon", "AlastorHuman"],      // both Alastors
+  ["Dabi", "Hawks"],                     // secret episode: Hawks laid an egg 🥚
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
   ["RauwAlejandro", "BadBunny"],         // the duet
@@ -361,6 +362,23 @@ const RARITY = {
   2: { key: "rare",      label: "Rare" },
   3: { key: "ultrarare", label: "Ultra Rare" },
   4: { key: "godtier",   label: "God Tier" },
+};
+ 
+// ----- Dabi + Hawks secret episode (fires when BOTH are verified together) -----
+// ✏️ Edit freely — `paragraphs` reveal one-by-one; `end` is the sign-off line.
+const HAWKS_EGG_EPISODE = {
+  badge: "🔓 SECRET EPISODE UNLOCKED",
+  title: "Hawks Laid an Egg 🥚",
+  sub: "MHA · Episode 7½ · never aired",
+  paragraphs: [
+    `COLD OPEN — 3 a.m., the Hero Commission break room. Hawks stands frozen, wings drooping, staring at the floor. There, impossibly, sits one warm, faintly glowing egg.`,
+    `"Keigo," Dabi says slowly, blue flames flickering low, "what did you DO." "I panicked!" Hawks whispers. "You said you were cold, so I — instinct took over!"`,
+    `The egg wobbles. It glows soft blue, trimmed with tiny red feathers. It has Hawks's eyes. It has Dabi's scowl. Neither disaster man knows how to keep an egg warm without freezing it OR cremating it.`,
+    `There is only one person calm enough — and unbothered enough by two chaotic men — to take the job. They make the call. Enter ALONDRA.`,
+    `She takes one look at the glowing egg, sighs the sigh of a woman who has seen worse, tucks it into a stolen hoodie (Michael's, obviously), and declares: "Fine. I'm the godmother, the egg's name is Caramelo Jr., and you two are splitting the vet bills with Cameo and Candy."`,
+    `Hawks bursts into tears. Dabi pretends he isn't. The egg glows a little brighter. 🔥🪶`,
+  ],
+  end: "TO BE CONTINUED… next season — if the Girlfriend Subscription renews 😌🥚",
 };
  
 function initCaptcha() {
@@ -1257,6 +1275,39 @@ function initCaptcha() {
     document.addEventListener("keydown", onKey);
   }
  
+  // ----- Dabi + Hawks: the unlocked "secret episode" card -----
+  function showSecretEpisode() {
+    const ep = HAWKS_EGG_EPISODE;
+    const old = document.querySelector(".episode-modal");
+    if (old) old.remove();
+    const ov = document.createElement("div");
+    ov.className = "episode-modal";
+    ov.innerHTML =
+      '<div class="episode-card">' +
+        '<div class="episode-egg">🥚</div>' +
+        '<div class="episode-badge">' + ep.badge + '</div>' +
+        '<div class="episode-title">' + ep.title + '</div>' +
+        (ep.sub ? '<div class="episode-sub">' + ep.sub + '</div>' : '') +
+        '<div class="episode-body">' +
+          ep.paragraphs.map((p, i) => '<p style="--i:' + i + '">' + p + '</p>').join("") +
+          '<p class="episode-end" style="--i:' + ep.paragraphs.length + '">' + ep.end + '</p>' +
+        '</div>' +
+        '<button type="button" class="episode-close">The End ⏎</button>' +
+      '</div>';
+    document.body.appendChild(ov);
+    let done = false;
+    function close() {
+      if (done) return; done = true;
+      document.removeEventListener("keydown", onKey);
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 220);
+    }
+    function onKey(e) { if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); close(); } }
+    ov.querySelector(".episode-close").addEventListener("click", close);
+    ov.addEventListener("click", (e) => { if (e.target === ov) close(); }); // tap backdrop to dismiss
+    document.addEventListener("keydown", onKey);
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1687,6 +1738,14 @@ function initCaptcha() {
     if (picked.length === 2 && picked.includes("AlastorDemon") && picked.includes("AlastorHuman")) {
       showGif("Danny.gif");
       fail("HANNA MONTANA?!?!?! Very Bi of you.");
+      return;
+    }
+    // Dabi + Hawks (and ONLY those two) => secret episode: "Hawks Laid an Egg"
+    if (picked.length === 2 && picked.includes("Dabi") && picked.includes("Hawks")) {
+      triggerCharFx("blueflame");                 // Dabi's blue fire
+      triggerCharFx("feathers");                  // Hawks's feathers, together
+      showSecretEpisode();
+      fail("🥚 SECRET EPISODE UNLOCKED — Hawks laid an egg?!");
       return;
     }
     // all the Avatar / Pandora characters together => avatar gif
