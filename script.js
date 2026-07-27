@@ -322,6 +322,10 @@ const CAPTCHA_POOL = [
     caption: "It is really is Zuko 🙃" },
   { src: "Cassian.jpg", label: "Cassian", power: "blades",
     caption: "Cassian — Lord of Bloodshed, 500+ years old, and STILL can't admit his feelings to Nesta. I sorted mine out in a year 😌🗡️" },
+  { src: "Dabi.jpg", label: "Dabi", fx: "blueflame",
+    caption: "Dabi?? Literalmente se autocombustiona 🔥💙 y su plan de vida es quemar a su familia. Yo te mantengo calientita sin mandarte a emergencias 😌" },
+  { src: "Hawks.jpg", label: "Hawks", fx: "feathers",
+    caption: "Hawks — el héroe #2, rapidísimo… pa' salir volando 🪶. Yo no alzo vuelo, me quedo contigo ❤️" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -489,6 +493,8 @@ function initCaptcha() {
     hextech: { emojis: ["🔷", "✨", "🎯"],                  mode: "rain",      tint: "rgba(30,90,150,0.28)", count: 24 }, // Caitlyn — Piltover
     impact:  { emojis: ["👊", "💥", "⭐"],                  mode: "burst",     tint: "rgba(150,40,90,0.25)", count: 24 }, // Vi — Zaun brawler
     zap:     { emojis: ["⚡", "🔵", "💠"],                  mode: "burst",     tint: "rgba(30,60,160,0.28)", count: 24 }, // Megamind — tech
+    blueflame: { emojis: ["💙", "🔥", "💠"],               mode: "rise",      tint: "rgba(20,80,190,0.34)", count: 30 }, // Dabi — blue flames
+    feathers:  { emojis: ["🪶", "❤️", "✨"],                mode: "rain",      tint: "rgba(180,40,30,0.20)", count: 26 }, // Hawks — crimson feathers
   };
  
   let charFx = document.querySelector(".char-fx");
