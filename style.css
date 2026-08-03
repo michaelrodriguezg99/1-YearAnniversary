@@ -1253,6 +1253,7 @@ body {
  
 /* the tome / scroll window: parchment inside a gilded wooden frame */
 #captcha-screen .win {
+  position: relative;
   background:
     radial-gradient(circle at 16% 10%, rgba(255,255,255,.35), transparent 42%),
     linear-gradient(180deg, var(--m-parch), var(--m-parch2));
@@ -1342,13 +1343,49 @@ body {
 }
 #captcha-screen .cap-verify:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 0 var(--m-wood-dk); }
  
-/* relic-rarity chips on parchment */
-#captcha-screen .cap-rarity .rar-key { font-family: var(--m-title); color: var(--m-ink-sft); }
-#captcha-screen .rar-chip {
-  font-family: var(--m-serif); background: var(--m-parch);
-  border: 1.5px solid var(--m-gold); color: var(--m-ink-sft);
+/* relic-rarity chips on parchment — high contrast so "in play" reads clearly */
+#captcha-screen .cap-rarity .rar-key {
+  font-family: var(--m-title); font-weight: 700; letter-spacing: 2px;
+  color: var(--m-ink); opacity: .9;
 }
-#captcha-screen .rar-chip.active { color: #fff; }
+#captcha-screen .rar-chip {
+  font-family: var(--m-serif); font-weight: 700; font-size: 12px;
+  background: rgba(58,38,18,.20);
+  border: 1.5px solid var(--m-gold);
+  color: #3f2f1a; opacity: .6;                 /* dim but still legible = not in play */
+}
+#captcha-screen .rar-chip.active {
+  opacity: 1; color: #fff;
+  border-color: var(--m-gold-lt);
+  box-shadow: 0 0 12px rgba(230,199,102,.6), 0 2px 6px rgba(0,0,0,.35);
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+#captcha-screen .rar-common.active    { background: linear-gradient(180deg,#7a9648,#4c642c); } /* mossy */
+#captcha-screen .rar-rare.active      { background: linear-gradient(180deg,#4a86d0,#295a95); } /* sapphire */
+#captcha-screen .rar-ultrarare.active { background: linear-gradient(180deg,#9a5fe0,#5e2f96); } /* amethyst */
+#captcha-screen .rar-godtier.active   { background: linear-gradient(180deg,#efce6f,#b58f36); color:#3a2a10; text-shadow:none; } /* gold */
+ 
+/* --- Moss creeping up the sides of the frame --- */
+#captcha-screen .win::before,
+#captcha-screen .win::after {
+  content: ""; position: absolute; z-index: 3; pointer-events: none; width: 32px;
+  background:
+    radial-gradient(circle at 22% 8%,  rgba(150,180,86,.90) 0, rgba(150,180,86,0) 55%),
+    radial-gradient(circle at 60% 22%, rgba(122,150,72,.95) 0, rgba(122,150,72,0) 58%),
+    radial-gradient(circle at 34% 40%, rgba(90,120,52,.98) 0, rgba(90,120,52,0) 58%),
+    radial-gradient(circle at 62% 58%, rgba(70,100,42,1)   0, rgba(70,100,42,0) 58%),
+    radial-gradient(circle at 36% 74%, rgba(56,82,34,1)    0, rgba(56,82,34,0) 58%),
+    radial-gradient(circle at 58% 90%, rgba(96,126,56,.95) 0, rgba(96,126,56,0) 58%);
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.4));
+}
+#captcha-screen .win::before {          /* left side, upper clump */
+  left: -18px; top: 48px; height: 130px;
+  border-radius: 60% 40% 55% 45% / 30% 35% 65% 70%;
+}
+#captcha-screen .win::after {           /* right side, lower clump */
+  right: -18px; bottom: 42px; height: 158px;
+  border-radius: 45% 55% 45% 55% / 40% 30% 70% 60%;
+}
  
 /* =====================================================================
    DEV SKIP — TESTING ONLY.  ⚠️ delete this block when done (and the
@@ -1367,3 +1404,4 @@ body {
 }
 #dev-skip button:active { transform: translateY(1px); }
 #dev-skip #dev-label { min-width: 34px; text-align: center; opacity: .9; }
+ 
