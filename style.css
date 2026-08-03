@@ -1227,6 +1227,130 @@ body {
 .episode-close:hover { background: var(--frame-dark); }
  
 /* =====================================================================
+   CAPTCHA — VINTAGE MEDIEVAL RE-SKIN (scoped to #captcha-screen only).
+   Every other screen keeps the pink pixel-OS look.
+   ===================================================================== */
+#captcha-screen {
+  --m-parch:   #ece0c2;   /* parchment */
+  --m-parch2:  #dcc9a0;   /* aged parchment */
+  --m-ink:     #3a2a17;   /* iron-gall ink */
+  --m-ink-sft: #715a3c;   /* faded ink */
+  --m-gold:    #b58f36;   /* aged gilt */
+  --m-gold-lt: #e6c766;   /* bright gilt */
+  --m-wood:    #4d3320;   /* dark wood / leather */
+  --m-wood-dk: #2f1c0e;
+  --m-wine:    #7a1f28;   /* royal burgundy */
+  --m-green:   #46602f;   /* forest */
+  --m-serif:   "IM Fell English", Georgia, "Times New Roman", serif;
+  --m-title:   "Cinzel", Georgia, serif;
+}
+ 
+/* moody candle-lit backdrop, only while the captcha is on screen */
+#captcha-screen.active::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 38%, rgba(70,46,22,.32), rgba(16,9,4,.80));
+}
+ 
+/* the tome / scroll window: parchment inside a gilded wooden frame */
+#captcha-screen .win {
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255,255,255,.35), transparent 42%),
+    linear-gradient(180deg, var(--m-parch), var(--m-parch2));
+  border: 4px solid var(--m-wood);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 3px var(--m-gold),
+    0 0 0 6px var(--m-wood-dk),
+    10px 12px 0 0 rgba(0,0,0,.38),
+    inset 0 0 42px rgba(120,80,30,.25);
+}
+ 
+/* carved title banner */
+#captcha-screen .win-bar {
+  background: linear-gradient(180deg, var(--m-wood), var(--m-wood-dk));
+  border-bottom: 3px solid var(--m-gold);
+  color: var(--m-gold-lt);
+  font-family: var(--m-title); font-weight: 700;
+  font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0,0,0,.65);
+}
+#captcha-screen .win-bar .dots { color: var(--m-gold); letter-spacing: 0; font-size: 16px; }
+ 
+/* the royal decree header */
+#captcha-screen .cap-head {
+  background: linear-gradient(180deg, var(--m-wine), #5c151d);
+  color: #f4e5c3;
+  border-bottom: 3px solid var(--m-gold);
+}
+#captcha-screen .cap-prompt {
+  font-family: var(--m-title); font-weight: 700; letter-spacing: .5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+#captcha-screen .cap-head .small { font-family: var(--m-serif); font-style: italic; opacity: .95; }
+ 
+/* refresh becomes a gilded coin/seal */
+#captcha-screen .cap-refresh {
+  background: radial-gradient(circle at 35% 30%, var(--m-gold-lt), var(--m-gold) 62%, #7a5c1e);
+  color: var(--m-wood-dk); border: 2px solid var(--m-wood-dk);
+  font-weight: 700;
+}
+#captcha-screen .cap-refresh:hover {
+  background: radial-gradient(circle at 35% 30%, #f2dc8e, var(--m-gold-lt) 62%, var(--m-gold));
+}
+ 
+/* the grid = gilt-framed portrait gallery */
+#captcha-screen .cap-grid { background: var(--m-wood); gap: 4px; padding: 6px; }
+#captcha-screen .cap-tile { background: var(--m-parch2); box-shadow: inset 0 0 0 2px var(--m-gold); }
+ 
+/* placeholder portraits (until real photos load) */
+#captcha-screen .tile-ph {
+  background: radial-gradient(circle at 50% 34%, #f1e7cd, #cdb488 78%);
+  color: var(--m-ink);
+}
+#captcha-screen .ph-avatar {
+  background: radial-gradient(circle at 40% 35%, var(--m-gold-lt), var(--m-gold) 70%);
+  border: 2px solid var(--m-wood-dk); color: var(--m-wood-dk); text-shadow: none;
+}
+#captcha-screen .ph-name { font-family: var(--m-title); color: var(--m-ink); text-shadow: none; }
+#captcha-screen .cap-tile[data-correct="true"] .tile-ph::after { content: "♛"; color: var(--m-wine); }
+ 
+/* selection mark = a gold wax seal */
+#captcha-screen .cap-tile::after {
+  content: "❧";
+  background: radial-gradient(circle at 35% 30%, var(--m-gold-lt), var(--m-gold) 60%, #7a5c1e);
+  color: var(--m-wood-dk); border: 2px solid var(--m-wood-dk);
+  font-size: 15px;
+}
+ 
+/* footer + heralds' message */
+#captcha-screen .cap-foot {
+  background: linear-gradient(180deg, var(--m-parch), var(--m-parch2));
+  border-top: 3px solid var(--m-gold);
+}
+#captcha-screen .cap-msg { font-family: var(--m-serif); font-size: 15px; color: var(--m-ink); }
+#captcha-screen .cap-msg.bad  { color: var(--m-wine); }
+#captcha-screen .cap-msg.ok   { color: var(--m-green); }
+#captcha-screen .cap-msg.hint { color: var(--m-ink-sft); font-style: italic; }
+ 
+/* verify = wax-sealed royal button */
+#captcha-screen .cap-verify {
+  font-family: var(--m-title); font-weight: 700; letter-spacing: 1px;
+  background: linear-gradient(180deg, var(--m-wine), #5c151d);
+  color: var(--m-gold-lt); border: 2px solid var(--m-gold);
+  box-shadow: 3px 3px 0 0 var(--m-wood-dk);
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+#captcha-screen .cap-verify:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 0 var(--m-wood-dk); }
+ 
+/* relic-rarity chips on parchment */
+#captcha-screen .cap-rarity .rar-key { font-family: var(--m-title); color: var(--m-ink-sft); }
+#captcha-screen .rar-chip {
+  font-family: var(--m-serif); background: var(--m-parch);
+  border: 1.5px solid var(--m-gold); color: var(--m-ink-sft);
+}
+#captcha-screen .rar-chip.active { color: #fff; }
+ 
+/* =====================================================================
    DEV SKIP — TESTING ONLY.  ⚠️ delete this block when done (and the
    matching "DEV SKIP" block in script.js).
    ===================================================================== */
