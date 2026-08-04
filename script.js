@@ -388,9 +388,9 @@ const HAWKS_EGG_EPISODE = {
 // ----- Chicas (friends) verified => a special invite to play your Kahoot -----
 // ✏️ Edit the message/labels freely. `url` is your Kahoot link.
 const FRIENDS_INVITE = {
-  badge: "👯 GIRLS' ROUND UNLOCKED",
-  title: "¡A jugar, chicas! 🎉",
-  message: "Since you rounded up the whole squad… I made you all a little Kahoot. Grab the girls and see who really knows us 😈🎮",
+  badge: "👯 SECRET GAME UNLOCKED",
+  title: "Let's play a game! 🎉",
+  message: "Since you rounded up the whole squad… I made you all a little Kahoot. Grab your friends and see who really knows you 😈🎮 (There is a price for the winner)",
   buttonLabel: "Play the Kahoot 🎉",
   url: "https://play.kahoot.it/v2/?quizId=9c0054e6-5f42-4160-a2f4-511c6875c843&hostId=1f15be47-aef2-4055-af7a-cf4b06d67065",
 };
@@ -1352,6 +1352,34 @@ function initCaptcha() {
     document.addEventListener("keydown", onKey);
   }
  
+  // ----- Chicas: hide a 👭 on the board; finding it unlocks the invite -----
+  function spawnHiddenGirls() {
+    const winEl = document.querySelector("#captcha-screen .win");
+    if (!winEl) { showFriendsInvite(); return; }        // safety fallback
+    const old = winEl.querySelector(".hidden-girls");
+    if (old) old.remove();
+    const spots = [                                     // tucked-away corners/edges
+      { top: "1.5%", left: "3%"  }, { top: "1.5%", right: "3%" },
+      { bottom: "2%", left: "4%" }, { bottom: "2%", right: "4%" },
+      { top: "47%",  left: "1.5%" }, { top: "52%", right: "1.5%" },
+    ];
+    const spot = spots[Math.floor(Math.random() * spots.length)];
+    const g = document.createElement("button");
+    g.type = "button";
+    g.className = "hidden-girls";
+    g.textContent = "👭";
+    g.title = "";
+    Object.assign(g.style, spot);
+    winEl.appendChild(g);
+    msgEl.textContent = "🔍 The girls are hiding somewhere… find them to unlock the game 👀";
+    msgEl.className = "cap-msg hint";
+    g.addEventListener("click", (e) => {
+      e.stopPropagation();
+      g.remove();
+      showFriendsInvite();
+    });
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1801,7 +1829,7 @@ function initCaptcha() {
     // las Chicas submitted for verification => whawhawha confetti, then Kahoot invite
     const chicasTile = selected.find(t => t.dataset.label === "Chicas");
     if (chicasTile) {
-      rainImages(["whawhawha.jpg"], { onPop: () => setTimeout(showFriendsInvite, 700) });
+      rainImages(["whawhawha.jpg"], { onPop: () => setTimeout(spawnHiddenGirls, 700) });
       fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
       return;
     }

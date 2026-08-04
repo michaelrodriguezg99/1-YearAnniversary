@@ -1259,6 +1259,20 @@ body {
 }
 .invite-close:hover { color: var(--ink); text-decoration: underline; }
  
+/* ---- Chicas: the hidden 👭 you have to find ---- */
+#captcha-screen .win { position: relative; }
+.hidden-girls {
+  position: absolute; z-index: 40;
+  padding: 3px; margin: 0; border: none; background: transparent;
+  font-size: 16px; line-height: 1; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: hg-pulse 2.6s ease-in-out infinite;
+}
+@keyframes hg-pulse { 0%, 100% { opacity: .42; } 50% { opacity: .72; } }
+.hidden-girls:hover {
+  animation-play-state: paused; opacity: 1; transform: scale(1.4);
+}
+ 
 /* =====================================================================
    DEV SKIP — TESTING ONLY.  ⚠️ delete this block when done (and the
    matching "DEV SKIP" block in script.js).
