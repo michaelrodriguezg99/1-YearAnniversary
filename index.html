@@ -14,14 +14,14 @@
   </head>
   <body>
     <div id="app">
- 
+
       <!-- ============ SCREEN 1: ENVELOPE (intro) ============ -->
       <section class="screen" id="envelope-screen">
         <div class="env">
           <img src="envelope.jpg" alt="Envelope" id="envelope" />
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 2: CAPTCHA ============ -->
       <section class="screen" id="captcha-screen">
         <div class="win">
@@ -42,7 +42,7 @@
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 3: LOGIN ============ -->
       <section class="screen" id="login-screen">
         <div class="win">
@@ -50,11 +50,11 @@
           <div class="win-body login-body">
             <div class="login-logo">♡ RelationshipOS ♡</div>
             <p class="login-sub">Sign in to manage your subscription.</p>
- 
+
             <label class="login-label" for="login-user">Username</label>
             <input id="login-user" class="login-input" type="text" value="Girlfriend"
                    autocomplete="off" spellcheck="false" />
- 
+
             <label class="login-label" for="login-pass">Password</label>
             <div class="login-passwrap">
               <input id="login-pass" class="login-input" type="password"
@@ -72,15 +72,15 @@
                 </svg>
               </button>
             </div>
- 
+
             <div class="login-hint" id="login-hint">💡 Hint: our official date (MM/DD/YYYY)</div>
- 
+
             <button class="login-btn" id="login-btn">Log In ♥</button>
             <div class="login-msg" id="login-msg"></div>
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 4: QUIZ ============ -->
       <section class="screen" id="quiz-screen">
         <div class="win">
@@ -95,7 +95,7 @@
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 5: WRAPPED (Us Edition) ============ -->
       <section class="screen" id="wrapped-screen">
         <div class="win wrapped-win">
@@ -107,7 +107,7 @@
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 6: SCRAPBOOK (memory core) ============ -->
       <section class="screen" id="scrapbook-screen">
         <div class="win scrap-win">
@@ -121,7 +121,7 @@
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 7: TERMS & CONDITIONS (sign to renew) ============ -->
       <section class="screen" id="terms-screen">
         <div class="win terms-win">
@@ -151,20 +151,21 @@
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 8: TRIP PICKER (choose the destination) ============ -->
       <section class="screen" id="trip-screen">
         <div class="win trip-win">
           <div class="win-bar"><span>trips.exe</span><span class="dots">— ▢ ✕</span></div>
           <div class="win-body trip-body">
-            <div class="trip-title">Pick our anniversary trip ✈️</div>
-            <div class="trip-sub">Three destinations — choose the one you want most 💕</div>
+            <div class="trip-title">Guess where we're going ✈️</div>
+            <div class="trip-sub">Two are decoys — pick the real destination 👀</div>
             <div class="trip-list" id="trip-list"></div>
-            <button class="trip-confirm" id="trip-confirm" type="button" disabled>Reserve this trip →</button>
+            <div class="trip-msg" id="trip-msg"></div>
+            <button class="trip-confirm" id="trip-confirm" type="button" disabled style="display:none">Reserve our trip →</button>
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 9: DATE PICKER (reserve the dates) ============ -->
       <section class="screen" id="date-screen">
         <div class="win date-win">
@@ -189,7 +190,7 @@
           </div>
         </div>
       </section>
- 
+
       <!-- ============ SCREEN 9: LETTER (renewal finale) ============ -->
       <section class="screen" id="letter-screen">
         <div class="letter-window">
@@ -211,7 +212,7 @@
           </div>
         </div>
       </section>
- 
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="script.js"></script>

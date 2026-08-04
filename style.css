@@ -12,7 +12,7 @@
   --good: #3f8f5e;        /* success green */
   --font: "Space Mono", monospace;
 }
- 
+
 body {
   margin: 0;
   min-height: 100vh;            /* was 100vh; min- lets tall screens (captcha) scroll */
@@ -23,7 +23,7 @@ body {
   background-size: cover;
   font-family: var(--font);
 }
- 
+
 /* =====================================================================
    SCREEN MANAGER (shared) — one screen visible at a time.
    ===================================================================== */
@@ -39,7 +39,7 @@ body {
   justify-content: center;
   align-items: center;
 }
- 
+
 /* generic pixel window frame (used by the captcha + future modules) */
 .win {
   width: 100%;
@@ -61,14 +61,14 @@ body {
   color: var(--frame-dark);
 }
 .win-body { padding: 14px; }
- 
+
 /* =====================================================================
    SCREEN 1 — ENVELOPE  (your original styling, re-scoped)
    ===================================================================== */
 #envelope-screen { cursor: pointer; }
 .env { text-align: center; }
 #envelope-screen p { font-size: 40px; }   /* was a global p{} rule — scoped here */
- 
+
 @keyframes pulse {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.1); }
@@ -79,7 +79,7 @@ body {
   animation: pulse 1.5s infinite;
   cursor: pointer;
 }
- 
+
 /* =====================================================================
    SCREEN 2 — CAPTCHA MODULE  (self-contained)
    ===================================================================== */
@@ -105,7 +105,7 @@ body {
 }
 .cap-refresh:hover  { background: rgba(255, 255, 255, 0.35); }
 .cap-refresh:active { transform: rotate(180deg); }
- 
+
 .cap-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -130,13 +130,13 @@ body {
 }
 .cap-tile.has-img img { display: block; }
 .cap-tile.has-img .tile-ph { display: none; }
- 
+
 .gif-pop img.cropped-allie {
   clip-path: inset(0px 20px 25px 40px);   /* top right bottom left */
   /* re-center the visible slice: translate = ((right-left)/2, (bottom-top)/2) */
   transform: translate(-10px, 12.5px);
 }
- 
+
 .tile-ph {                       /* avatar placeholder (shown until a real photo loads) */
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
@@ -166,7 +166,7 @@ body {
   position: absolute; top: 4px; right: 6px;
   font-size: 14px; opacity: 0.85;
 }
- 
+
 .cap-tile::after {               /* Google-style selection check */
   content: "✓";
   position: absolute; top: 5px; left: 5px;
@@ -179,7 +179,7 @@ body {
 .cap-tile.selected::after { transform: scale(1); }
 .cap-tile.selected img,
 .cap-tile.selected .tile-ph { filter: brightness(0.7); }
- 
+
 .cap-foot {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 14px; background: var(--panel);
@@ -196,7 +196,7 @@ body {
 }
 .cap-verify:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2); }
 .cap-verify:disabled { opacity: 0.6; cursor: default; }
- 
+
 @keyframes capShake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }
@@ -205,7 +205,7 @@ body {
   80% { transform: translateX(5px); }
 }
 .shake { animation: capShake 0.4s ease; }
- 
+
 /* --- Lightning storm (animation is driven from script.js via element.animate) --- */
 .thunder-flash {
   position: fixed; inset: 0; z-index: 9999;
@@ -221,7 +221,7 @@ body {
   opacity: 0;
   /* position + transform are set per-strike by JS (random angle/position) */
 }
- 
+
 /* --- Alastor (Radio Demon) powers: crimson vignette + static + eldritch glyphs --- */
 .alastor-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; opacity: 0; transition: opacity .4s ease; }
 .alastor-fx.show { opacity: 1; }
@@ -253,7 +253,7 @@ body {
   70%  { opacity: 1; transform: translate(-50%,-50%) rotate(calc(var(--grot) + 18deg)) scale(1); }
   100% { opacity: 0; transform: translate(-50%,-50%) rotate(calc(var(--grot) + 28deg)) scale(1.12); }
 }
- 
+
 /* --- Blood (human Alastor): drips run down + splatters --- */
 .blood-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; opacity: 0; transition: opacity .6s ease; }
 .blood-fx.show { opacity: 1; }
@@ -286,7 +286,7 @@ body {
   55%  { opacity: 1; }
   100% { transform: translate(-50%,-50%) scale(1); opacity: .9; }
 }
- 
+
 /* --- Reaction GIF popup (shown when a tile with a gif is picked) --- */
 .gif-pop {
   position: fixed; inset: 0; z-index: 10000;
@@ -296,7 +296,7 @@ body {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .gif-pop.show { opacity: 1; transform: scale(1); }
- 
+
 /* ---- Falling-image "confetti" (rains BEHIND the gif at z 9990) ----
    Each piece falls (wrapper) while swaying side-to-side like a wiper (img).
    Swap which images fall via CONFETTI_IMAGES in script.js. */
@@ -345,18 +345,18 @@ body {
   55%  { opacity: 1; transform: translate(-50%,-50%) scale(1.55); }
   100% { opacity: 0; transform: translate(-50%,-50%) scale(1.75); }
 }
- 
+
 /* =====================================================================
    SCREEN 5 — SPOTIFY WRAPPED: US EDITION  (Spotify-Wrapped styling)
    ===================================================================== */
 .wrapped-body { display: flex; flex-direction: column; gap: 12px; }
 /* bold display font, scoped to just this screen */
 .wrapped-body, .wrapped-body * { font-family: "Montserrat", "Space Mono", sans-serif; }
- 
+
 .wr-dots { display: flex; gap: 6px; justify-content: center; }
 .wr-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--panel-2); transition: background .2s; }
 .wr-dot.on { background: var(--frame); }
- 
+
 .wr-stage {
   position: relative; cursor: pointer; overflow: hidden;
   border-radius: 14px; aspect-ratio: 9 / 15;
@@ -377,7 +377,7 @@ body {
   text-transform: uppercase; opacity: .85;
 }
 .wr-block { display: flex; flex-direction: column; }
- 
+
 /* stat cards: giant number near the bottom, label + note under it */
 .wr-statnum {
   font-weight: 900; font-size: clamp(58px, 19vw, 92px); line-height: .9;
@@ -388,7 +388,7 @@ body {
   margin-top: 6px; line-height: 1.05;
 }
 .wr-note { font-weight: 600; font-size: 14.5px; line-height: 1.35; margin-top: 14px; opacity: .9; }
- 
+
 /* spotlight cards: big "album art" + name */
 .wr-toplabel { font-weight: 900; font-size: 26px; line-height: 1.05; margin-bottom: 14px; }
 .wr-art {
@@ -401,7 +401,7 @@ body {
   font-size: 64px; background: rgba(0,0,0,.18);
 }
 .wr-name { font-weight: 900; font-size: 40px; line-height: 1; margin: 14px 0 0; letter-spacing: -1px; }
- 
+
 /* ranked top-5 list */
 .wr-ranktitle { margin-bottom: 6px; }
 .wr-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
@@ -412,25 +412,25 @@ body {
 .wr-t0 { background: #ffb3c7; } .wr-t1 { background: #b39dff; }
 .wr-t2 { background: #9bf6c4; } .wr-t3 { background: #ffd36e; }
 .wr-t4 { background: #8ec5ff; } .wr-t5 { background: #ff9e7d; }
- 
+
 /* the final shareable summary card */
 .wr-summarycard { gap: 14px; }
 .wr-sumgrid { display: flex; flex-direction: column; gap: 14px; margin: auto 0; }
 .wr-sumrow { display: flex; flex-direction: column; }
 .wr-sumh { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: .7; }
 .wr-sumv { font-weight: 900; font-size: 30px; line-height: 1.05; letter-spacing: -1px; }
- 
+
 /* intro splash */
 .wr-introbig { font-weight: 900; font-size: clamp(40px, 14vw, 60px); line-height: .96; letter-spacing: -1px; overflow-wrap: anywhere; }
 .wr-introsub { font-weight: 700; font-size: 17px; margin-top: 12px; opacity: .9; }
- 
+
 .wr-next {
   align-self: center; font-family: "Montserrat", sans-serif; font-weight: 800;
   font-size: 16px; cursor: pointer; color: #111;
   background: #fff; border: none; border-radius: 40px; padding: 11px 30px;
 }
 .wr-next:hover { transform: scale(1.04); }
- 
+
 /* Spotify-Wrapped vibrant backgrounds */
 .wr-green  { background: #1ed760; color: #06371c; }
 .wr-pink   { background: #ff4f81; color: #3a0d20; }
@@ -440,7 +440,7 @@ body {
 .wr-coral  { background: #ff6f59; color: #3a1106; }
 /* keep next-button readable on light vs dark cards */
 .wr-purple .wr-next, .wr-blue .wr-next { background: #fff; color: #111; }
- 
+
 /* =====================================================================
    SCREEN 6 — DIGITAL SCRAPBOOK  (polaroid stack)
    ===================================================================== */
@@ -494,7 +494,7 @@ body {
   background: #000; border: 3px solid var(--frame); box-shadow: 0 8px 18px rgba(0, 0, 0, .22);
 }
 .scrap-vcap { font-family: "Caveat", cursive; font-weight: 700; font-size: 22px; color: var(--ink); text-align: center; }
- 
+
 /* =====================================================================
    SCREEN 7 — TERMS & CONDITIONS  (scroll wall + draw-to-sign)
    ===================================================================== */
@@ -547,7 +547,7 @@ body {
   box-shadow: 0 0 0 4px var(--panel-2), 8px 8px 0 0 rgba(0, 0, 0, 0.25);
   image-rendering: pixelated;
 }
- 
+
 /* --- Swim-across effect (e.g. Lola gliding over the screen when picked) --- */
 .swim-layer {
   position: fixed; inset: 0; z-index: 9998;
@@ -566,7 +566,7 @@ body {
   transform-origin: center bottom;
   filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
 }
- 
+
 /* --- Lyric flash (duet line for a song pairing) --- */
 .lyric-pop {
   position: fixed; inset: 0; z-index: 10001;
@@ -588,7 +588,7 @@ body {
 .lyric-note { display: block; font-size: 30px; margin-bottom: 6px; opacity: 0.85; }
 .lyric-text { display: block; white-space: pre-line; }
 .lyric-meta { display: block; margin-top: 14px; font-size: 14px; opacity: 0.75; }
- 
+
 /* =====================================================================
    SCREEN 3 — LOGIN MODULE
    ===================================================================== */
@@ -637,7 +637,7 @@ body {
 .login-msg { min-height: 20px; margin-top: 10px; font-size: 14px; line-height: 1.2; }
 .login-msg.bad { color: var(--frame-dark); }
 .login-msg.ok  { color: var(--good); }
- 
+
 /* =====================================================================
    SCREEN 4 — QUIZ MODULE
    ===================================================================== */
@@ -667,7 +667,7 @@ body {
 .quiz-msg { min-height: 22px; margin-top: 12px; text-align: center; font-size: 15px; line-height: 1.15; }
 .quiz-msg.ok  { color: var(--good); }
 .quiz-msg.bad { color: var(--frame-dark); }
- 
+
 /* =====================================================================
    SCREEN 8 — DATE PICKER  (calendar where only one day is "available")
    ===================================================================== */
@@ -717,7 +717,7 @@ body {
 .date-msg.bad { color: var(--frame-dark); }
 .date-msg.ok  { color: var(--good); font-weight: 700; }
 .date-hint { min-height: 16px; text-align: center; font-size: 12px; color: var(--ink-soft); font-style: italic; }
- 
+
 /* =====================================================================
    SCREEN 3 — LETTER (renewal finale)  — your original styling, verbatim
    ===================================================================== */
@@ -733,12 +733,12 @@ body {
   display: flex; flex-direction: column; align-items: center;
   text-align: center; gap: 10px;
 }
- 
+
 .letter-window h1 { font-size: 22px; line-height: 1.3; margin: 0; }   /* scoped title */
- 
+
 .cat { width: 250px; margin: 10px 0; transition: width 0.4s ease; }
 .letter-window.final .cat { width: 180px; }
- 
+
 .buttons { display: flex; justify-content: center; gap: 24px; position: relative; margin-top: 6px; }
 .no-wrapper { position: relative; }
 .btn {
@@ -754,7 +754,7 @@ body {
   z-index: 1; position: relative; transition: transform 0.15s ease; cursor: default;
   background: var(--panel); color: var(--frame-dark); border: 3px solid var(--frame);
 }
- 
+
 .final-text {
   font-size: 22px;
   line-height: 1.4;
@@ -764,7 +764,7 @@ body {
   background-color: rgba(255, 240, 240, 0.5);
   border-radius: 12px;
 }
- 
+
 /* =====================================================================
    BABYMIKO TAMAGOTCHI  (captcha easter egg)
    Uses tama_console.png as the handheld; hotspots overlay the 3 buttons.
@@ -778,11 +778,11 @@ body {
 .tama-overlay.closing { animation: tama-out .2s ease forwards; }
 @keyframes tama-in  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes tama-out { to { opacity: 0; } }
- 
+
 .tama-wrap {
   display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
- 
+
 .tama-bubble {
   font-family: var(--font, "Space Mono", monospace);
   font-size: 14px; color: var(--ink, #7d2f2a);
@@ -796,7 +796,7 @@ body {
 }
 .tama-bubble.pop { animation: tama-pop .35s ease; }
 @keyframes tama-pop { 0% { transform: scale(.7); } 55% { transform: scale(1.12); } 100% { transform: scale(1); } }
- 
+
 .tama-device {
   position: relative;
   width: min(300px, 78vw);
@@ -810,7 +810,7 @@ body {
   35%     { transform: translateY(-10px); }
   60%     { transform: translateY(0) scaleY(.97); }
 }
- 
+
 /* invisible tap targets over the three pink buttons */
 .tama-hot {
   position: absolute; transform: translate(-50%, -50%);
@@ -819,7 +819,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .tama-hot:active { background: radial-gradient(circle, rgba(255,255,255,.45), transparent 70%); }
- 
+
 /* tooltip naming each button (shows on hover desktop, on press/tap mobile) */
 .tama-tip {
   position: absolute; left: 50%; bottom: 100%;
@@ -836,7 +836,7 @@ body {
 .tama-hot:hover .tama-tip,
 .tama-hot:active .tama-tip,
 .tama-hot.pressing .tama-tip { opacity: 1; transform: translate(-50%, -8px) scale(1); }
- 
+
 /* floating hearts/sparkles emitted over the screen area */
 .tama-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .tama-float {
@@ -848,7 +848,7 @@ body {
   25%  { opacity: 1; }
   100% { opacity: 0; transform: translateY(-70px) scale(1.15); }
 }
- 
+
 .tama-close {
   font-family: var(--font, "Space Mono", monospace); font-size: 13px; cursor: pointer;
   background: var(--panel-2, #e9c4cb); color: var(--frame-dark, #a8443b);
@@ -856,7 +856,7 @@ body {
   box-shadow: 3px 3px 0 0 rgba(0,0,0,.18);
 }
 .tama-close:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 rgba(0,0,0,.18); }
- 
+
 /* =====================================================================
    CHARACTER "POWERS" — themed particle bursts + screen tint (data-driven)
    Driven by triggerCharFx() in script.js via each pool entry's fx: "name".
@@ -874,13 +874,13 @@ body {
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.25));
   user-select: none;
 }
- 
+
 /* =====================================================================
    UNIQUE CHARACTER EFFECTS — Xaden (shadow), Violet (lightning reuses
    .thunder-flash), Hannah (music), Zuko (bespoke fire). All sit behind
    the gif popup (z 10000) like the Alastor/blood overlays.
    ===================================================================== */
- 
+
 /* --- Xaden: shadow tendrils --- */
 .shadow-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
 .shadow-fx::before {
@@ -894,7 +894,7 @@ body {
   background: radial-gradient(circle at 50% 50%, rgba(24,10,46,0.95), rgba(10,4,24,0.6) 55%, transparent 72%);
   filter: blur(14px); will-change: transform, opacity;
 }
- 
+
 /* --- Hannah: singer — equalizer + floating notes + warm glow --- */
 .music-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity .4s ease; }
 .music-fx.show { opacity: 1; }
@@ -919,7 +919,7 @@ body {
 .music-notes { position: absolute; inset: 0; }
 .music-note { position: absolute; bottom: 8%; will-change: transform, opacity;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.25)); }
- 
+
 /* --- Zuko: bespoke firebending — flame wall + embers + heat flash --- */
 .fire-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity .6s ease; }
 .fire-fx.show { opacity: 1; }
@@ -948,7 +948,7 @@ body {
   background: radial-gradient(circle, #ffe08a, #ff7a1e 60%, rgba(255,60,20,0) 100%);
   will-change: transform, opacity;
 }
- 
+
 /* --- Violet: time-stop (Andarna's gift) — desaturate + shockwave + clocks --- */
 .time-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
 .time-fx::before {
@@ -968,7 +968,7 @@ body {
 .time-clocks { position: absolute; inset: 0; }
 .time-clock { position: absolute; will-change: transform, opacity;
   filter: drop-shadow(0 1px 3px rgba(0,0,0,.3)); }
- 
+
 /* --- Cassian: Lord of Bloodshed — twin-blade slashes + red Siphon flash --- */
 .slash-fx { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
 .slash-flash {
@@ -983,8 +983,8 @@ body {
   box-shadow: 0 0 14px rgba(255,70,60,0.9), 0 0 26px rgba(255,40,40,0.6);
   border-radius: 4px; will-change: transform, opacity;
 }
- 
- 
+
+
 /* ---- Wrapped: "caught sleeping" stat card — gif under the number ---- */
 .wr-sleepgif {
   display: block;
@@ -1004,7 +1004,7 @@ body {
   justify-content: center;
   font-size: 40px;
 }
- 
+
 /* ---- Bridgerton brothers: three clean dancing copies of the picture ---- */
 .three-fx { position: fixed; inset: 0; z-index: 10001; pointer-events: none; }
 .three-img {
@@ -1021,7 +1021,7 @@ body {
 @media (max-width: 560px) {
   .three-img { height: 24vh; max-width: 31vw; border-width: 3px; }
 }
- 
+
 /* =====================================================================
    CAPTCHA — rarity legend (flags which hidden combos are in the shown set)
    Dim chip = that rarity isn't currently possible; lit chip = it is.
@@ -1046,13 +1046,13 @@ body {
 }
 .rar-dot   { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .7; }
 .rar-count { font-weight: 700; }
- 
+
 /* per-tier accent + glow (used when active) */
 .rar-common    { --rar: var(--frame); --rar-glow: rgba(199,92,82,.5); }
 .rar-rare      { --rar: #3f78c4;      --rar-glow: rgba(63,120,196,.5); }
 .rar-ultrarare { --rar: #8a4fd0;      --rar-glow: rgba(138,79,208,.5); }
 .rar-godtier   { --rar: #d4a017;      --rar-glow: rgba(212,160,23,.55); }
- 
+
 /* lit = a combo of this size is present in the current tiles */
 .rar-chip.active {
   opacity: 1; transform: translateY(-1px); color: #fff;
@@ -1065,12 +1065,12 @@ body {
   color: #4a2e00; text-shadow: 0 1px 0 rgba(255,255,255,.4);
 }
 .rar-godtier.active .rar-dot { background: #4a2e00; }
- 
+
 @media (max-width: 460px) {
   .cap-rarity { font-size: 10px; gap: 5px 6px; }
   .rar-chip { padding: 3px 8px; }
 }
- 
+
 /* ---- God-Tier "Daddy" heads-up modal (before the all-Mikes animations) ---- */
 .daddy-modal {
   position: fixed; inset: 0; z-index: 10070;
@@ -1103,7 +1103,7 @@ body {
   border: none; border-radius: 10px; background: var(--frame); color: #fff; cursor: pointer;
 }
 .daddy-go:hover { background: var(--frame-dark); }
- 
+
 /* =====================================================================
    SCREEN 8 — TRIP PICKER  (three showcased destinations, choose one)
    ===================================================================== */
@@ -1159,7 +1159,20 @@ body {
 }
 .trip-confirm:hover:not(:disabled) { background: var(--frame-dark); }
 .trip-confirm:disabled { opacity: .5; cursor: not-allowed; }
- 
+
+/* ---- Trip guess game: message + wrong/correct/revealed states ---- */
+.trip-msg { min-height: 20px; text-align: center; font-size: 14px; line-height: 1.3; color: var(--ink); }
+.trip-msg.bad { color: var(--frame-dark); }
+.trip-card.correct { border-color: var(--good); box-shadow: 0 0 0 3px rgba(63,143,94,.4); }
+.trip-card.revealed,
+.trip-card.revealed:hover { cursor: default; border-color: var(--good); }
+.trip-card.wrong { animation: trip-nope .45s ease; }
+@keyframes trip-nope {
+  0%, 100% { transform: translateX(0); border-color: var(--frame); }
+  20% { transform: translateX(-5px); border-color: var(--frame-dark); box-shadow: 0 0 0 3px rgba(168,68,59,.35); }
+  60% { transform: translateX(5px); }
+}
+
 /* ---- Calendar: each accepted day (7th/8th/9th) turns green when chosen ---- */
 .date-cell.picked {
   background: var(--good); color: #fff; border-color: var(--good);
@@ -1172,7 +1185,7 @@ body {
 }
 .date-confirm:hover:not(:disabled) { background: var(--frame-dark); }
 .date-confirm:disabled { opacity: .5; cursor: not-allowed; }
- 
+
 /* ---- Dabi + Hawks: "secret episode" overlay ---- */
 .episode-modal {
   position: fixed; inset: 0; z-index: 10075;
@@ -1225,7 +1238,7 @@ body {
   padding: 10px 22px; margin-top: 8px;
 }
 .episode-close:hover { background: var(--frame-dark); }
- 
+
 /* ---- Chicas: "play my Kahoot" invite ---- */
 .invite-modal {
   position: fixed; inset: 0; z-index: 10076;
@@ -1253,12 +1266,25 @@ body {
   border-radius: 10px; padding: 12px 16px;
 }
 .invite-play:hover { background: var(--frame-dark); }
+.invite-prizebtn {
+  display: block; width: 100%; margin-top: 10px;
+  font-family: var(--font); font-weight: 700; font-size: 14px; cursor: pointer;
+  background: var(--panel-2); color: var(--frame-dark);
+  border: 2px dashed var(--frame); border-radius: 10px; padding: 10px 14px;
+}
+.invite-prizebtn:hover { background: #e7b9c1; }
+.invite-prize {
+  margin-top: 10px; padding: 12px 14px; text-align: left;
+  font-size: 13.5px; line-height: 1.5; color: var(--ink);
+  background: #fff; border: 2px solid var(--frame); border-radius: 10px;
+  animation: daddy-in .2s ease;
+}
 .invite-close {
   margin-top: 10px; font-family: var(--font); font-size: 13px; cursor: pointer;
   background: transparent; color: var(--ink-soft); border: none;
 }
 .invite-close:hover { color: var(--ink); text-decoration: underline; }
- 
+
 /* ---- Chicas: the hidden 👭 you have to find ---- */
 #captcha-screen .win { position: relative; }
 .hidden-girls {
@@ -1272,7 +1298,7 @@ body {
 .hidden-girls:hover {
   animation-play-state: paused; opacity: 1; transform: scale(1.4);
 }
- 
+
 /* =====================================================================
    DEV SKIP — TESTING ONLY.  ⚠️ delete this block when done (and the
    matching "DEV SKIP" block in script.js).

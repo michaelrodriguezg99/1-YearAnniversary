@@ -23,7 +23,7 @@ const GIF_MIN_MS = 1800;    // floor so a very short gif doesn't just flash by
 const GIF_MAX_MS = 12000;   // safety cap for very long gifs
 const _gifDurCache = {};
 const _gifLoopCache = {};   // raw single-loop length (ms) per gif, 0 if unknown
- 
+
 function _parseGifMs(buf) {
   const b = new Uint8Array(buf);
   if (b.length < 13 || b[0] !== 0x47 || b[1] !== 0x49 || b[2] !== 0x46) return 0; // "GIF"
@@ -52,7 +52,7 @@ function _parseGifMs(buf) {
   }
   return ms;
 }
- 
+
 // Measures `src` and calls onMeasured(ms, loopMs) — ms = sensible default
 // "show this long" duration; loopMs = one full loop (so a caller can force an
 // exact number of loops). Never calls back if the file can't be fetched.
@@ -73,7 +73,7 @@ function measureGif(src, onMeasured) {
     })
     .catch(() => { /* leave the caller's fallback timer in place */ });
 }
- 
+
 /* =====================================================================
    FALLING-IMAGE "CONFETTI" (shared) — rains photos/icons down BEHIND the
    gif popup. Replace the filenames in CONFETTI_IMAGES with your own images
@@ -83,12 +83,12 @@ function measureGif(src, onMeasured) {
      rainImages(null, { count: 40, duration: 4000 });
    ===================================================================== */
 const CONFETTI_IMAGES = ["confetti1.jpg", "confetti2.jpg", "confetti3.jpg"]; // <- swap these
- 
+
 function rainImages(images, opts) {
   opts = opts || {};
   const list = (images && images.length) ? images : CONFETTI_IMAGES;
   if (!list.length) return;
- 
+
   // spawns the actual falling confetti
   function spawn() {
     const count = opts.count || 28;
@@ -97,7 +97,7 @@ function rainImages(images, opts) {
     layer.className = "img-rain";
     if (opts.z != null) layer.style.zIndex = opts.z;
     document.body.appendChild(layer);
- 
+
     let maxEnd = 0;
     for (let i = 0; i < count; i++) {
       const drop = document.createElement("div");
@@ -124,14 +124,14 @@ function rainImages(images, opts) {
     }
     setTimeout(() => layer.remove(), maxEnd + 250);
   }
- 
+
   // no reveal: just rain (then optional gif). Used for multi-icon showers.
   if (opts.preview === false) {
     spawn();
     if (typeof opts.onPop === "function") opts.onPop();
     return;
   }
- 
+
   // reveal: image appears, grows, POPS -> confetti -> (optional) gif after
   const grow = opts.previewMs || 1000;
   const prev = document.createElement("div");
@@ -141,7 +141,7 @@ function rainImages(images, opts) {
   pimg.src = list[0];
   prev.appendChild(pimg);
   document.body.appendChild(prev);
- 
+
   setTimeout(() => prev.classList.add("pop"), grow);        // start the pop
   setTimeout(() => {                                        // pop finished
     prev.remove();
@@ -149,7 +149,7 @@ function rainImages(images, opts) {
     if (typeof opts.onPop === "function") setTimeout(opts.onPop, 120); // gif AFTER
   }, grow + 340);
 }
- 
+
 /* =====================================================================
    SOUND (shared) — play an audio file on tap. Works for any screen.
    HOW TO USE:
@@ -187,7 +187,7 @@ function stopSound(src) {
     }, 35);
   } catch (e) { /* ignore */ }
 }
- 
+
 /* =====================================================================
    SCREEN MANAGER CORE (shared)
    Add a screen by appending to SCREENS. Remove one by commenting it out.
@@ -207,7 +207,7 @@ const SCREENS = [
   { id: "date-screen",     init: initDatePicker, onShow: showDatePicker },
   { id: "letter-screen",   init: initLetter, onShow: openLetterWindow },
 ];
- 
+
 let _screen = 0;
 function showScreen(i) {
   SCREENS.forEach((s, idx) =>
@@ -224,14 +224,14 @@ document.addEventListener("DOMContentLoaded", () => {
   SCREENS.forEach(s => s.init && s.init());
   showScreen(0);
 });
- 
+
 /* =====================================================================
    SCREEN 1 — ENVELOPE
    ===================================================================== */
 function initEnvelope() {
   document.getElementById("envelope-screen").addEventListener("click", nextScreen);
 }
- 
+
 /* =====================================================================
    SCREEN 2 — CAPTCHA MODULE
    ---------------------------------------------------------------------
@@ -331,17 +331,17 @@ const CAPTCHA_POOL = [
   { src: "Lady.jpg", label: "Lady", fx: "missiles",
     caption: "Lady te apunta con un lanzacohetes al primer malentendido 💥🚀. Yo los conflictos los resuelvo con palabras y snacks 🥺" },
 ];
- 
+
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
 const CAPTCHA_CORRECT_MIN = 1;     // guarantee at least this many of YOUR photos appear
 const THUNDER_SOUND       = true;  // set false to mute the lightning rumble
- 
+
 const CAPTCHA_NUDGES = [
   "Pick at least one. He's right there 👀",
   "Still nothing? He's getting insecure.",
   "Bestie. Select the boyfriend.",
 ];
- 
+
 // ----- Hidden combos (the easter eggs that fire on Verify) -----
 // Each entry lists the labels that combo needs. The number of labels sets the
 // rarity shown in the legend: 1 = Common, 2 = Rare, 3 = Ultra Rare, 4 = God Tier.
@@ -367,7 +367,7 @@ const RARITY = {
   3: { key: "ultrarare", label: "Ultra Rare" },
   4: { key: "godtier",   label: "God Tier" },
 };
- 
+
 // ----- Dabi + Hawks secret episode (fires when BOTH are verified together) -----
 // ✏️ Edit freely — `paragraphs` reveal one-by-one; `end` is the sign-off line.
 const HAWKS_EGG_EPISODE = {
@@ -384,7 +384,7 @@ const HAWKS_EGG_EPISODE = {
   ],
   end: "TO BE CONTINUED… next season — if the Girlfriend Subscription renews 😌🥚",
 };
- 
+
 // ----- Chicas (friends) verified => a special invite to play your Kahoot -----
 // ✏️ Edit the message/labels freely. `url` is your Kahoot link.
 const FRIENDS_INVITE = {
@@ -392,16 +392,18 @@ const FRIENDS_INVITE = {
   title: "Let's play a game! 🎉",
   message: "Since you rounded up the whole squad… I made you all a little Kahoot. Grab your friends and see who really knows you 😈🎮 (There is a price for the winner)",
   buttonLabel: "Play the Kahoot 🎉",
+  prizeLabel: "🎁 See the winner's prize",
+  prize: "🎟️ The winner earns a Golden Ticket: you get to choose — one player to do the strawberries game with the B-girl 🍓, one player to kiss her 💋, and one player to take a shot 🥃. Winner's orders 😈",
   url: "https://play.kahoot.it/v2/?quizId=9c0054e6-5f42-4160-a2f4-511c6875c843&hostId=1f15be47-aef2-4055-af7a-cf4b06d67065",
 };
- 
+
 function initCaptcha() {
   const grid   = document.getElementById("cap-grid");
   const msgEl  = document.getElementById("cap-msg");
   const verify = document.getElementById("cap-verify");
   const win    = document.querySelector("#captcha-screen .win");
   let nudgeIdx = 0;
- 
+
   // ----- Lightning storm (overlay created once, reused) -----
   let flash = document.querySelector(".thunder-flash");
   if (!flash) {
@@ -413,7 +415,7 @@ function initCaptcha() {
     document.body.appendChild(flash);
   }
   const bolt = flash.querySelector(".thunder-bolt");
- 
+
   let actx;
   function audioCtx() {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
@@ -484,7 +486,7 @@ function initCaptcha() {
     for (let k = 1; k < n; k++) setTimeout(strike, 200 + Math.random() * (total - 200));
     rumble(total / 1000);
   }
- 
+
   // ----- Alastor (Radio Demon) powers + Blood overlays (created once) -----
   let alFx = document.querySelector(".alastor-fx");
   if (!alFx) {
@@ -499,7 +501,7 @@ function initCaptcha() {
     bloodFx.className = "blood-fx";
     document.body.appendChild(bloodFx);
   }
- 
+
   // ----- Character "powers" engine (themed particle bursts + screen tint) -----
   // A lightweight, data-driven version of the Alastor effect: each book/anime/
   // animated character points at one preset below via  fx: "name"  in the pool.
@@ -530,14 +532,14 @@ function initCaptcha() {
     devil:     { emojis: ["😈", "🗡️", "🔥", "🔫"],          mode: "burst",     tint: "rgba(140,10,20,0.32)", count: 30 }, // Dante — demon hunter
     missiles:  { emojis: ["💥", "🚀", "🎯"],                mode: "sideBurst", tint: "rgba(70,84,104,0.26)", count: 24 }, // Lady — Kalina Ann
   };
- 
+
   let charFx = document.querySelector(".char-fx");
   if (!charFx) {
     charFx = document.createElement("div");
     charFx.className = "char-fx";
     document.body.appendChild(charFx);
   }
- 
+
   function triggerCharFx(name) {
     const cfg = CHAR_FX[name];
     if (!cfg) return;
@@ -555,10 +557,10 @@ function initCaptcha() {
       s.textContent = emojis[i % emojis.length];
       s.style.fontSize = (20 + Math.random() * 26) + "px";
       charFx.appendChild(s);
- 
+
       const delay = Math.random() * 700;
       let frames, dur;
- 
+
       if (cfg.mode === "rain") {
         s.style.left = (Math.random() * 100) + "%"; s.style.top = "-8%";
         const dx = Math.random() * 40 - 20, rot = Math.random() * 720 - 360;
@@ -609,7 +611,7 @@ function initCaptcha() {
         ];
         dur = 1400 + Math.random() * 900;
       }
- 
+
       const anim = s.animate(frames, { duration: dur, delay, easing: "ease-out", fill: "forwards" });
       anim.onfinish = () => s.remove();
     }
@@ -620,7 +622,7 @@ function initCaptcha() {
     '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="26"/><line x1="50" y1="8" x2="50" y2="24"/><line x1="50" y1="50" x2="78" y2="36"/></svg>',
     '<svg viewBox="0 0 100 100"><path d="M50 50 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"/><path d="M30 50 a20 20 0 0 1 40 0"/><path d="M18 50 a32 32 0 0 1 64 0"/><path d="M6 50 a44 44 0 0 1 88 0"/></svg>',
   ];
- 
+
   function alStatic(dur) {           // synthesized red-radio static + tuning warble
     if (!THUNDER_SOUND) return;
     try {
@@ -640,7 +642,7 @@ function initCaptcha() {
       lfo.stop(ctx.currentTime + dur);
     } catch (e) {}
   }
- 
+
   function triggerAlastorPowers() {
     const symbols = alFx.querySelector(".al-symbols");
     symbols.innerHTML = "";
@@ -663,7 +665,7 @@ function initCaptcha() {
     alStatic(3.2);
     setTimeout(() => alFx.classList.remove("show"), 3400);
   }
- 
+
   function triggerBlood() {
     bloodFx.innerHTML = "";
     bloodFx.classList.remove("show"); void bloodFx.offsetWidth; bloodFx.classList.add("show");
@@ -687,7 +689,7 @@ function initCaptcha() {
     }
     setTimeout(() => bloodFx.classList.remove("show"), 4200);
   }
- 
+
   // ----- Xaden: shadow tendrils creeping in from the edges (his signet) -----
   let shadowFx = document.querySelector(".shadow-fx");
   if (!shadowFx) {
@@ -746,7 +748,7 @@ function initCaptcha() {
     }
     setTimeout(() => shadowFx.classList.remove("show"), 2800);
   }
- 
+
   // ----- Violet: Andarna's gift — time grinds to a halt -----
   // Screen desaturates + a shockwave ring freezes, clocks pop and hold,
   // and a tone glides down in pitch like everything is slowing to a stop.
@@ -808,7 +810,7 @@ function initCaptcha() {
     }
     setTimeout(() => timeFx.classList.remove("show"), 2600);
   }
- 
+
   // ----- Cassian: Lord of Bloodshed — twin-blade slashes + red Siphon flash -----
   let slashFx = document.querySelector(".slash-fx");
   if (!slashFx) {
@@ -856,7 +858,7 @@ function initCaptcha() {
     }
     setTimeout(() => slashFx.classList.remove("show"), 1600);
   }
- 
+
   // ----- Hannah: she's a singer — sound-wave bars + floating notes + glow -----
   let musicFx = document.querySelector(".music-fx");
   if (!musicFx) {
@@ -901,7 +903,7 @@ function initCaptcha() {
     // otherwise the equalizer keeps animating at the bottom of the screen forever
     setTimeout(() => { eq.innerHTML = ""; notes.innerHTML = ""; }, 3300);
   }
- 
+
   // ----- Zuko: bespoke firebending — flame wall + rising embers + heat flash -----
   let fireFx = document.querySelector(".fire-fx");
   if (!fireFx) {
@@ -960,7 +962,7 @@ function initCaptcha() {
     setTimeout(() => fireFx.classList.remove("show"), 4200);          // match the blood effect's length
     setTimeout(() => { wall.innerHTML = ""; embers.innerHTML = ""; }, 4900); // stop the looping flames once hidden
   }
- 
+
   // ----- Bridgerton brothers: show the picture 3 times, dancing & clear -----
   // Three clean copies pop in across the screen and do a little wiggle/bob.
   // Self-cleaning (no infinite loop). Optional sound is cut to the animation.
@@ -1007,14 +1009,14 @@ function initCaptcha() {
     });
     if (sound) { playSound(sound); setTimeout(() => stopSound(sound), total); } // audio = animation length
   }
- 
+
   // ----- Cherry fireworks (canvas): rockets that burst into a cherry shape -----
   // Adapted from the provided sketch. Runs for a bounded window then tears down
   // (clears the loop + removes the canvas) so nothing animates forever.
   let cherryCanvas = null, cherryRAF = 0, cherryLaunch = false;
   function triggerCherryBurst() {
     if (cherryCanvas) { cancelAnimationFrame(cherryRAF); cherryCanvas.remove(); cherryCanvas = null; }
- 
+
     const canvas = document.createElement("canvas");
     canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;z-index:10050;pointer-events:none;";
     document.body.appendChild(canvas);
@@ -1024,11 +1026,11 @@ function initCaptcha() {
     let W = window.innerWidth, H = window.innerHeight;
     canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
- 
+
     const CHERRY = ["#e8294a", "#cc1133", "#ff4466", "#ff6688", "#dd1144"];
     const STEM = "#2ecc52", LEAF = "#25a840";
     const DRAG = 0.97, GRAVITY = 0.10, EXPAND = 0.13;
- 
+
     function cherryShape(sc) {
       const out = [];
       const R = sc * 0.80, gap = sc * 0.17;
@@ -1082,7 +1084,7 @@ function initCaptcha() {
       }
       return out;
     }
- 
+
     function Particle(x, y, col, vx, vy, rocket, life, targetY, size) {
       this.x = x; this.y = y; this.col = col; this.vx = vx; this.vy = vy;
       this.rocket = rocket; this.alpha = 1; this.life = life; this.ml = life;
@@ -1120,7 +1122,7 @@ function initCaptcha() {
       });
       ctx.restore();
     };
- 
+
     let objects = [];
     function explode(cx, cy, life) {
       const base = CHERRY[Math.floor(Math.random() * CHERRY.length)];
@@ -1135,7 +1137,7 @@ function initCaptcha() {
         objects.push(new Particle(cx, cy, col, p.vx * EXPAND + jx, p.vy * EXPAND + jy, false, life * (0.85 + Math.random() * 0.3), 0, sz));
       });
     }
- 
+
     const SAFETY = 12000;                      // hard cap so it can never run forever
     const startT = performance.now();
     cherryLaunch = true;                       // keep launching until the gif hides
@@ -1168,13 +1170,13 @@ function initCaptcha() {
   }
   // called when the Cherry gif hides, so the fireworks last exactly as long as it
   function stopCherryBurst() { cherryLaunch = false; }
- 
+
   // ----- Make-it-rain: tap throws money AT the gif; scroll flings it up -----
   // Active only while the God-Tier gif is up; listeners removed + tiles unlocked
   // on stop so nothing lingers.
   const MONEY = ["💸", "💵"];
   let moneyLayer = null, moneyActive = false, moneyOnDown = null, moneyOnWheel = null;
- 
+
   function mkBill(x, y) {
     const b = document.createElement("span");
     b.textContent = MONEY[Math.floor(Math.random() * MONEY.length)];
@@ -1259,7 +1261,7 @@ function initCaptcha() {
     moneyOnDown = moneyOnWheel = null;
     setTimeout(() => { if (moneyLayer && !moneyActive) { moneyLayer.remove(); moneyLayer = null; } }, 2800);
   }
- 
+
   // ----- God-Tier heads-up modal (shown before the all-Mikes animations) -----
   function showDaddyModal(onContinue) {
     const old = document.querySelector(".daddy-modal");
@@ -1290,7 +1292,7 @@ function initCaptcha() {
     ov.querySelector(".daddy-go").addEventListener("click", go);
     document.addEventListener("keydown", onKey);
   }
- 
+
   // ----- Dabi + Hawks: the unlocked "secret episode" card -----
   function showSecretEpisode() {
     const ep = HAWKS_EGG_EPISODE;
@@ -1323,7 +1325,7 @@ function initCaptcha() {
     ov.addEventListener("click", (e) => { if (e.target === ov) close(); }); // tap backdrop to dismiss
     document.addEventListener("keydown", onKey);
   }
- 
+
   // ----- Chicas: the "play my Kahoot" invite card -----
   function showFriendsInvite() {
     const inv = FRIENDS_INVITE;
@@ -1337,10 +1339,22 @@ function initCaptcha() {
         '<div class="invite-title">' + inv.title + '</div>' +
         '<div class="invite-text">' + inv.message + '</div>' +
         '<a class="invite-play" target="_blank" rel="noopener noreferrer">' + inv.buttonLabel + '</a>' +
+        (inv.prize ? '<button type="button" class="invite-prizebtn">' + (inv.prizeLabel || "🎁 See the prize") + '</button>' +
+                     '<div class="invite-prize" hidden>' + inv.prize + '</div>' : '') +
         '<button type="button" class="invite-close">Maybe later ✕</button>' +
       '</div>';
     document.body.appendChild(ov);
     ov.querySelector(".invite-play").href = inv.url;   // set via property (avoids entity issues)
+    const prizeBtn = ov.querySelector(".invite-prizebtn");
+    const prizeEl  = ov.querySelector(".invite-prize");
+    if (prizeBtn && prizeEl) {
+      prizeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const show = prizeEl.hasAttribute("hidden");
+        if (show) { prizeEl.removeAttribute("hidden"); prizeBtn.textContent = "🙈 Hide the prize"; }
+        else      { prizeEl.setAttribute("hidden", ""); prizeBtn.textContent = inv.prizeLabel || "🎁 See the prize"; }
+      });
+    }
     function close() {
       document.removeEventListener("keydown", onKey);
       ov.classList.add("closing");
@@ -1351,7 +1365,7 @@ function initCaptcha() {
     ov.addEventListener("click", (e) => { if (e.target === ov) close(); }); // tap backdrop to dismiss
     document.addEventListener("keydown", onKey);
   }
- 
+
   // ----- Chicas: hide a 👭 on the board; finding it unlocks the invite -----
   function spawnHiddenGirls() {
     const winEl = document.querySelector("#captcha-screen .win");
@@ -1379,7 +1393,7 @@ function initCaptcha() {
       showFriendsInvite();
     });
   }
- 
+
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1402,14 +1416,14 @@ function initCaptcha() {
     }
     gifPop.classList.add("show");
     gifOnHide = onHide || null;
- 
+
     // stop any previous paired sound; remember the new one (started on reveal)
     if (gifSound && gifSound !== sound) stopSound(gifSound);
     gifSound = sound || null;
- 
+
     clearTimeout(gifTimer);
     let measured = 0, loopMs = loopHintMs || 0, shown = false, revealed = false;
- 
+
     function scheduleHide() {                  // (re)start the on-screen clock
       clearTimeout(gifTimer);
       // if a loop count is given and we know one loop's length, hold for exactly
@@ -1425,19 +1439,19 @@ function initCaptcha() {
       if (sound) playSound(sound);             // start audio WHEN the gif appears (kept in sync)
       scheduleHide();                          // ...and start its on-screen clock now
     }
- 
+
     // hide the old frame until the new gif has decoded
     img.style.visibility = "hidden";
     img.onload  = reveal;
     img.onerror = hideGifPop;                  // broken src -> don't leave the box stuck
     img.removeAttribute("src");
- 
+
     // safety net: if onload never fires, don't hang the overlay
     gifTimer = setTimeout(hideGifPop, 6000);
- 
+
     img.src = src;
     if (img.complete && img.naturalWidth > 0) reveal();   // already cached -> show immediately
- 
+
     // measure single-loop length too; prefer the explicit hint when given
     measureGif(src, (ms, lp) => {
       measured = ms;
@@ -1445,7 +1459,7 @@ function initCaptcha() {
       if (shown) scheduleHide();
     });
   }
- 
+
   // ----- Swim-across effect (an image glides over the screen with a bob) -----
   let swimLayer = document.querySelector(".swim-layer");
   if (!swimLayer) {
@@ -1468,7 +1482,7 @@ function initCaptcha() {
     ], { duration: 3400, easing: "linear" });
     anim.onfinish = () => fish.remove();
   }
- 
+
   // ----- Worm-across effect (an image inches across with a wriggle) -----
   // Reuses the same full-screen .swim-layer. Crawls left -> right low on the
   // screen, alternately scrunching and stretching like an inchworm.
@@ -1494,7 +1508,7 @@ function initCaptcha() {
     const anim = worm.animate(frames, { duration: 4200, easing: "linear" });
     anim.onfinish = () => worm.remove();
   }
- 
+
   // ----- BabyMiko Tamagotchi (a tiny pet she pokes for a few seconds) -----
   // Uses tama_console.png as the handheld (the pixel-her is baked into it).
   // Three invisible hotspots sit over the pink buttons. Closes on Enter,
@@ -1513,7 +1527,7 @@ function initCaptcha() {
   function launchTamagotchi() {
     const old = document.querySelector(".tama-overlay");
     if (old) old.remove();
- 
+
     const ov = document.createElement("div");
     ov.className = "tama-overlay";
     const btns = TAMA_BTNS.map(b =>
@@ -1533,11 +1547,11 @@ function initCaptcha() {
         '<button type="button" class="tama-close" id="tama-close">Done ⏎</button>' +
       '</div>';
     document.body.appendChild(ov);
- 
+
     const device = ov.querySelector("#tama-device");
     const bubble = ov.querySelector("#tama-bubble");
     const fx     = ov.querySelector("#tama-fx");
- 
+
     function react(act) {
       const list = TAMA_REACT[act] || TAMA_REACT.love;
       bubble.textContent = list[Math.floor(Math.random() * list.length)];
@@ -1552,7 +1566,7 @@ function initCaptcha() {
       fx.appendChild(e);
       setTimeout(() => e.remove(), 950);
     }
- 
+
     ov.querySelectorAll(".tama-hot").forEach(b => {
       b.addEventListener("click", () => {
         react(b.dataset.act);
@@ -1562,7 +1576,7 @@ function initCaptcha() {
         b.blur();
       });
     });
- 
+
     function close() {
       document.removeEventListener("keydown", onKey);
       ov.classList.add("closing");
@@ -1574,7 +1588,7 @@ function initCaptcha() {
     ov.querySelector("#tama-close").addEventListener("click", close);
     document.addEventListener("keydown", onKey);
   }
- 
+
   // ----- Lyric flash (e.g. the Rauw × Bad Bunny duet line) -----
   let lyricBox = document.querySelector(".lyric-pop");
   if (!lyricBox) {
@@ -1600,7 +1614,7 @@ function initCaptcha() {
     clearTimeout(lyricTimer);
     lyricTimer = setTimeout(hideLyric, ms || 4200);
   }
- 
+
   const shuffle = a => a.slice().sort(() => Math.random() - 0.5);
   const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   // turn "AlistorDemon" / "TaylorSwift" into "Alistor Demon" / "Taylor Swift"
@@ -1612,7 +1626,7 @@ function initCaptcha() {
     const w = prettify(s).split(/\s+/).filter(Boolean);
     return ((w[0] ? w[0][0] : "") + (w[1] ? w[1][0] : "")).toUpperCase() || "?";
   };
- 
+
   // ----- Rarity legend: flags which combos are present in the shown tiles -----
   const rarityBar = document.getElementById("cap-rarity");
   function buildRarityBar() {
@@ -1654,12 +1668,12 @@ function initCaptcha() {
       chip.querySelector(".rar-count").textContent = c > 1 ? " ×" + c : "";
     });
   }
- 
+
   // the pool entries behind the currently selected tiles (for keep-on-refresh)
   function selectedItems() {
     return [...grid.querySelectorAll(".cap-tile.selected")].map(t => t._item).filter(Boolean);
   }
- 
+
   // Pick the visible set. Any items in `keep` are retained; the remaining slots
   // are re-rolled from the rest of the pool (so selections survive a shuffle).
   function pickVisible(keep) {
@@ -1680,7 +1694,7 @@ function initCaptcha() {
       console.warn("CAPTCHA: no correct photo visible — add at least one {correct:true}.");
     return all;
   }
- 
+
   function makeTile(item, selected) {
     const tile = document.createElement("button");
     tile.className = "cap-tile" + (selected ? " selected" : "");
@@ -1747,7 +1761,7 @@ function initCaptcha() {
     });
     return tile;
   }
- 
+
   // render(keep): keep = pool entries to retain (kept selected); rest re-rolled.
   function render(keep) {
     keep = keep || [];
@@ -1761,17 +1775,17 @@ function initCaptcha() {
     else          { msgEl.textContent = "";               msgEl.className = "cap-msg"; }
     scanRarity(items);
   }
- 
+
   function fail(text) {
     msgEl.textContent = text; msgEl.className = "cap-msg bad";
     win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake");
     grid.querySelectorAll(".selected").forEach(t => t.classList.remove("selected"));
   }
- 
+
   verify.addEventListener("click", () => {
     const tiles    = [...grid.querySelectorAll(".cap-tile")];
     const selected = tiles.filter(t => t.classList.contains("selected"));
- 
+
     if (!selected.length) {
       fail(CAPTCHA_NUDGES[Math.min(nudgeIdx++, CAPTCHA_NUDGES.length - 1)]);
       return;
@@ -1882,15 +1896,15 @@ function initCaptcha() {
     verify.disabled = true;
     setTimeout(nextScreen, 1200);
   });
- 
+
   // shuffle button: KEEP whatever is selected, re-roll the rest (build combos fast)
   const refreshBtn = document.getElementById("cap-refresh");
   if (refreshBtn) refreshBtn.addEventListener("click", () => render(selectedItems()));
- 
+
   buildRarityBar();
   render();
 }
- 
+
 /* =====================================================================
    SCREEN 3 — LOGIN MODULE
    ---------------------------------------------------------------------
@@ -1911,7 +1925,7 @@ const LOGIN_PASSWORDS = [
   "09/11/2025", "09/11/2025",       // DD/MM/YYYY  (just in case she thinks day-first)
   "9/11/2025", "9/11/2025",       // DD/MM/YYYY  (just in case she thinks day-first with out 09)
 ];
- 
+
 // Wrong-date errors escalate in drama; the LAST one is the final warning.
 // One more wrong answer AFTER the warning resets (reloads) the whole page.
 const LOGIN_ERRORS = [
@@ -1921,12 +1935,12 @@ const LOGIN_ERRORS = [
   "ERROR 500 — CRITICAL: the relationship server is sweating. This is THE date 😰",
   "⚠️ FINAL WARNING — one more wrong answer and I wipe this ENTIRE thing and start over 💣",
 ];
- 
+
 function focusLoginPass() {
   const el = document.getElementById("login-pass");
   if (el) el.focus();
 }
- 
+
 function initLogin() {
   const userEl = document.getElementById("login-user");
   const passEl = document.getElementById("login-pass");
@@ -1935,14 +1949,14 @@ function initLogin() {
   const hint   = document.getElementById("login-hint");
   const win    = document.querySelector("#login-screen .win");
   let tries = 0;
- 
+
   const norm = s => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const show = (text, cls) => { msg.textContent = text; msg.className = "login-msg " + cls; };
- 
+
   function submit() {
     const u = norm(userEl.value);
     const p = norm(passEl.value);
- 
+
     if (!p) {
       show("ERROR 400 — a relationship requires *some* effort. Type something 😌", "bad");
       return;
@@ -1973,11 +1987,11 @@ function initLogin() {
     userEl.disabled = true;
     setTimeout(nextScreen, 1300);
   }
- 
+
   btn.addEventListener("click", submit);
   userEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
   passEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
- 
+
   // show/hide password eye (SVG icons — renders the same in every browser)
   const eye = document.getElementById("login-eye");
   if (eye) {
@@ -1992,7 +2006,7 @@ function initLogin() {
     });
   }
 }
- 
+
 /* =====================================================================
    SCREEN 4 — QUIZ MODULE  (photo multiple-choice, pick one, random order)
    ---------------------------------------------------------------------
@@ -2018,7 +2032,7 @@ const QUIZ = [
       { src: "Miles.jpg",  label: "Miles" },
     ],
   },
- 
+
   // Q2 — first date (correct = Calle Cerra; TODO: photos + the 3 decoy spots)
   {
     prompt: "Where was our first date?",
@@ -2031,7 +2045,7 @@ const QUIZ = [
       { src: "Picnic.jpg",    label: "Picnic" },
     ],
   },
- 
+
   // Q3 — the fruit inside joke  (TODO: which berry is correct?)
   {
     prompt: "Which are you most likly to buy from marshalls?",
@@ -2044,7 +2058,7 @@ const QUIZ = [
       { emoji: "🍇", label: "Raspberry", correct: true },
     ],
   },
- 
+
   // Q4 — the item Mike hides  (TODO: the item + photos + decoys)
   {
     prompt: "What does Mike hide for you to always find?",
@@ -2057,7 +2071,7 @@ const QUIZ = [
       { src: "LoveLetter.jpg", label: "LoveLetter" },
     ],
   },
- 
+
   // Q5 — the door (her photo vanishes if picked; the 3 of YOU remain)
   {
     prompt: "Who should open the door… always?",
@@ -2072,7 +2086,7 @@ const QUIZ = [
         vanishMsg: "✨ Poof! Nice try — door duty is mine 🎩" },
     ],
   },
- 
+
   // Q6 — "Te quiero" first (pick HIM 3 times; then he dramatically admits it)
   {
     prompt: 'Who said "Te quiero" first?',
@@ -2093,14 +2107,14 @@ const QUIZ = [
     ],
   },
 ];
- 
+
 function initQuiz() {
   const counterEl = document.getElementById("quiz-counter");
   const promptEl  = document.getElementById("quiz-prompt");
   const grid      = document.getElementById("quiz-grid");
   const msgEl     = document.getElementById("quiz-msg");
   const win       = document.querySelector("#quiz-screen .win");
- 
+
   // reuse the shared reaction-gif overlay (created by the captcha module) or make one
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -2113,7 +2127,7 @@ function initQuiz() {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     gifPop.classList.add("show");
- 
+
     let gTimer, measured = 0, shown = false, revealed = false;
     const dur = () => Math.max(measured, minMs || 0) || 2600;   // minMs acts as a floor
     function hideIt() { clearTimeout(gTimer); gifPop.classList.remove("show"); }
@@ -2124,7 +2138,7 @@ function initQuiz() {
       img.style.visibility = "visible";
       scheduleHide();                          // count on-screen time from when it's visible
     }
- 
+
     img.style.visibility = "hidden";
     img.onload  = reveal;
     img.onerror = hideIt;
@@ -2134,22 +2148,22 @@ function initQuiz() {
     if (img.complete && img.naturalWidth > 0) reveal();   // cached -> show now
     measureGif(src, (ms) => { measured = ms; if (shown) scheduleHide(); });
   }
- 
+
   const shuffle  = a => a.slice().sort(() => Math.random() - 0.5);
   const prettify = s => (s || "").replace(/([a-z0-9])([A-Z])/g, "$1 $2").trim();
   const setMsg   = (text, cls) => { msgEl.textContent = text; msgEl.className = "quiz-msg " + (cls || ""); };
   const shake    = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
- 
+
   let qIndex = 0;
   let denyCount = 0;
- 
+
   function advance() {
     qIndex++;
     denyCount = 0;
     if (qIndex >= QUIZ.length) { nextScreen(); return; }
     render();
   }
- 
+
   function render() {
     const q = QUIZ[qIndex];
     counterEl.textContent = `Question ${qIndex + 1} of ${QUIZ.length}`;
@@ -2171,7 +2185,7 @@ function initQuiz() {
       grid.appendChild(tile);
     });
   }
- 
+
   function handlePick(q, opt, tile) {
     // vanishing option (the door question): spiral away, then a card-trick gif
     if (opt.vanish) {
@@ -2212,10 +2226,10 @@ function initQuiz() {
     setMsg(q.wrong || "Nope, try again 😌", "bad");
     shake();
   }
- 
+
   render();
 }
- 
+
 /* =====================================================================
    SCREEN 5 — SPOTIFY WRAPPED: US EDITION
    ---------------------------------------------------------------------
@@ -2229,31 +2243,31 @@ function initQuiz() {
    ===================================================================== */
 const WRAPPED = [
   { kind: "intro",  accent: "green" },
- 
+
   { kind: "stat",   accent: "pink",   num: 59375,                 label: "messages sent",
     note: "Two years of texts and we STILL had more to say 💬" },
- 
+
   { kind: "stat",   accent: "purple", num: 131400, unit: "",      label: "minutes together",
     note: "That's 2,190 hours of you being my favorite place to be ⏳" },
- 
+
   { kind: "stat",   accent: "yellow", num: 1095,                  label: "meals shared",
     note: "Every single one beats eating alone 🍽️" },
- 
+
   { kind: "stat",   accent: "blue",   big: "∞",                   label: "inside jokes",
     note: "Officially uncountable — nobody else would get a single one 😂" },
- 
+
   // 😴 caught-sleeping stat with the speed-run gif underneath.
   // ✏️ set num to the real count and gif to your compiled speed-run file.
   { kind: "sleep",  accent: "coral",  num: 30,                    label: "times caught sleeping",
     gif: "sleep_speedrun.gif",
     note: "Heavy sleeper of the year 😴 — and I caught every one. Roll the tape 🎬" },
- 
+
   { kind: "spotlight", accent: "green", art: "me1.jpeg", topLabel: "Your Top Artist",
     name: "Michael", note: "You were in the top 0.01% of his listeners 🎧" },
- 
+
   { kind: "spotlight", accent: "coral", art: "ComoDormisteCover.jpg", topLabel: "Your Top Song",
     name: "Como Dormiste", note: "You know exactly which one 🎵" },
- 
+
   { kind: "ranked", accent: "purple", title: "Your Top Artists", items: [
     { name: "Michael",                 img: "me1.jpeg" },
     { name: "Michael (Acoustic)",      img: "me2.jpeg" },
@@ -2261,23 +2275,23 @@ const WRAPPED = [
     { name: "Michael feat. You",       img: "her.jpeg" },
     { name: "Honestly, still Michael", img: "MikeBefore.jpg" },
   ] },
- 
+
   { kind: "summary", accent: "pink" },
 ];
- 
+
 function initWrapped() {
   const stage   = document.getElementById("wr-stage");
   const dotsEl  = document.getElementById("wr-dots");
   const nextBtn = document.getElementById("wr-next");
   let idx = 0;
- 
+
   dotsEl.innerHTML = "";
   WRAPPED.forEach(() => {
     const d = document.createElement("span");
     d.className = "wr-dot";
     dotsEl.appendChild(d);
   });
- 
+
   function countUp(el, target, unit) {
     const dur = 1100, t0 = performance.now();
     (function step(now) {
@@ -2287,13 +2301,13 @@ function initWrapped() {
       if (p < 1) requestAnimationFrame(step);
     })(t0);
   }
- 
+
   function render() {
     const c = WRAPPED[idx];
     stage.className = "wr-stage wr-" + (c.accent || "green");
     const mark = '<div class="wr-mark">● Wrapped</div>';
     let html = "";
- 
+
     if (c.kind === "intro") {
       html =
         '<div class="wr-card wr-introcard">' + mark +
@@ -2302,7 +2316,7 @@ function initWrapped() {
             '<div class="wr-introsub">Two years. Tap to unwrap →</div>' +
           '</div>' +
         '</div>';
- 
+
     } else if (c.kind === "stat") {
       html =
         '<div class="wr-card">' + mark +
@@ -2312,7 +2326,7 @@ function initWrapped() {
             '<div class="wr-note">' + (c.note || "") + '</div>' +
           '</div>' +
         '</div>';
- 
+
     } else if (c.kind === "sleep") {
       const media = c.gif
         ? '<img class="wr-sleepgif" src="' + c.gif + '" alt="">'
@@ -2326,7 +2340,7 @@ function initWrapped() {
             '<div class="wr-note">' + (c.note || "") + '</div>' +
           '</div>' +
         '</div>';
- 
+
     } else if (c.kind === "spotlight") {
       const art = c.art
         ? '<img class="wr-art" src="' + c.art + '" alt="">'
@@ -2340,7 +2354,7 @@ function initWrapped() {
             '<div class="wr-note">' + (c.note || "") + '</div>' +
           '</div>' +
         '</div>';
- 
+
     } else if (c.kind === "ranked") {
       let rows = "";
       c.items.forEach((it, i) => {
@@ -2360,7 +2374,7 @@ function initWrapped() {
           '<div class="wr-toplabel wr-ranktitle">' + (c.title || "") + '</div>' +
           '<div class="wr-list">' + rows + '</div>' +
         '</div>';
- 
+
     } else if (c.kind === "summary") {
       const pair = (h, v) =>
         '<div class="wr-sumrow"><div class="wr-sumh">' + h + '</div>' +
@@ -2377,33 +2391,33 @@ function initWrapped() {
           '<div class="wr-note">That\'s our two years 💛 Tap to keep going →</div>' +
         '</div>';
     }
- 
+
     stage.innerHTML = html;
- 
+
     if (c.kind === "stat" || c.kind === "sleep") {
       const el = document.getElementById("wr-num");
       if (c.num != null) { el.textContent = "0"; countUp(el, c.num, c.unit); }
       else el.textContent = c.big || "";
     }
- 
+
     [...dotsEl.children].forEach((d, i) => d.classList.toggle("on", i === idx));
     nextBtn.textContent = (idx === WRAPPED.length - 1) ? "Continue →" : "Next →";
   }
- 
+
   function advance() {
     if (idx < WRAPPED.length - 1) { idx++; render(); }
     else nextScreen();
   }
- 
+
   nextBtn.addEventListener("click", advance);
   stage.addEventListener("click", advance);   // tapping the card also advances
- 
+
   initWrapped._reset = () => { idx = 0; render(); };
   render();
 }
 // onShow: always start the deck from the first card
 function showWrapped() { if (initWrapped._reset) initWrapped._reset(); }
- 
+
 /* =====================================================================
    SCREEN 6 — DIGITAL SCRAPBOOK  (a stack of polaroids she flips through)
    ---------------------------------------------------------------------
@@ -2419,28 +2433,28 @@ const SCRAPBOOK = [
   { src: "scrap4.jpg", caption: "Our last celebrated goal", date: "May, 9, 2026" },
   { src: "scrap5.jpg", caption: "Our recreated kiss", date: "December, 1, 2025" },
 ];
- 
+
 // Optional year-recap video — revealed after the last photo is flipped through.
 // Drop your .mp4 next to index.html. Set src to "" to skip the video entirely.
 const SCRAPBOOK_VIDEO = {
   src: "recap.mp4",
   caption: "Our year, in one take 🎬",
 };
- 
+
 function initScrapbook() {
   const stack   = document.getElementById("scrap-stack");
   const countEl = document.getElementById("scrap-count");
   const hint    = document.getElementById("scrap-hint");
   const doneEl  = document.getElementById("scrap-done");
   const nextBtn = document.getElementById("scrap-next");
- 
+
   function updateCount() {
     const total = SCRAPBOOK.length;
     const left  = stack.querySelectorAll(".polaroid").length;
     const cur   = Math.min(total - left + 1, total);
     countEl.textContent = total ? `${cur} / ${total}` : "";
   }
- 
+
   function attachTop() {
     const cards = [...stack.querySelectorAll(".polaroid")];
     if (!cards.length) {                 // flipped through them all
@@ -2463,7 +2477,7 @@ function initScrapbook() {
     top.addEventListener("click", dismiss, { once: true });
     updateCount();
   }
- 
+
   function dismiss(e) {
     const card = e.currentTarget;
     const dir = Math.random() < 0.5 ? -1 : 1;
@@ -2472,7 +2486,7 @@ function initScrapbook() {
     card.style.opacity = "0";
     setTimeout(() => { card.remove(); attachTop(); }, 470);
   }
- 
+
   function build() {
     stack.innerHTML = "";
     stack.classList.remove("video-mode");
@@ -2498,14 +2512,14 @@ function initScrapbook() {
     });
     attachTop();
   }
- 
+
   nextBtn.addEventListener("click", nextScreen);
   initScrapbook._reset = build;
   build();
 }
 // onShow: rebuild the stack each time the screen is entered
 function showScrapbook() { if (initScrapbook._reset) initScrapbook._reset(); }
- 
+
 /* =====================================================================
    SCREEN 7 — TERMS & CONDITIONS  (read to the bottom, then draw a signature)
    ---------------------------------------------------------------------
@@ -2526,7 +2540,7 @@ const TERMS = [
   "Subscriber confirms she is, and will remain, the favorite person. Status is non-transferable. Ever.",
 ];
 const TERMS_FINE = "By signing below, Subscriber acknowledges she is officially stuck with me. Congratulations. ❤️";
- 
+
 // Optional add-ons she ticks (or doesn't). The accepted ones get folded into
 // the signed agreement and emailed. Edit freely.
 const TERMS_OPTIONS = [
@@ -2545,12 +2559,12 @@ const TERMS_OPTIONS = [
   "We must make a local or international trip together at least twice a year ✈️",
   "I will move in with boyfriend and redo the living space to my liking 🏡",
 ];
- 
+
 // --- Where the signed agreement is emailed -----------------------------
 const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";   // where the signed agreement lands
 // Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
 const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93", finalTemplateId: "template_fmbfeh9" };
- 
+
 // ✏️ Subject + body sent with the FINAL renewal email (template_fmbfeh9).
 // In that EmailJS template, set the Subject field to {{subject}} and put
 // {{message}} in the body (same as your working agreement template).
@@ -2563,7 +2577,7 @@ const FINAL_EMAIL = {
     "Status: Renewed successfully.\n" +
     "Expiration date: Never. 💖🐱🐶",
 };
- 
+
 function initTerms() {
   const scroll     = document.getElementById("terms-scroll");
   const list       = document.getElementById("terms-list");
@@ -2574,15 +2588,15 @@ function initTerms() {
   const scrollHint = document.getElementById("terms-scrollhint");
   const optsEl     = document.getElementById("terms-options");
   const ctx = canvas.getContext("2d");
- 
+
   let scrolled = false, signed = false, drawing = false;
- 
+
   list.innerHTML = TERMS.map(t => "<li>" + t + "</li>").join("");
   fine.textContent = TERMS_FINE;
   optsEl.innerHTML = TERMS_OPTIONS.map((t, i) =>
     '<label class="terms-opt"><input type="checkbox" data-opt="' + i + '"><span>' + t + '</span></label>'
   ).join("");
- 
+
   function sizeCanvas() {
     const w = canvas.parentElement.clientWidth || 280;
     canvas.width = w; canvas.height = 120;           // (resets the drawing)
@@ -2602,16 +2616,16 @@ function initTerms() {
     e.preventDefault();
   }
   function end() { drawing = false; }
- 
+
   canvas.addEventListener("mousedown", start);
   canvas.addEventListener("mousemove", move);
   window.addEventListener("mouseup", end);
   canvas.addEventListener("touchstart", start, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
   canvas.addEventListener("touchend", end);
- 
+
   function updateBtn() { acceptBtn.disabled = !(scrolled && signed); }
- 
+
   scroll.addEventListener("scroll", () => {
     if (scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 8) {
       scrolled = true;
@@ -2619,12 +2633,12 @@ function initTerms() {
       updateBtn();
     }
   });
- 
+
   clearBtn.addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     signed = false; updateBtn();
   });
- 
+
   function buildEmailBody(chosen) {
     const date = new Date().toLocaleDateString();
     const L = [];
@@ -2641,7 +2655,7 @@ function initTerms() {
     L.push(TERMS_FINE);
     return L.join("\n");
   }
- 
+
   function sendRenewalEmail(chosen) {
     const subject = "Relationship Renewal Agreement — Signed ✅";
     const message = buildEmailBody(chosen);
@@ -2655,7 +2669,7 @@ function initTerms() {
       } catch (e) { /* ignore */ }
     }
   }
- 
+
   acceptBtn.addEventListener("click", () => {
     if (acceptBtn.disabled) return;
     const chosen = [...optsEl.querySelectorAll("input:checked")]
@@ -2663,7 +2677,7 @@ function initTerms() {
     sendRenewalEmail(chosen);
     nextScreen();
   });
- 
+
   initTerms._reset = () => {
     sizeCanvas();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2679,149 +2693,170 @@ function initTerms() {
 }
 // onShow: resize the canvas to the now-visible window and reset the gates
 function showTerms() { if (initTerms._reset) initTerms._reset(); }
- 
+
 /* =====================================================================
-   SCREEN 8 — TRIP PICKER  (she showcases 3 destinations and chooses one)
+   SCREEN 8 — TRIP GUESS  ("guess where we're going" — one real, two decoys)
    ---------------------------------------------------------------------
-   ✏️  FILL ME IN — one entry per destination (exactly 3, but add/remove
-   freely). Drop each photo next to index.html and put its filename in
-   `img`. Until a real file exists, a labeled placeholder shows so you can
-   test right now. `details` is a list of lines shown under the photo —
-   use it for dates, hotel, vibe, highlights, budget, whatever you want.
- 
-   Her pick is remembered in SELECTED_TRIP (used to title the calendar)
-   and — if EmailJS is set up (it is, for the terms screen) — emailed to
-   you silently so you know which one she chose.
+   ✏️  Exactly ONE entry has  correct: true  — that's the real destination,
+   and its `details` are revealed only after she guesses it. The others are
+   decoys: give each a `wrong` roast (or they fall back to TRIP_WRONG).
+   Drop photos next to index.html (trip1/2/3.jpg); until then a labeled
+   placeholder shows. Her correct guess is remembered in SELECTED_TRIP.
    ===================================================================== */
 const TRIPS = [
   {
-    id: "A",
-    name: "Salem, Massachusetts 🎃",
-    place: "Salem, Massachusetts, USA",
+    id: "NOLA", correct: true,
+    name: "New Orleans, Louisiana 🎃",
+    place: "New Orleans, Louisiana, USA",
     img: "trip1.jpg",
-    tagline: "Witchy vibes, cobblestone streets & peak Halloween magic 🖤",
+    tagline: "Spooky, witchy & dripping with Halloween-in-November magic 🖤",
+    reveal: "You guessed it! 🎉",
     details: [
       "🗓️ 7th to 9th of November, 2026",
-      "🧹 Witch history, haunted lanes & spooky-cute shops",
-      "🍂 Golden fall scenery and full Halloween-season atmosphere",
-      "🕯️ Cozy nights in the most bewitching town in New England",
-      "🏡 A cozy Airbnb in the heart of town",
+      "🏡 A cozy local vintage Airbnb",
+      "🔮 All the witchy magic this haunted town offers in November",
+      "🎭 Booked activities, guided tours & room to just explore",
+      "🍽️ …and so much food 😋",
     ],
   },
   {
-    id: "B",
-    name: "PLACEHOLDER — Destination 2 ✏️",
-    place: "City, Country ✏️",
-    img: "trip2.jpg",
-    tagline: "One-line romantic hook for this trip ✏️",
-    details: [
-      "🗓️ 7th to 9th of November, 2026",
-      "🏨 Where you'll stay ✏️",
-      "✨ Highlight #1 ✏️",
-      "🌅 Highlight #2 ✏️",
-    ],
+    id: "PAR", name: "Paris, France 🗼", place: "Paris, France", img: "trip2.jpg",
+    wrong: "Paris? 🥖 Bonito intento… pero no. Sigue adivinando 👀",
   },
   {
-    id: "C",
-    name: "PLACEHOLDER — Destination 3 ✏️",
-    place: "City, Country ✏️",
-    img: "trip3.jpg",
-    tagline: "One-line romantic hook for this trip ✏️",
-    details: [
-      "🗓️ 7th to 9th of November, 2026",
-      "🏨 Where you'll stay ✏️",
-      "✨ Highlight #1 ✏️",
-      "🏖️ Highlight #2 ✏️",
-    ],
+    id: "SAN", name: "Santorini, Greece 🏖️", place: "Santorini, Greece", img: "trip3.jpg",
+    wrong: "Santorini? 🏖️ I wish — but nope, not this time. Try again 😏",
   },
 ];
- 
+
+// fallback roasts if a decoy has no `wrong` of its own
+const TRIP_WRONG = [
+  "Nope, not there 😌 guess again",
+  "Ooh, so close… not really 😏 try another",
+  "That's a decoy 👀 keep guessing",
+];
+
 // Remembered across screens (the calendar reads this to title itself).
 let SELECTED_TRIP = null;
- 
+
 function showTrip() { if (initTrip._reset) initTrip._reset(); }
- 
+
 function initTrip() {
   const listEl    = document.getElementById("trip-list");
   const confirmEl = document.getElementById("trip-confirm");
-  let chosen = null;
- 
+  const msgEl     = document.getElementById("trip-msg");
+  const titleEl   = document.querySelector("#trip-screen .trip-title");
+  const subEl     = document.querySelector("#trip-screen .trip-sub");
+  const winEl     = document.querySelector("#trip-screen .win");
+  let done = false;
+
   const prettify = s => (s || "").replace(/([a-z0-9])([A-Z])/g, "$1 $2").trim();
- 
-  function render() {
-    listEl.innerHTML = "";
-    chosen = null;
-    confirmEl.disabled = true;
-    confirmEl.textContent = "Reserve this trip →";
- 
-    TRIPS.forEach(trip => {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "trip-card";
-      card.dataset.id = trip.id;
-      const details = (trip.details || [])
-        .map(d => '<li>' + d + '</li>').join("");
-      card.innerHTML =
-        '<div class="trip-photo">' +
-          '<img alt="">' +
-          '<span class="trip-ph">✈️ ' + prettify(trip.name) + '</span>' +
-          '<span class="trip-pick">✓ Chosen</span>' +
-        '</div>' +
+  const shuffle  = a => a.slice().sort(() => Math.random() - 0.5);
+  const rand     = a => a[Math.floor(Math.random() * a.length)];
+  const shake    = () => { winEl.classList.remove("shake"); void winEl.offsetWidth; winEl.classList.add("shake"); };
+
+  // Best-effort silent email so you know she found it (reuses the terms template).
+  function emailTripChoice(trip) {
+    if (!(window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId)) return;
+    const message =
+      "She guessed the trip ✈️\n\n" +
+      "Destination: " + trip.name + "\n" +
+      (trip.place ? "Location: " + trip.place + "\n" : "") +
+      "\nItinerary:\n" +
+      (trip.details || []).map(d => "  • " + d).join("\n") +
+      "\n\nSee you the 7th–9th of November 💖";
+    try {
+      emailjs.init({ publicKey: EMAILJS.publicKey });
+      emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
+        { to_email: RENEWAL_EMAIL_TO, subject: "✈️ She guessed the trip: " + trip.name, message: message }
+      ).catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+
+  // she guessed right → reveal the real itinerary + a Continue button
+  function reveal(trip) {
+    done = true;
+    SELECTED_TRIP = trip;
+    emailTripChoice(trip);
+    const details = (trip.details || []).map(d => '<li>' + d + '</li>').join("");
+    listEl.innerHTML =
+      '<div class="trip-card revealed">' +
+        '<div class="trip-photo"><img alt=""><span class="trip-ph">✈️ ' + prettify(trip.name) + '</span></div>' +
         '<div class="trip-info">' +
           '<div class="trip-name">' + trip.name + '</div>' +
           (trip.place ? '<div class="trip-place">📍 ' + trip.place + '</div>' : '') +
           (trip.tagline ? '<div class="trip-tag">' + trip.tagline + '</div>' : '') +
           (details ? '<ul class="trip-details">' + details + '</ul>' : '') +
+        '</div>' +
+      '</div>';
+    const img = listEl.querySelector("img");
+    img.onload = () => listEl.querySelector(".trip-card").classList.add("has-img");
+    if (trip.img) img.src = trip.img;
+    if (titleEl) titleEl.textContent = trip.reveal || "You guessed it! 🎉";
+    if (subEl)   subEl.textContent   = "Here's where we're going 💕";
+    msgEl.textContent = ""; msgEl.className = "trip-msg";
+    confirmEl.style.display = "";
+    confirmEl.disabled = false;
+    confirmEl.textContent = "Reserve our trip →";
+  }
+
+  function guessWrong(card, trip) {
+    card.classList.remove("wrong"); void card.offsetWidth; card.classList.add("wrong");
+    setTimeout(() => card.classList.remove("wrong"), 500);
+    shake();
+    msgEl.textContent = trip.wrong || rand(TRIP_WRONG);
+    msgEl.className = "trip-msg bad";
+  }
+
+  function render() {
+    done = false;
+    if (titleEl) titleEl.textContent = "Guess where we're going ✈️";
+    if (subEl)   subEl.textContent   = "Two are decoys — pick the real destination 👀";
+    msgEl.textContent = ""; msgEl.className = "trip-msg";
+    confirmEl.style.display = "none";
+    confirmEl.disabled = true;
+
+    listEl.innerHTML = "";
+    shuffle(TRIPS).forEach(trip => {                 // random order each visit
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "trip-card guess";
+      card.dataset.id = trip.id;
+      card.innerHTML =
+        '<div class="trip-photo"><img alt=""><span class="trip-ph">✈️ ' + prettify(trip.name) + '</span></div>' +
+        '<div class="trip-info">' +
+          '<div class="trip-name">' + trip.name + '</div>' +
+          (trip.place ? '<div class="trip-place">📍 ' + trip.place + '</div>' : '') +
         '</div>';
       const img = card.querySelector("img");
       img.onload = () => card.classList.add("has-img");
       if (trip.img) img.src = trip.img;
- 
+
       card.addEventListener("click", () => {
-        listEl.querySelectorAll(".trip-card").forEach(c => c.classList.remove("selected"));
-        card.classList.add("selected");
-        chosen = trip;
-        confirmEl.disabled = false;
-        confirmEl.textContent = "Reserve this trip →";
-        card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (done) return;
+        if (trip.correct) {
+          done = true;                               // lock further guesses
+          card.classList.add("correct");
+          setTimeout(() => reveal(trip), 550);       // brief green beat, then reveal
+        } else {
+          guessWrong(card, trip);
+        }
       });
- 
       listEl.appendChild(card);
     });
   }
- 
-  // Best-effort silent email so you know which trip she picked (reuses the
-  // terms EmailJS template — subject/message only, like the signed agreement).
-  function emailTripChoice(trip) {
-    if (!(window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId)) return;
-    const message =
-      "She picked your anniversary trip ✈️\n\n" +
-      "Destination: " + trip.name + "\n" +
-      (trip.place ? "Location: " + trip.place + "\n" : "") +
-      "\nDetails she saw:\n" +
-      (trip.details || []).map(d => "  • " + d).join("\n") +
-      "\n\nGo book it 💖";
-    try {
-      emailjs.init({ publicKey: EMAILJS.publicKey });
-      emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
-        { to_email: RENEWAL_EMAIL_TO, subject: "✈️ She chose the trip: " + trip.name, message: message }
-      ).catch(() => {});
-    } catch (e) { /* ignore */ }
-  }
- 
+
   confirmEl.addEventListener("click", () => {
-    if (!chosen) return;
-    SELECTED_TRIP = chosen;
-    emailTripChoice(chosen);
+    if (!done) return;
     confirmEl.disabled = true;
     confirmEl.textContent = "Reserved ✓ Now let's lock the dates →";
-    setTimeout(nextScreen, 1200);
+    setTimeout(nextScreen, 1100);
   });
- 
+
   initTrip._reset = render;
   render();
 }
- 
+
 /* =====================================================================
    SCREEN 9 — DATE PICKER  (reserve the trip's date RANGE, not one day)
    ---------------------------------------------------------------------
@@ -2831,7 +2866,7 @@ function initTrip() {
    Edit the excuses freely — add/remove as many as you like.
    ===================================================================== */
 const TRIP_DATES = { year: 2026, month: 11, days: [7, 8, 9] };   // 7th–9th of November 2026 (month 1-indexed)
- 
+
 const DATE_EXCUSES = [
   "Booked solid — Cameo scheduled a very important nap that day 🐱",
   "Booked solid — Candy has a vet appointment that day 🐶",
@@ -2847,16 +2882,16 @@ const DATE_EXCUSES = [
   "Nuh-uh. That day is reserved for thinking about the RIGHT day 🤔",
   "Unavailable — I'll be too busy being obsessed with you 💘",
 ];
- 
+
 const DATE_HINTS = [
   "",
   "💡 It's a 3-day getaway — you'll need all three days 🧳",
   "💡 Think anniversary weekend… the 7th, 8th and 9th 💕",
   "💡 Tap the 7th, 8th AND 9th of November, 2026 😉",
 ];
- 
+
 function showDatePicker() { if (initDatePicker._reset) initDatePicker._reset(); }
- 
+
 function initDatePicker() {
   const grid      = document.getElementById("date-grid");
   const monthEl   = document.getElementById("date-month");
@@ -2868,10 +2903,10 @@ function initDatePicker() {
   const win       = document.querySelector("#date-screen .win");
   const titleEl   = document.querySelector("#date-screen .date-title");
   const subEl     = document.querySelector("#date-screen .date-sub");
- 
+
   const MONTHS = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"];
- 
+
   const NEED = TRIP_DATES.days.slice();          // [7, 8, 9]
   const needSet = new Set(NEED);
   const picked = new Set();                       // required days she's turned green
@@ -2879,23 +2914,23 @@ function initDatePicker() {
   let viewMonth = TRIP_DATES.month - 1;           // 0-indexed for JS Date
   let wrong = 0;
   let done  = false;
- 
+
   const rand  = a => a[Math.floor(Math.random() * a.length)];
   const shake = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
   const onTripMonth = () => viewYear === TRIP_DATES.year && viewMonth === TRIP_DATES.month - 1;
   const cellFor = d => [...grid.querySelectorAll(".date-cell:not(.empty)")].find(c => +c.textContent === d);
   const allPicked = () => NEED.every(d => picked.has(d));
- 
+
   function updateConfirm() {
     confirmEl.disabled = !allPicked();
   }
- 
+
   function build() {
     monthEl.textContent = MONTHS[viewMonth] + " " + viewYear;
     grid.innerHTML = "";
     const firstDow = new Date(viewYear, viewMonth, 1).getDay();      // 0 = Sunday
     const days     = new Date(viewYear, viewMonth + 1, 0).getDate(); // last day of month
- 
+
     for (let i = 0; i < firstDow; i++) {
       const blank = document.createElement("span");
       blank.className = "date-cell empty";
@@ -2913,7 +2948,7 @@ function initDatePicker() {
     // re-paint already-chosen days green when this month is shown
     if (onTripMonth()) picked.forEach(d => { const c = cellFor(d); if (c) c.classList.add("picked"); });
   }
- 
+
   function reject(cell) {
     cell.classList.remove("wrong"); void cell.offsetWidth; cell.classList.add("wrong");
     setTimeout(() => cell.classList.remove("wrong"), 500);
@@ -2923,7 +2958,7 @@ function initDatePicker() {
     wrong++;
     hintEl.textContent = DATE_HINTS[Math.min(wrong, DATE_HINTS.length - 1)];
   }
- 
+
   function finish() {
     done = true;
     grid.querySelectorAll(".date-cell").forEach(c => c.disabled = true);
@@ -2934,10 +2969,10 @@ function initDatePicker() {
     msgEl.className = "date-msg ok";
     setTimeout(nextScreen, 1800);
   }
- 
+
   function pick(d, cell) {
     if (done) return;
- 
+
     // an accepted trip day (7/8/9 on Nov 2026) → toggle it green
     if (onTripMonth() && needSet.has(d)) {
       if (picked.has(d)) {                 // tap again to remove
@@ -2960,11 +2995,11 @@ function initDatePicker() {
       }
       return;
     }
- 
+
     // anything else → a funny excuse (keeps the green picks she already has)
     reject(cell);
   }
- 
+
   prevBtn.addEventListener("click", () => {
     if (--viewMonth < 0) { viewMonth = 11; viewYear--; }
     build();
@@ -2974,7 +3009,7 @@ function initDatePicker() {
     build();
   });
   confirmEl.addEventListener("click", () => { if (allPicked() && !done) finish(); });
- 
+
   initDatePicker._reset = () => {
     viewYear  = TRIP_DATES.year;
     viewMonth = TRIP_DATES.month - 1;
@@ -2991,7 +3026,7 @@ function initDatePicker() {
   };
   build();
 }
- 
+
 /* =====================================================================
    SCREEN 9 — LETTER (renewal finale)
    Your original logic, unchanged — just wrapped in init/onShow and
@@ -3002,7 +3037,7 @@ function openLetterWindow() {
   win.classList.remove("open");          // reset in case of re-entry
   setTimeout(() => win.classList.add("open"), 50);
 }
- 
+
 function initLetter() {
   const screen    = document.getElementById("letter-screen");
   const noBtn     = screen.querySelector(".no-btn");
@@ -3011,15 +3046,15 @@ function initLetter() {
   const catImg    = screen.querySelector("#letter-cat");
   const buttons   = screen.querySelector("#letter-buttons");
   const finalText = screen.querySelector("#final-text");
- 
+
   // "grow" -> No grows Yes | "sad" -> heartbroken Cameo | "runaway" -> No dodges
   let phase = "grow";
   let yesScale = 1;
- 
+
   yesBtn.style.position = "relative";
   yesBtn.style.transformOrigin = "center center";
   yesBtn.style.transition = "transform 0.3s ease";
- 
+
   function resetYesBtn() {
     yesScale = 1;
     yesBtn.style.position = "relative";
@@ -3027,7 +3062,7 @@ function initLetter() {
     yesBtn.style.left = "";
     yesBtn.style.transform = "";
   }
- 
+
   function startSadRound() {
     phase = "sad";
     resetYesBtn();
@@ -3035,7 +3070,7 @@ function initLetter() {
     title.textContent = "🐱 It's me, Cameo. You hesitated… and now my tiny heart is cracked 🥺 Do you REALLY want to break my heart like this?";
     yesBtn.style.display = "none";
   }
- 
+
   function startRunawayRound() {
     phase = "runaway";
     catImg.src = "candy_heart.gif";
@@ -3043,7 +3078,7 @@ function initLetter() {
     yesBtn.style.display = "";
     noBtn.style.transform = "";
   }
- 
+
   let finalSent = false;
   function sendRenewalConfirmation() {
     if (finalSent) return;                 // only ever send once
@@ -3057,7 +3092,7 @@ function initLetter() {
       } catch (e) { /* ignore */ }
     }
   }
- 
+
   function showFinal() {
     sendRenewalConfirmation();             // membership renewed -> fire the final email
     title.textContent = "Yippeeee! Membership renewed — for another forever 💖";
@@ -3066,7 +3101,7 @@ function initLetter() {
     buttons.style.display = "none";
     finalText.style.display = "block";
   }
- 
+
   noBtn.addEventListener("click", () => {
     if (phase === "grow") {
       yesScale += 2;
@@ -3080,7 +3115,7 @@ function initLetter() {
       startRunawayRound();
     }
   });
- 
+
   noBtn.addEventListener("mouseover", () => {
     if (phase !== "runaway") return;
     const min = 150, max = 250;
@@ -3091,13 +3126,13 @@ function initLetter() {
     noBtn.style.transition = "transform 0.3s ease";
     noBtn.style.transform = `translate(${moveX}px, ${moveY}px)`;
   });
- 
+
   yesBtn.addEventListener("click", () => {
     if (phase === "grow") { startSadRound(); return; }
     if (phase === "runaway") { showFinal(); }
   });
 }
- 
+
 /* =====================================================================
    DEV SKIP — TESTING ONLY.  ⚠️ REMOVE BEFORE SENDING:
    flip DEV_SKIP to false, or delete this whole block. Also delete the
