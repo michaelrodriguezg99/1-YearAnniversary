@@ -354,6 +354,7 @@ const CAPTCHA_COMBOS = [
   ["Allie", "Hannah"],                   // their gif
   ["AlastorDemon", "AlastorHuman"],      // both Alastors
   ["Dabi", "Hawks"],                     // secret episode: Hawks laid an egg 🥚
+  ["Dante", "Lady"],                     // Devil May Cry duo
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
   ["RauwAlejandro", "BadBunny"],         // the duet
@@ -1832,6 +1833,14 @@ function initCaptcha() {
       triggerCharFx("feathers");                  // Hawks's feathers, together
       showSecretEpisode();
       fail("🥚 SECRET EPISODE UNLOCKED — Hawks laid an egg?!");
+      return;
+    }
+    // Dante + Lady (and ONLY those two) => their Devil May Cry gif
+    if (picked.length === 2 && picked.includes("Dante") && picked.includes("Lady")) {
+      triggerCharFx("devil");                     // Dante's demon energy
+      triggerCharFx("missiles");                  // Lady's barrage, together
+      showGif("DanteAndLady.gif");
+      fail("Dante Y Lady?? El dúo completo de Devil May Cry 😳🗡️ Cool, pero ninguno de los dos se queda — yo sí 😌");
       return;
     }
     // all the Avatar / Pandora characters together => avatar gif
