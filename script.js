@@ -385,6 +385,16 @@ const HAWKS_EGG_EPISODE = {
   end: "TO BE CONTINUED… next season — if the Girlfriend Subscription renews 😌🥚",
 };
  
+// ----- Chicas (friends) verified => a special invite to play your Kahoot -----
+// ✏️ Edit the message/labels freely. `url` is your Kahoot link.
+const FRIENDS_INVITE = {
+  badge: "👯 GIRLS' ROUND UNLOCKED",
+  title: "¡A jugar, chicas! 🎉",
+  message: "Since you rounded up the whole squad… I made you all a little Kahoot. Grab the girls and see who really knows us 😈🎮",
+  buttonLabel: "Play the Kahoot 🎉",
+  url: "https://play.kahoot.it/v2/?quizId=9c0054e6-5f42-4160-a2f4-511c6875c843&hostId=1f15be47-aef2-4055-af7a-cf4b06d67065",
+};
+ 
 function initCaptcha() {
   const grid   = document.getElementById("cap-grid");
   const msgEl  = document.getElementById("cap-msg");
@@ -1314,6 +1324,34 @@ function initCaptcha() {
     document.addEventListener("keydown", onKey);
   }
  
+  // ----- Chicas: the "play my Kahoot" invite card -----
+  function showFriendsInvite() {
+    const inv = FRIENDS_INVITE;
+    const old = document.querySelector(".invite-modal");
+    if (old) old.remove();
+    const ov = document.createElement("div");
+    ov.className = "invite-modal";
+    ov.innerHTML =
+      '<div class="invite-card">' +
+        '<div class="invite-badge">' + inv.badge + '</div>' +
+        '<div class="invite-title">' + inv.title + '</div>' +
+        '<div class="invite-text">' + inv.message + '</div>' +
+        '<a class="invite-play" target="_blank" rel="noopener noreferrer">' + inv.buttonLabel + '</a>' +
+        '<button type="button" class="invite-close">Maybe later ✕</button>' +
+      '</div>';
+    document.body.appendChild(ov);
+    ov.querySelector(".invite-play").href = inv.url;   // set via property (avoids entity issues)
+    function close() {
+      document.removeEventListener("keydown", onKey);
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 200);
+    }
+    function onKey(e) { if (e.key === "Escape") { e.preventDefault(); close(); } }
+    ov.querySelector(".invite-close").addEventListener("click", close);
+    ov.addEventListener("click", (e) => { if (e.target === ov) close(); }); // tap backdrop to dismiss
+    document.addEventListener("keydown", onKey);
+  }
+ 
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1760,17 +1798,17 @@ function initCaptcha() {
       fail("All of Pandora?? 🌌 Neytiri, Jake AND Varang — Ni el arbol aguanta esa presión 💀");
       return;
     }
-    // las Chicas submitted for verification => whawhawha confetti
+    // las Chicas submitted for verification => whawhawha confetti, then Kahoot invite
     const chicasTile = selected.find(t => t.dataset.label === "Chicas");
     if (chicasTile) {
-      rainImages(["whawhawha.jpg"]);
+      rainImages(["whawhawha.jpg"], { onPop: () => setTimeout(showFriendsInvite, 700) });
       fail(chicasTile.dataset.caption || "Sería ideal pero es todas o nada y victoria no tira para tu lado 🥱");
       return;
     }
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
       triggerCherryBurst();                                            // cherry fireworks
-      showGif("Cherry.gif", "Cherry.mp3", 1, undefined, stopCherryBurst); // loop x2; fireworks end with it
+      showGif("Cherry.gif", "Cherry.mp3", 1, undefined, stopCherryBurst); // loop x1; fireworks end with it
       fail("Acho baby es que tu eres bien afrenta'");
       return;
     }
