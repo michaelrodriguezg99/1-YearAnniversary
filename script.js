@@ -326,6 +326,10 @@ const CAPTCHA_POOL = [
     caption: "Dabi?? Literalmente se autocombustiona 🔥💙 y su plan de vida es quemar a su familia. Yo te mantengo calientita sin mandarte a emergencias 😌" },
   { src: "Hawks.jpg", label: "Hawks", fx: "feathers",
     caption: "Hawks — el héroe #2, rapidísimo… pa' salir volando 🪶. Yo no alzo vuelo, me quedo contigo ❤️" },
+  { src: "Dante.jpg", label: "Dante", fx: "devil",
+    caption: "Dante?? Cazador de demonios, cool… pero vive quebra'o y endeuda'o hasta el cuello 🍕. Yo también ando pela'o, pero al menos aparezco 😌" },
+  { src: "Lady.jpg", label: "Lady", fx: "missiles",
+    caption: "Lady te apunta con un lanzacohetes al primer malentendido 💥🚀. Yo los conflictos los resuelvo con palabras y snacks 🥺" },
 ];
  
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -513,6 +517,8 @@ function initCaptcha() {
     zap:     { emojis: ["⚡", "🔵", "💠"],                  mode: "burst",     tint: "rgba(30,60,160,0.28)", count: 24 }, // Megamind — tech
     blueflame: { emojis: ["💙", "🔥", "💠"],               mode: "rise",      tint: "rgba(20,80,190,0.34)", count: 30 }, // Dabi — blue flames
     feathers:  { emojis: ["🪶", "❤️", "✨"],                mode: "rain",      tint: "rgba(180,40,30,0.20)", count: 26 }, // Hawks — crimson feathers
+    devil:     { emojis: ["😈", "🗡️", "🔥", "🔫"],          mode: "burst",     tint: "rgba(140,10,20,0.32)", count: 30 }, // Dante — demon hunter
+    missiles:  { emojis: ["💥", "🚀", "🎯"],                mode: "sideBurst", tint: "rgba(70,84,104,0.26)", count: 24 }, // Lady — Kalina Ann
   };
  
   let charFx = document.querySelector(".char-fx");
@@ -1764,7 +1770,7 @@ function initCaptcha() {
     // Michael + Cherry => the new cherry effect + gif + Cherry.mp3 (this pairing only)
     if (picked.includes("Cherry") && picked.includes("Michael")) {
       triggerCherryBurst();                                            // cherry fireworks
-      showGif("Cherry.gif", "Cherry.mp3", 1, undefined, stopCherryBurst); // loop x2; fireworks end with it
+      showGif("Cherry.gif", "Cherry.mp3", 2, undefined, stopCherryBurst); // loop x2; fireworks end with it
       fail("Acho baby es que tu eres bien afrenta'");
       return;
     }
