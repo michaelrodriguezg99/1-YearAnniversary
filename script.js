@@ -12,7 +12,6 @@ Y que se atreve con Benito y con Rauw, jeje`,
   song:   "Party",
   artist: "Rauw Alejandro & Bad Bunny",
 };
-
 /* =====================================================================
    GIF DURATION (shared) — so reaction-gif popups stay up until the gif
    actually finishes a loop, instead of a fixed timer cutting it short.
@@ -331,6 +330,8 @@ const CAPTCHA_POOL = [
     caption: "Dante?? Cazador de demonios, cool… pero vive endeuda'o hasta las papas 🥔." },
   { src: "Lady.jpg", label: "Lady", fx: "missiles",
     caption: "Vas a tener que pelear con Dante. Eso esta feo mi amorcito :(" },
+  { src: "OptimusPrime.jpg", label: "OptimusPrime", gif: "OptimusPrime.gif",
+    caption: "Optimus Prime?? Bombón, ese es un camión de 30 pies 🚛🤖. Autobots, roll out… pa' otro la'o. Yo me quedo contigo 💙" },
 ];
 
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -1396,6 +1397,49 @@ function initCaptcha() {
     });
   }
 
+  // ----- "Preparensé para perreaL..." 5s countdown before the duet drops -----
+  function cdBeep(freq) {
+    if (!THUNDER_SOUND) return;
+    try {
+      const ctx = audioCtx();
+      const o = ctx.createOscillator(); o.type = "square";
+      const g = ctx.createGain(); g.gain.value = 0.0001;
+      o.frequency.value = freq;
+      o.connect(g); g.connect(ctx.destination);
+      const t = ctx.currentTime;
+      g.gain.exponentialRampToValueAtTime(0.16, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      o.start(t); o.stop(t + 0.22);
+    } catch (e) {}
+  }
+  function startPerreoCountdown(onDone) {
+    const old = document.querySelector(".countdown-modal");
+    if (old) old.remove();
+    const ov = document.createElement("div");
+    ov.className = "countdown-modal";
+    ov.innerHTML =
+      '<div class="cd-inner">' +
+        '<div class="cd-hype">Preparensé para perreaL...</div>' +
+        '<div class="cd-num">5</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    const numEl = ov.querySelector(".cd-num");
+    let n = 5;
+    function finish() {
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 250);
+      if (typeof onDone === "function") onDone();
+    }
+    function tick() {
+      numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
+      if (n === 0) { numEl.textContent = "🔥"; cdBeep(880); setTimeout(finish, 600); return; }
+      numEl.textContent = n; cdBeep(440);
+      n--;
+      setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1877,9 +1921,10 @@ function initCaptcha() {
       fail(mikoTile.dataset.caption || "Te va a tener de tamagotchi 🕹️");
       return;
     }
-    // Rauw Alejandro + Bad Bunny (and ONLY those two) => flash the duet line + play it
+    // Rauw Alejandro + Bad Bunny (and ONLY those two) => countdown, then the duet
     if (picked.length === 2 && picked.includes("RauwAlejandro") && picked.includes("BadBunny")) {
-      showLyric(DUET, 19000, "Party.mp3");   // text + clip last exactly 19s
+      playSound("Party.mp3", 0);   // unlock the audio inside the tap so it can play after the countdown
+      startPerreoCountdown(() => showLyric(DUET, 19000, "Party.mp3")); // 5..GO, then text + clip (19s)
       fail("A whole duet?? 🎶 Iconic taste — but they don't know your name. I do 🎤");
       return;
     }

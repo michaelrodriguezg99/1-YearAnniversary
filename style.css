@@ -1299,6 +1299,33 @@ body {
   animation-play-state: paused; opacity: 1; transform: scale(1.4);
 }
 
+/* ---- "Preparensé para perreaL..." countdown before the duet ---- */
+.countdown-modal {
+  position: fixed; inset: 0; z-index: 10080;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 6, 24, 0.88);
+  animation: daddy-in .2s ease;
+}
+.countdown-modal.closing { opacity: 0; transition: opacity .25s ease; }
+.cd-inner { text-align: center; font-family: "Montserrat", "Space Mono", sans-serif; }
+.cd-hype {
+  font-size: clamp(20px, 6vw, 34px); font-weight: 900; letter-spacing: .5px;
+  color: #ff6fae; text-shadow: 0 2px 14px rgba(255, 79, 129, .6);
+  margin-bottom: 16px; animation: cd-bob 1s ease-in-out infinite alternate;
+}
+@keyframes cd-bob { from { transform: translateY(0) rotate(-1.5deg); } to { transform: translateY(-5px) rotate(1.5deg); } }
+.cd-num {
+  font-size: clamp(96px, 32vw, 190px); font-weight: 900; line-height: 1; color: #fff;
+  text-shadow: 0 0 26px rgba(255, 120, 180, .85), 0 6px 34px rgba(124, 77, 255, .7);
+}
+.cd-num.pop { animation: cd-pop .5s ease; }
+@keyframes cd-pop {
+  0%   { transform: scale(.3);  opacity: 0; }
+  40%  { transform: scale(1.28); opacity: 1; }
+  70%  { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+
 /* =====================================================================
    DEV SKIP — TESTING ONLY.  ⚠️ delete this block when done (and the
    matching "DEV SKIP" block in script.js).
