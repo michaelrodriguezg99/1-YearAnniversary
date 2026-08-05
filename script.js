@@ -12,6 +12,7 @@ Y que se atreve con Benito y con Rauw, jeje`,
   song:   "Party",
   artist: "Rauw Alejandro & Bad Bunny",
 };
+
 /* =====================================================================
    GIF DURATION (shared) — so reaction-gif popups stay up until the gif
    actually finishes a loop, instead of a fixed timer cutting it short.
@@ -327,9 +328,9 @@ const CAPTCHA_POOL = [
   { src: "Hawks.jpg", label: "Hawks", fx: "feathers",
     caption: "Hawks — el héroe #2, rapidísimo… pa' salir volando 🪶. Yo no alzo vuelo, me quedo contigo ❤️" },
   { src: "Dante.jpg", label: "Dante", fx: "devil",
-    caption: "Dante?? Cazador de demonios, cool… pero vive quebra'o y endeuda'o hasta el cuello 🍕. Yo también ando pela'o, pero al menos aparezco 😌" },
+    caption: "Dante?? Cazador de demonios, cool… pero vive endeuda'o hasta las papas 🥔." },
   { src: "Lady.jpg", label: "Lady", fx: "missiles",
-    caption: "Lady te apunta con un lanzacohetes al primer malentendido 💥🚀. Yo los conflictos los resuelvo con palabras y snacks 🥺" },
+    caption: "Vas a tener que pelear con Dante. Eso esta feo mi amorcito :(" },
 ];
 
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -1840,7 +1841,7 @@ function initCaptcha() {
       triggerCharFx("devil");                     // Dante's demon energy
       triggerCharFx("missiles");                  // Lady's barrage, together
       showGif("DanteAndLady.gif");
-      fail("Dante Y Lady?? El dúo completo de Devil May Cry 😳🗡️ Cool, pero ninguno de los dos se queda — yo sí 😌");
+      fail("I lowkey like the bunny as well 🐰...");
       return;
     }
     // all the Avatar / Pandora characters together => avatar gif
