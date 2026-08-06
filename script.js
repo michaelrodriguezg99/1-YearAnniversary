@@ -12,6 +12,13 @@ Y que se atreve con Benito y con Rauw, jeje`,
   song:   "Party",
   artist: "Rauw Alejandro & Bad Bunny",
 };
+// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
+const DUET = {
+  line:   "🎵 ♪ your song line goes here ♪ 🎵",
+  song:   "Party",
+  artist: "Rauw Alejandro & Bad Bunny",
+};
+
 /* =====================================================================
    GIF DURATION (shared) — so reaction-gif popups stay up until the gif
    actually finishes a loop, instead of a fixed timer cutting it short.
@@ -332,6 +339,10 @@ const CAPTCHA_POOL = [
     caption: "Vas a tener que pelear con Dante. Eso esta feo mi amorcito :(" },
   { src: "OptimusPrime.jpg", label: "OptimusPrime", gif: "OptimusPrime.gif",
     caption: "Optimus Prime?? Bombón, ese es un camión de 30 pies 🚛🤖. Autobots, roll out… pa' otro la'o. Yo me quedo contigo 💙" },
+  { src: "Victor.jpg", label: "Victor", fx: "piano",
+    caption: "Victor?? Amor, ese se casó con una muerta por accidente 💀🎹. Yo te elegí a ti — bien viva y bien mía 😌" },
+  { src: "CorpseBride.jpg", label: "CorpseBride", fx: "butterfly",
+    caption: "La Novia Cadáver esperó una eternidad por su amor 🦋⚰️. Tú no tienes que esperar — aquí estoy yo 💙" },
   { src: "JackSkellington.jpg", label: "JackSkellington", fx: "pumpkin",
     caption: "Jack Skellington?? Amor, ese es literalmente un esqueleto sin ná por dentro 💀🎃. Yo tengo corazón Y carne, y son tuyos." },
   { src: "Sally.jpg", label: "Sally", fx: "ragdoll",
@@ -361,6 +372,7 @@ const CAPTCHA_COMBOS = [
   ["AlastorDemon", "AlastorHuman"],      // both Alastors
   ["Dabi", "Hawks"],                     // secret episode: Hawks laid an egg 🥚
   ["Dante", "Lady"],                     // Devil May Cry duo
+  ["Victor", "CorpseBride"],             // Corpse Bride duo
   ["JackSkellington", "Sally"],          // Nightmare Before Christmas duo
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
@@ -369,6 +381,26 @@ const CAPTCHA_COMBOS = [
   ["Neytiri", "JakeSully", "Varang"],    // all of Pandora
   { Michael: 3, Mike: 1 },               // 4 → God Tier: all of me + the "before" Mike
 ];
+
+// ----- Verifications that come with a REAL, physical gift -----
+// ✏️ ONE shared message for all of them. Each key is either a single tile
+// label (verified alone) or two labels (any order). When she verifies exactly
+// that, a 🎁 docks on the side; clicking it shows the message (your cue to
+// hand over the gift). The captcha keeps going normally.
+const GIFT_MESSAGE = {
+  title: "🎁 This one comes with a real gift!",
+  message: "Ooh — this unlocks an actual present 🎁. Pause the game, come find me, and I'll hand it over… then keep playing 😌",
+};
+const COMBO_GIFTS = {
+  "BadBunny":         GIFT_MESSAGE,   // Bad Bunny alone
+  "TaylorSwift":      GIFT_MESSAGE,   // Taylor Swift alone
+  "Violet|Xaden":     GIFT_MESSAGE,   // Violet + Xaden
+  "Allie|Hannah":     GIFT_MESSAGE,   // Hannah + Allie
+  "Cherry|Michael":   GIFT_MESSAGE,   // Cherry + Mike
+  "Feyre|Rhysand":    GIFT_MESSAGE,   // Feyre + Rhysand
+  "Victor|Victoria":  GIFT_MESSAGE,   // (kept as you named it)
+  "CorpseBride|Victor": GIFT_MESSAGE, // Victor + Corpse Bride (the actual tiles)
+};
 const RARITY = {
   1: { key: "common",    label: "Common" },
   2: { key: "rare",      label: "Rare" },
@@ -539,6 +571,8 @@ function initCaptcha() {
     feathers:  { emojis: ["🪶", "❤️", "✨"],                mode: "rain",      tint: "rgba(180,40,30,0.20)", count: 26 }, // Hawks — crimson feathers
     devil:     { emojis: ["😈", "🗡️", "🔥", "🔫"],          mode: "burst",     tint: "rgba(140,10,20,0.32)", count: 30 }, // Dante — demon hunter
     missiles:  { emojis: ["💥", "🚀", "🎯"],                mode: "sideBurst", tint: "rgba(70,84,104,0.26)", count: 24 }, // Lady — Kalina Ann
+    piano:     { emojis: ["🎹", "🎶", "🕯️"],                mode: "rise",      tint: "rgba(50,60,110,0.30)", count: 26 }, // Victor — piano
+    butterfly: { emojis: ["🦋", "✨", "🌙"],                mode: "drift",     tint: "rgba(70,110,150,0.24)", count: 24 }, // Corpse Bride — butterflies
     pumpkin:   { emojis: ["🎃", "💀", "🦇"],                mode: "rise",      tint: "rgba(90,30,120,0.32)", count: 28 }, // Jack — Halloween Town
     ragdoll:   { emojis: ["🍂", "🧵", "🍁"],                mode: "rain",      tint: "rgba(120,70,30,0.22)", count: 24 }, // Sally — stitched rag doll
   };
@@ -1447,6 +1481,55 @@ function initCaptcha() {
     tick();
   }
 
+  // ----- Physical-gift pairs: dock a 🎁 on the side; click opens the message -----
+  let giftDock = null;
+  const dockedGifts = new Set();
+  function offerGiftIfAny(labels) {
+    if (!labels || !labels.length) return;
+    const key = labels.slice().sort().join("|");    // single label OR "A|B"
+    const gift = COMBO_GIFTS[key];
+    if (gift) dockGift(key, gift);
+  }
+  function dockGift(key, gift) {
+    if (dockedGifts.has(key)) return;              // don't dock the same pair twice
+    dockedGifts.add(key);
+    if (!giftDock) {
+      giftDock = document.createElement("div");
+      giftDock.className = "gift-dock";
+      (document.getElementById("captcha-screen") || document.body).appendChild(giftDock);
+    }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "gift-icon";
+    btn.textContent = "🎁";
+    btn.title = "You unlocked a gift!";
+    btn.addEventListener("click", () => showGiftModal(gift));
+    giftDock.appendChild(btn);
+  }
+  function showGiftModal(gift) {
+    const old = document.querySelector(".gift-modal");
+    if (old) old.remove();
+    const ov = document.createElement("div");
+    ov.className = "gift-modal";
+    ov.innerHTML =
+      '<div class="gift-card">' +
+        '<div class="gift-emoji">🎁</div>' +
+        '<div class="gift-title">' + (gift.title || "🎁 A real gift!") + '</div>' +
+        '<div class="gift-text">' + gift.message + '</div>' +
+        '<button type="button" class="gift-close">Continue the captcha →</button>' +
+      '</div>';
+    document.body.appendChild(ov);
+    function close() {
+      document.removeEventListener("keydown", onKey);
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 200);
+    }
+    function onKey(e) { if (e.key === "Escape" || e.key === "Enter") { e.preventDefault(); close(); } }
+    ov.querySelector(".gift-close").addEventListener("click", close);
+    ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
+    document.addEventListener("keydown", onKey);
+  }
+
   // ----- Reaction GIF popup (overlay created once, reused) -----
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
@@ -1843,6 +1926,7 @@ function initCaptcha() {
       fail(CAPTCHA_NUDGES[Math.min(nudgeIdx++, CAPTCHA_NUDGES.length - 1)]);
       return;
     }
+    offerGiftIfAny(selected.map(t => t.dataset.label));   // dock a 🎁 if this verify has a real gift (runs before every combo)
     // the 3 Bridgerton brothers together => AloStraws confetti
     const allPicked = selected.map(t => t.dataset.label);
     if (allPicked.includes("Anthony") && allPicked.includes("Benedict") && allPicked.includes("Colin")) {
@@ -1893,6 +1977,14 @@ function initCaptcha() {
       triggerCharFx("missiles");                  // Lady's barrage, together
       showGif("DanteAndLady.gif");
       fail("I lowkey like the bunny as well 🐰...");
+      return;
+    }
+    // Victor + Corpse Bride (and ONLY those two) => their Corpse Bride gif
+    if (picked.length === 2 && picked.includes("Victor") && picked.includes("CorpseBride")) {
+      triggerCharFx("piano");                     // Victor's piano
+      triggerCharFx("butterfly");                 // the Corpse Bride's butterflies, together
+      showGif("VictorAndCorpseBride.gif");
+      fail("Victor y la Novia Cadáver 💍🦋 — lindo, pero un poco muerto el romance 💀. El nuestro está bien vivo 😌");
       return;
     }
     // Jack + Sally (and ONLY those two) => their Nightmare Before Christmas gif
