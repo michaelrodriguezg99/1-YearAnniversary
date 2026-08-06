@@ -12,13 +12,6 @@ Y que se atreve con Benito y con Rauw, jeje`,
   song:   "Party",
   artist: "Rauw Alejandro & Bad Bunny",
 };
-// ✏️ Fill these in. I can't reproduce song lyrics, so paste the `line` yourself.
-const DUET = {
-  line:   "🎵 ♪ your song line goes here ♪ 🎵",
-  song:   "Party",
-  artist: "Rauw Alejandro & Bad Bunny",
-};
-
 /* =====================================================================
    GIF DURATION (shared) — so reaction-gif popups stay up until the gif
    actually finishes a loop, instead of a fixed timer cutting it short.
