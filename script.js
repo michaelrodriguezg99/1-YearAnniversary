@@ -332,6 +332,10 @@ const CAPTCHA_POOL = [
     caption: "Vas a tener que pelear con Dante. Eso esta feo mi amorcito :(" },
   { src: "OptimusPrime.jpg", label: "OptimusPrime", gif: "OptimusPrime.gif",
     caption: "Optimus Prime?? Bombón, ese es un camión de 30 pies 🚛🤖. Autobots, roll out… pa' otro la'o. Yo me quedo contigo 💙" },
+  { src: "JackSkellington.jpg", label: "JackSkellington", fx: "pumpkin",
+    caption: "Jack Skellington?? Amor, ese es literalmente un esqueleto sin ná por dentro 💀🎃. Yo tengo corazón Y carne, y son tuyos." },
+  { src: "Sally.jpg", label: "Sally", fx: "ragdoll",
+    caption: "Sally está cosida y perdidamente enamorada de Jack 🧵🍂. Ese amor ya tiene dueño… igual que yo tengo dueña 😌" },
 ];
 
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -357,6 +361,7 @@ const CAPTCHA_COMBOS = [
   ["AlastorDemon", "AlastorHuman"],      // both Alastors
   ["Dabi", "Hawks"],                     // secret episode: Hawks laid an egg 🥚
   ["Dante", "Lady"],                     // Devil May Cry duo
+  ["JackSkellington", "Sally"],          // Nightmare Before Christmas duo
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
   ["RauwAlejandro", "BadBunny"],         // the duet
@@ -534,6 +539,8 @@ function initCaptcha() {
     feathers:  { emojis: ["🪶", "❤️", "✨"],                mode: "rain",      tint: "rgba(180,40,30,0.20)", count: 26 }, // Hawks — crimson feathers
     devil:     { emojis: ["😈", "🗡️", "🔥", "🔫"],          mode: "burst",     tint: "rgba(140,10,20,0.32)", count: 30 }, // Dante — demon hunter
     missiles:  { emojis: ["💥", "🚀", "🎯"],                mode: "sideBurst", tint: "rgba(70,84,104,0.26)", count: 24 }, // Lady — Kalina Ann
+    pumpkin:   { emojis: ["🎃", "💀", "🦇"],                mode: "rise",      tint: "rgba(90,30,120,0.32)", count: 28 }, // Jack — Halloween Town
+    ragdoll:   { emojis: ["🍂", "🧵", "🍁"],                mode: "rain",      tint: "rgba(120,70,30,0.22)", count: 24 }, // Sally — stitched rag doll
   };
 
   let charFx = document.querySelector(".char-fx");
@@ -1886,6 +1893,14 @@ function initCaptcha() {
       triggerCharFx("missiles");                  // Lady's barrage, together
       showGif("DanteAndLady.gif");
       fail("I lowkey like the bunny as well 🐰...");
+      return;
+    }
+    // Jack + Sally (and ONLY those two) => their Nightmare Before Christmas gif
+    if (picked.length === 2 && picked.includes("JackSkellington") && picked.includes("Sally")) {
+      triggerCharFx("pumpkin");                   // Jack's Halloween Town
+      triggerCharFx("ragdoll");                   // Sally's stitched autumn, together
+      showGif("JackAndSally.gif");
+      fail("Jack Y Sally?? La pareja más icónica de Halloween Town 💀🍂 — pero nosotros somos mejor pareja, y sin puntadas 😌🎃");
       return;
     }
     // all the Avatar / Pandora characters together => avatar gif
