@@ -1279,6 +1279,45 @@ body {
   background: #fff; border: 2px solid var(--frame); border-radius: 10px;
   animation: daddy-in .2s ease;
 }
+
+/* ---- Physical-gift pairs: side dock + message ---- */
+.gift-dock {
+  position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
+  z-index: 9000; display: flex; flex-direction: column; gap: 10px;
+}
+.gift-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  border: 3px solid var(--frame-dark); background: var(--frame); color: #fff;
+  font-size: 26px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,.32);
+  animation: gift-in .4s ease, gift-wiggle 2.4s ease-in-out .5s infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+.gift-icon:hover { transform: scale(1.08); }
+@keyframes gift-in { from { transform: scale(0) rotate(-25deg); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes gift-wiggle { 0%, 86%, 100% { transform: rotate(0); } 90% { transform: rotate(-9deg); } 95% { transform: rotate(9deg); } }
+.gift-modal {
+  position: fixed; inset: 0; z-index: 10085;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; background: rgba(40, 10, 15, 0.72);
+  animation: daddy-in .2s ease;
+}
+.gift-modal.closing { opacity: 0; transition: opacity .2s ease; }
+.gift-card {
+  width: 100%; max-width: 360px; padding: 22px 20px; text-align: center;
+  background: var(--panel); border: 3px solid var(--frame); border-radius: 16px;
+  box-shadow: 0 16px 46px rgba(0,0,0,.45); font-family: var(--font);
+}
+.gift-emoji { font-size: 48px; line-height: 1; margin-bottom: 8px; animation: gift-wiggle 2.4s ease-in-out infinite; }
+.gift-title { font-size: 21px; font-weight: 700; color: var(--ink); line-height: 1.15; }
+.gift-text { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin: 10px 0 16px; }
+.gift-close {
+  font-family: var(--font); font-weight: 700; font-size: 15px; cursor: pointer;
+  background: var(--frame); color: #fff; border: 3px solid var(--frame-dark);
+  border-radius: 10px; padding: 11px 16px;
+}
+.gift-close:hover { background: var(--frame-dark); }
 .invite-close {
   margin-top: 10px; font-family: var(--font); font-size: 13px; cursor: pointer;
   background: transparent; color: var(--ink-soft); border: none;
