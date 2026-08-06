@@ -1052,6 +1052,7 @@ body {
 .rar-rare      { --rar: #3f78c4;      --rar-glow: rgba(63,120,196,.5); }
 .rar-ultrarare { --rar: #8a4fd0;      --rar-glow: rgba(138,79,208,.5); }
 .rar-godtier   { --rar: #d4a017;      --rar-glow: rgba(212,160,23,.55); }
+.rar-gift      { --rar: #d84f9c;      --rar-glow: rgba(216,79,156,.5); }
 
 /* lit = a combo of this size is present in the current tiles */
 .rar-chip.active {

@@ -1496,10 +1496,10 @@ function initCaptcha() {
     btn.className = "gift-icon";
     btn.textContent = "🎁";
     btn.title = "You unlocked a gift!";
-    btn.addEventListener("click", () => showGiftModal(gift));
+    btn.addEventListener("click", () => showGiftModal(gift, btn, key));
     giftDock.appendChild(btn);
   }
-  function showGiftModal(gift) {
+  function showGiftModal(gift, iconBtn, key) {
     const old = document.querySelector(".gift-modal");
     if (old) old.remove();
     const ov = document.createElement("div");
@@ -1516,6 +1516,8 @@ function initCaptcha() {
       document.removeEventListener("keydown", onKey);
       ov.classList.add("closing");
       setTimeout(() => ov.remove(), 200);
+      if (iconBtn) iconBtn.remove();               // gift disappears once she closes it
+      if (key) dockedGifts.delete(key);            // (so it can re-dock if she verifies again)
     }
     function onKey(e) { if (e.key === "Escape" || e.key === "Enter") { e.preventDefault(); close(); } }
     ov.querySelector(".gift-close").addEventListener("click", close);
@@ -1768,7 +1770,11 @@ function initCaptcha() {
                  '<span class="rar-dot"></span>' + r.label +
                  '<span class="rar-count"></span>' +
                '</span>';
-      }).join("");
+      }).join("") +
+      '<span class="rar-chip rar-gift" data-gift="1">' +
+        '<span class="rar-dot"></span>🎁 Gift' +
+        '<span class="rar-count"></span>' +
+      '</span>';
   }
   // a combo may be an array of labels (each needs ≥1) OR a { label: count } map.
   // tier size = total labels required (so 3× Michael + 1× Mike = 4 = God Tier).
@@ -1793,9 +1799,20 @@ function initCaptcha() {
     });
     rarityBar.querySelectorAll(".rar-chip").forEach(chip => {
       const n = +chip.dataset.size, c = counts[n] || 0;
+      if (!chip.dataset.size) return;                 // skip the gift chip here
       chip.classList.toggle("active", c > 0);
       chip.querySelector(".rar-count").textContent = c > 1 ? " ×" + c : "";
     });
+    // gift chip: lit when any gift-earning verification is possible right now
+    let giftC = 0;
+    Object.keys(COMBO_GIFTS).forEach(k => {
+      if (k.split("|").every(l => (have[l] || 0) >= 1)) giftC += 1;
+    });
+    const gchip = rarityBar.querySelector(".rar-gift");
+    if (gchip) {
+      gchip.classList.toggle("active", giftC > 0);
+      gchip.querySelector(".rar-count").textContent = giftC > 1 ? " ×" + giftC : "";
+    }
   }
 
   // the pool entries behind the currently selected tiles (for keep-on-refresh)
