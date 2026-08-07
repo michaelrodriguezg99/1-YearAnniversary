@@ -359,6 +359,7 @@ const CAPTCHA_NUDGES = [
 const CAPTCHA_COMBOS = [
   ["BabyMiko"],                          // tamagotchi
   ["Chicas"],                            // las chicas
+  ["Mike"],                              // the "before" me (common single)
   ["Xaden", "Violet"],                   // the storm
   ["Allie", "Dean"],                     // their couple gif
   ["Allie", "Hannah"],                   // their gif
@@ -2045,6 +2046,12 @@ function initCaptcha() {
       fail("A whole duet?? 🎶 Iconic taste — but they don't know your name. I do 🎤");
       return;
     }
+    // Mike alone (the "before" me) => his gif  [common single]
+    if (picked.length === 1 && picked[0] === "Mike") {
+      showGif("MikeBefore.gif");
+      fail("NOW he's your boyfriend?!?! 😭 That's me BEFORE I met you.");
+      return;
+    }
     // 🏆 GOD TIER — all three Michael photos AND the "before" Mike selected
     // ✏️ swap the gif/sound/caption below for whatever you want this to do.
     const mikeCount = selected.filter(t => t.dataset.label === "Michael").length;
@@ -2897,7 +2904,7 @@ const TRIPS = [
   },
   {
     id: "SAN", name: "Santorini, Greece 🏖️", place: "Santorini, Greece", img: "trip3.jpg",
-    wrong: "Santorini? 🏖️ I wish — but nope, not this time. Try again 😏",
+    wrong: "Santorini? 🏖️ PFF, you've been there done that!",
   },
 ];
 
