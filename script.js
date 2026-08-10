@@ -417,6 +417,11 @@ const HAWKS_EGG_EPISODE = {
   title: "Hawks Laid an Egg 🥚",
   sub: "MHA · Episode 7½ · never aired",
   paragraphs: [
+    `COLD OPEN — 4 a.m., Hawks's apartment. The egg is gone. The baby is here.`,
+    `Hisora is screaming.`,
+    `Not the polite newborn kind. The kind that fills a whole apartment and bounces off the windows and makes two grown men question every choice that led them to this moment.`,
+    `Dabi is on the floor, phone six inches from his face, thumb smearing across a cracked screen. Three percent battery. He is typing "why is newborn baby crying is he dying is he safe?!?!" into a search bar, not even bothering to separate the questions.`,
+    `"He's not dying," Hawks says, pacing, wings flared to full and trembling. "He's NOT dying, right Dabi? DABI?!? Is he dying—"`,
     `"I'm ASKING the internet—"`,
     `"The internet doesn't know our son!"`,
     `"The internet knows more than WE do—" The screen goes black. "…And now it's dead." Dabi stares at his reflection in the blank phone. "The phone. The phone is dead. Not the baby." Dabi looks up to see Hawks looking almost like a beheaded chicken.`,
