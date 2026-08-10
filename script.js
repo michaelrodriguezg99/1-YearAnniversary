@@ -340,6 +340,12 @@ const CAPTCHA_POOL = [
     caption: "Jack Skellington?? Amor, ese es literalmente un esqueleto sin ná por dentro 💀🎃. Yo tengo corazón Y carne, y son tuyos." },
   { src: "Sally.jpg", label: "Sally", fx: "ragdoll",
     caption: "Sally está cosida y perdidamente enamorada de Jack 🧵🍂. Ese amor ya tiene dueño… igual que yo tengo dueña 😌" },
+  { src: "Judy.jpg", label: "Judy", fx: "carrot",
+    caption: "Judy Hopps?? Amor, esa es una coneja policía de otra especie 🐰🚓. Yo soy de tu especie Y bien tuyo 😌" },
+  { src: "Nick.jpg", label: "Nick", fx: "sly",
+    caption: "Nick Wilde?? Ese zorro es puro cuento y estafa 🦊😏. Yo soy real y no te vendo pawpsicles derretidos." },
+  { src: "SamsCookie.jpg", label: "SamsCookie", fx: "cookie",
+    caption: "\"I would fuck that cookie 😤🫵\" — your exact words, caramelo. A COOKIE. I've been replaced by baked goods 😭🍪" },
 ];
 
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -367,6 +373,7 @@ const CAPTCHA_COMBOS = [
   ["Dabi", "Hawks"],                     // secret episode: Hawks laid an egg 🥚
   ["Dante", "Lady"],                     // Devil May Cry duo
   ["Victor", "CorpseBride"],             // Corpse Bride duo
+  ["Judy", "Nick"],                      // Zootopia duo
   ["JackSkellington", "Sally"],          // Nightmare Before Christmas duo
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
@@ -394,6 +401,7 @@ const COMBO_GIFTS = {
   "Feyre|Rhysand":    GIFT_MESSAGE,   // Feyre + Rhysand
   "Victor|Victoria":  GIFT_MESSAGE,   // (kept as you named it)
   "CorpseBride|Victor": GIFT_MESSAGE, // Victor + Corpse Bride (the actual tiles)
+  "Judy|Nick":        GIFT_MESSAGE,   // Judy + Nick (Zootopia)
 };
 const RARITY = {
   1: { key: "common",    label: "Common" },
@@ -409,14 +417,63 @@ const HAWKS_EGG_EPISODE = {
   title: "Hawks Laid an Egg 🥚",
   sub: "MHA · Episode 7½ · never aired",
   paragraphs: [
-    `COLD OPEN — 3 a.m., the Hero Commission break room. Hawks stands frozen, wings drooping, staring at the floor. There, impossibly, sits one warm, faintly glowing egg.`,
-    `"Keigo," Dabi says slowly, blue flames flickering low, "what did you DO." "I panicked!" Hawks whispers. "You said you were cold, so I — instinct took over!"`,
-    `The egg wobbles. It glows soft blue, trimmed with tiny red feathers. It has Hawks's eyes. It has Dabi's scowl. Neither disaster man knows how to keep an egg warm without freezing it OR cremating it.`,
-    `There is only one person calm enough — and unbothered enough by two chaotic men — to take the job. They make the call. Enter ALONDRA.`,
-    `She takes one look at the glowing egg, sighs the sigh of a woman who has seen worse, tucks it into a stolen hoodie (Michael's, obviously), and declares: "Fine. I'm the godmother, the egg's name is Caramelo Jr., and you two are splitting the vet bills with Cameo and Candy."`,
-    `Hawks bursts into tears. Dabi pretends he isn't. The egg glows a little brighter. 🔥🪶`,
+    `"I'm ASKING the internet—"`,
+    `"The internet doesn't know our son!"`,
+    `"The internet knows more than WE do—" The screen goes black. "…And now it's dead." Dabi stares at his reflection in the blank phone. "The phone. The phone is dead. Not the baby." Dabi looks up to see Hawks looking almost like a beheaded chicken.`,
+    `Hisora screams louder, as if personally offended by the distinction.`,
+    `Neither man has slept. Neither man knows what a baby wants. Hawks smells like three energy drinks and a bad decision. Dabi smells like a housefire that got worse.`,
+    `And in a rare moment of clarity — the last two braincells between them FINALLY did something — Hawks fumbles his own phone out with feathers and manages exactly one coherent act all night.`,
+    `He texts the only person who has ever known what to do.`,
+    `To: Alondra<br>"We don't know, if baby dead please HELP"`,
+    `Send.`,
+    `The reply is three dots, then nothing, then a knock at the door that is somehow completely surprising for both of them — but Alondra just knew that this would happen.`,
+    `Enter ALONDRA.`,
+    `She doesn't wait to be let in. She steps over a knocked-over baby bottle, takes one look at the scene — two of the most dangerous men in the city reduced to weeping wrecks over an eight-pound infant — and closes her eyes like she's praying for patience she does not have.`,
+    `"You had a WHOLE person," she says, "and instead of holding him, you two decided to lose your minds on the floor. In OPPOSITE corners."`,
+    `"He won't stop—" Hawks starts.`,
+    `"Because you're both vibrating like a pink LELO." She holds out her arms. "Give."`,
+    `Hawks hands Hisora over like he's passing a hot potato. The second the baby is in Alondra's arms, she shifts him against her shoulder, one smooth motion, and pulls something out of her bag — a hoodie.`,
+    `She tugs it down over the baby, swaddling him inside soft warm fabric that smells, faintly, of somebody who actually takes regular baths and sleeps 8 hours a day.`,
+    `Hisora goes quiet.`,
+    `Not tapering off. Instantly. One second: air raid siren. The next: a tiny content sigh, a curl of pink hair against clean cotton, and blessed, holy silence.`,
+    `The two fathers stare.`,
+    `"…What did you DO," Dabi whispers, still on the floor.`,
+    `"How," Hawks breathes. "How. We tried EVERYTHING. What is that?!"`,
+    `Alondra just sways side to side, unbothered. "Don't worry about it."`,
+    `Nobody knows it's Michael's. That secret is doing all the work and taking none of the credit. The baby smells expensive and safe and has decided this is the best thing that has ever happened to him. His nubby little wings settle flat under the fabric.`,
+    `Alondra finally looks up from the baby — and physically recoils.`,
+    `"Okay. New problem." She points her chin at the both of them. "You two smell like a crime scene. When's the last time either of you showered?"`,
+    `Hawks opens his mouth.`,
+    `"If you have to think about it," she says, "the answer is disgusting."`,
+    `Dabi sniffs his own jacket and grimaces. Housefire, confirmed.`,
+    `"Hisora is not spending his first day on Earth marinating in energy-drink sweat and whatever that is," she says, gesturing at Dabi entirely. "Number two hero. Walking arson report. Go take a bath. Both of you. He's fine. He's better than fine — he's asleep, which is more than I can say for either of you."`,
+    `Hawks hesitates at the bathroom door. Dabi, ever himself, leans on the frame with a smirk that's about forty percent bravado and sixty percent sleep deprivation.`,
+    `"You could always come supervise, sweetheart," he drawls. "Purely hygienic."`,
+    `Hawks waggles his eyebrows in weak solidarity. "Strictly for morale."`,
+    `Alondra actually pauses. Head tilts. She thinks about it — genuinely, one second, two —`,
+    `And then it's not the bathroom she's thinking about at all. It's last night. It's specifically what Michael and her got up to last night, the memory arriving uninvited and in full color, and a slow warmth climbs up the side of her neck and settles high on her cheeks.`,
+    `Dabi, sleep-deprived but never that far gone, catches it instantly.`,
+    `"…Are you blushing?" His grin turns wolfish. "Is that because of us?"`,
+    `"Go take a bath," Alondra says, a half-second too fast, "and leave me alone."`,
+    `"You totally are—"`,
+    `"Not without my man." She lifts her chin, composure snapping back into place like she never lost it, though the flush hasn't quite faded. "And believe me, whatever's on my mind right now — it is not the two of you. Not even close. MOVE."`,
+    `They move.`,
+    `Ten minutes later, two damp and considerably less horrifying men shuffle out, towels around their shoulders, looking clean but no calmer. The adrenaline hasn't drained — it's just gone hollow, that jittery wired exhaustion where your body forgot how to stop.`,
+    `"I can't—" Hawks is bouncing on his heels. "I can't turn it off. My brain. It's still going. What if he wakes up, what if he's hungry, what if—"`,
+    `"He's breathing wrong," Dabi says, staring into the bassinet. "Is that wrong? That's too fast. Babies breathe fast, right? Hawks, does he breathe fast—"`,
+    `Alondra, still holding a perfectly serene Hisora, sighs the sigh of a woman who has seen worse.`,
+    `She reaches into her bag. Two more hoodies. Michael's, obviously.`,
+    `She tosses one at each of them. "Put these on. Now."`,
+    `They're too tired to argue.`,
+    `Hawks pulls his on first. The moment it settles over his shoulders — warm lavender, soft woods underneath, the smell of a man who has never once had to run — something in his chest unclenches.`,
+    `"…Oh," he says softly. "Oh no. Why is this —"`,
+    `Dabi shrugs his on braced to hate it. He does not hate it. Bright bergamot, cool sea salt, clean citrus and open air, like standing on a shoreline with nothing chasing him for the first time in his life. The fire in him goes quiet. His shoulders drop half an inch. Then another.`,
+    `"…Huh."`,
+    `"Prada Ocean, for the rotisserie chicken," Alondra says, not looking up. "And Boss Lavender for the bird." She adjusts the baby against her shoulder. "Michael's. Always seems to work for me."`,
+    `And that's it. No explanation. No lecture. She doesn't need one.`,
+    `Because Hawks is already listing sideways against the wall, eyes fluttering, wrapped in lavender calm. And Dabi — Dabi, who has not slept properly in years — is out cold on the edge of the bed, ocean-wrapped, finally, finally at peace.`,
   ],
-  end: "TO BE CONTINUED… next season — if the Girlfriend Subscription renews 😌🥚",
+  end: "🥚 THE END — brought to you by Michael's cologne 😌",
 };
 
 // ----- Chicas (friends) verified => a special invite to play your Kahoot -----
@@ -567,6 +624,9 @@ function initCaptcha() {
     missiles:  { emojis: ["💥", "🚀", "🎯"],                mode: "sideBurst", tint: "rgba(70,84,104,0.26)", count: 24 }, // Lady — Kalina Ann
     piano:     { emojis: ["🎹", "🎶", "🕯️"],                mode: "rise",      tint: "rgba(50,60,110,0.30)", count: 26 }, // Victor — piano
     butterfly: { emojis: ["🦋", "✨", "🌙"],                mode: "drift",     tint: "rgba(70,110,150,0.24)", count: 24 }, // Corpse Bride — butterflies
+    carrot:    { emojis: ["🥕", "🐰", "✨"],                mode: "burst",     tint: "rgba(230,130,40,0.26)", count: 26 }, // Judy — carrots
+    sly:       { emojis: ["🦊", "🕶️", "✨"],                mode: "drift",     tint: "rgba(200,110,40,0.22)", count: 24 }, // Nick — sly fox
+    cookie:    { emojis: ["🍪", "😤", "✨"],                mode: "burst",     tint: "rgba(150,95,45,0.26)", count: 26 }, // Sam's Cookie
     pumpkin:   { emojis: ["🎃", "💀", "🦇"],                mode: "rise",      tint: "rgba(90,30,120,0.32)", count: 28 }, // Jack — Halloween Town
     ragdoll:   { emojis: ["🍂", "🧵", "🍁"],                mode: "rain",      tint: "rgba(120,70,30,0.22)", count: 24 }, // Sally — stitched rag doll
   };
@@ -1345,8 +1405,8 @@ function initCaptcha() {
         '<div class="episode-title">' + ep.title + '</div>' +
         (ep.sub ? '<div class="episode-sub">' + ep.sub + '</div>' : '') +
         '<div class="episode-body">' +
-          ep.paragraphs.map((p, i) => '<p style="--i:' + i + '">' + p + '</p>').join("") +
-          '<p class="episode-end" style="--i:' + ep.paragraphs.length + '">' + ep.end + '</p>' +
+          ep.paragraphs.map((p, i) => '<p style="--i:' + Math.min(i, 6) + '">' + p + '</p>').join("") +
+          '<p class="episode-end" style="--i:7">' + ep.end + '</p>' +
         '</div>' +
         '<button type="button" class="episode-close">The End ⏎</button>' +
       '</div>';
@@ -2004,6 +2064,14 @@ function initCaptcha() {
       triggerCharFx("ragdoll");                   // Sally's stitched autumn, together
       showGif("JackAndSally.gif");
       fail("Jack Y Sally?? La pareja más icónica de Halloween Town 💀🍂 — pero nosotros somos mejor pareja, y sin puntadas 😌🎃");
+      return;
+    }
+    // Judy + Nick (and ONLY those two) => their Zootopia gif
+    if (picked.length === 2 && picked.includes("Judy") && picked.includes("Nick")) {
+      triggerCharFx("carrot");                    // Judy's carrots
+      triggerCharFx("sly");                       // Nick's sly fox, together
+      showGif("NickAndJudy.gif");
+      fail("Nick y Judy?? El dúo interespecie más icónico 🦊🐰 — pero nosotros hacemos mejor equipo 😌");
       return;
     }
     // all the Avatar / Pandora characters together => avatar gif
