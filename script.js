@@ -279,7 +279,7 @@ const CAPTCHA_POOL = [
   { src: "AlastorHuman.jpg", label: "AlastorHuman", effect: "blood",
     caption: "I'm not afraid of a little blood either 😈" },
   { src: "Cherry.jpg", label: "Cherry",
-    caption: "Te estoy velando graciosa 👀, at least she's not a friend lol." },
+    caption: "Que afrenta 😭" },
   { src: "RauwAlejandro.jpg", label: "RauwAlejandro", worm: true,
     caption: "De verdad quieres que vaya a tu casa a hacerte el gusano ese?" },
   { src: "TaylorSwift.jpg", label: "TaylorSwift", gif: "TaylorSwift.gif", sound: "TaylorSwift.mp3",
@@ -297,15 +297,15 @@ const CAPTCHA_POOL = [
   { src: "Kovu.jpg", label: "Kovu", fx: "pawdust", gif: "Kovu.gif",
     caption: "Rawr — he's feisty today and doesn't seem to want you. But I do 🙂🦁" },
   { src: "Neytiri.jpg", label: "Neytiri", fx: "pandora",
-    caption: "Okay I heard you out, but stil. 😭" },
+    caption: "Si graban una movie sería la 4 top grossing movie de Zoe… abusadora 🥲" },
   { src: "JakeSully.jpg", label: "JakeSully", fx: "pandora",
-    caption: "Okay I heard you out, but stil. 😭" },
+    caption: "Es un pitufo gigante." },
   { src: "Varang.jpg", label: "Varang", fx: "fire",
     caption: "Bitch will literally burn you alive." },
   { src: "Lola.jpg", label: "Lola", swim: true,
-    caption: "Lola swims off the second the money dries up. I'm broke AND loyal — way better deal 🐟" },
+    caption: "Eso es una chapy y una pezca la colmo…" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor", fx: "krypton",
-    caption: "Lena Luthor: genius billionaire with a last name that screams trust and daddy issues." },
+    caption: "Con ese nombre es probable que tenga Daddy issues y que pierda TODO su pelo" },
   { src: "LoveQuinn.jpg", label: "LoveQuinn", fx: "knives", gif: "Love.gif",
     caption: "Do you really wanna play with fire like that? 😭🔪" },
   { src: "RheaRipley.jpg", label: "RheaRipley", gif: "RheaRipley.gif",
@@ -315,7 +315,7 @@ const CAPTCHA_POOL = [
   { src: "Caitlyn.jpg", label: "Caitlyn", fx: "hextech", gif: "Caitlyn.gif",
     caption: "Not bad, but I can do better." },
   { src: "VI.jpg", label: "VI", fx: "impact", gif: "VI.gif",
-    caption: "Will literally betray you for her sister everytime 😈" },
+    caption: "Will literally betray you for her sister everytime 🙃" },
   { src: "MegaMind.jpg", label: "MegaMind", fx: "zap", gif: "MegaMind.gif",
     caption: "Big blue head, even bigger ego — and a robot doing all his work. I do my own scheming, all for you!" },
   { src: "Zuko.jpg", label: "Zuko", power: "zukofire", gif: "Zuko.gif",
@@ -323,27 +323,27 @@ const CAPTCHA_POOL = [
   { src: "Cassian.jpg", label: "Cassian", power: "blades",
     caption: "Cassian — Lord of Bloodshed, 500+ years old, and STILL can't admit his feelings to Nesta. I sorted mine out in a year 😌🗡️" },
   { src: "Dabi.jpg", label: "Dabi", fx: "blueflame",
-    caption: "Dabi?? Literalmente se autocombustiona 🔥💙 y su plan de vida es quemar a su familia. Yo te mantengo calientita sin mandarte a emergencias 😌" },
+    caption: "No aguanta la presión, hasta en tu carro se quemó solo 🤣" },
   { src: "Hawks.jpg", label: "Hawks", fx: "feathers",
-    caption: "Hawks — el héroe #2, rapidísimo… pa' salir volando 🪶. Yo no alzo vuelo, me quedo contigo ❤️" },
+    caption: "Siempre va a ser #2 y yo #1 😏" },
   { src: "Dante.jpg", label: "Dante", fx: "devil",
     caption: "Dante?? Cazador de demonios, cool… pero vive endeuda'o hasta las papas 🥔." },
   { src: "Lady.jpg", label: "Lady", fx: "missiles",
     caption: "Vas a tener que pelear con Dante. Eso esta feo mi amorcito :(" },
   { src: "OptimusPrime.jpg", label: "OptimusPrime", gif: "OptimusPrime.gif",
-    caption: "Optimus Prime?? Bombón, ese es un camión de 30 pies 🚛🤖. Autobots, roll out… pa' otro la'o. Yo me quedo contigo 💙" },
+    caption: "I- yeah no puedo competir con eso lol" },
   { src: "Victor.jpg", label: "Victor", fx: "piano",
     caption: "Victor?? Amor, ese se casó con una muerta por accidente 💀🎹. Yo te elegí a ti — bien viva y bien mía 😌" },
   { src: "CorpseBride.jpg", label: "CorpseBride", fx: "butterfly",
     caption: "La Novia Cadáver esperó una eternidad por su amor 🦋⚰️. Tú no tienes que esperar — aquí estoy yo 💙" },
   { src: "JackSkellington.jpg", label: "JackSkellington", fx: "pumpkin",
-    caption: "Jack Skellington?? Amor, ese es literalmente un esqueleto sin ná por dentro 💀🎃. Yo tengo corazón Y carne, y son tuyos." },
+    caption: "Managed to fuck up Christmas… imagínate tu cumple o aniversario." },
   { src: "Sally.jpg", label: "Sally", fx: "ragdoll",
-    caption: "Sally está cosida y perdidamente enamorada de Jack 🧵🍂. Ese amor ya tiene dueño… igual que yo tengo dueña 😌" },
+    caption: "Sally está cosida y perdidamente enamorada de Jack 🧵🍂." },
   { src: "Judy.jpg", label: "Judy", fx: "carrot",
-    caption: "Judy Hopps?? Amor, esa es una coneja policía de otra especie 🐰🚓. Yo soy de tu especie Y bien tuyo 😌" },
+    caption: "traumatic 😭 pero entiendo jajaja" },
   { src: "Nick.jpg", label: "Nick", fx: "sly",
-    caption: "Nick Wilde?? Ese zorro es puro cuento y estafa 🦊😏. Yo soy real y no te vendo pawpsicles derretidos." },
+    caption: "Literal fox babe… no quieres ver los red flags" },
   { src: "SamsCookie.jpg", label: "SamsCookie", fx: "cookie",
     caption: "\"I would fuck that cookie 😤🫵\" — your exact words, caramelo. A COOKIE. I've been replaced by baked goods 😭🍪" },
 ];
@@ -2007,7 +2007,7 @@ function initCaptcha() {
     const allPicked = selected.map(t => t.dataset.label);
     if (allPicked.includes("Anthony") && allPicked.includes("Benedict") && allPicked.includes("Colin")) {
       triggerThreeBoys("AloStraws.jpg", "three.mp3");
-      fail("All three Bridgerton brothers?! That's a whole regency scandal. They're fictional AND taken — I'm real AND yours 🍓");
+      fail("All three Bridgerton brothers?! That's a whole regency scandal. They're fictional AND taken — I'm real AND yours");
       return;
     }
     // both Xaden AND Violet (two different thunder characters) selected => storm
@@ -2030,7 +2030,7 @@ function initCaptcha() {
     // Allie + Hannah (and ONLY those two) => their gif
     if (picked.length === 2 && picked.includes("Allie") && picked.includes("Hannah")) {
       showGif("AllieAndHannah.gif");
-      fail("Allie AND Hannah?? 🎭🎤 Dos divas — pero ninguna de las dos te conoce como yo 😌");
+      fail("Understandable 😅");
       return;
     }
     // both Alastors (demon form + human form) selected => Danny.gif
@@ -2096,7 +2096,7 @@ function initCaptcha() {
     if (picked.includes("Cherry") && picked.includes("Michael")) {
       triggerCherryBurst();                                            // cherry fireworks
       showGif("Cherry.gif", "Cherry.mp3", 1, undefined, stopCherryBurst); // loop x1; fireworks end with it
-      fail("Acho baby es que tu eres bien afrenta'");
+      fail("The magic number -De la Soul.");
       return;
     }
     // BabyMiko + Rauw Alejandro together => their crossover gif
@@ -2116,7 +2116,7 @@ function initCaptcha() {
     if (picked.length === 2 && picked.includes("RauwAlejandro") && picked.includes("BadBunny")) {
       playSound("Party.mp3", 0);   // unlock the audio inside the tap so it can play after the countdown
       startPerreoCountdown(() => showLyric(DUET, 19000, "Party.mp3")); // 5..GO, then text + clip (19s)
-      fail("A whole duet?? 🎶 Iconic taste — but they don't know your name. I do 🎤");
+      fail("Que afrentaa, quieres con los dos a la vez");
       return;
     }
     // Mike alone (the "before" me) => his gif  [common single]
