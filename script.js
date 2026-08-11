@@ -2825,7 +2825,7 @@ const FINAL_EMAIL = {
   message:
     "Great news 🎉\n\n" +
     "You just renewed your Girlfriend Membership — Premium Tier — for another year.\n\n" +
-    "📅 Date locked in: November 9th — PLACEHOLDER Restaurant, 7pm.\n\n" +
+    "✈️ Trip reserved: New Orleans — 7th to 9th of November, 2026.\n\n" +
     "Status: Renewed successfully.\n" +
     "Expiration date: Never. 💖🐱🐶",
 };
