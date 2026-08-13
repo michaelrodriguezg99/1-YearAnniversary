@@ -358,7 +358,7 @@ body {
 .wr-dot.on { background: var(--frame); }
 
 .wr-stage {
-  position: relative; cursor: pointer; overflow: hidden;
+  position: relative; cursor: pointer; overflow-x: hidden; overflow-y: auto;
   border-radius: 14px; aspect-ratio: 9 / 15;
   min-height: 380px; max-height: calc(100vh - 240px);
   display: flex; padding: 22px; color: #111;
@@ -990,7 +990,7 @@ body {
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: 46vh;
+  max-height: 36vh;
   margin: 14px auto 0;
   border-radius: 12px;
   border: 3px solid rgba(255, 255, 255, 0.85);
