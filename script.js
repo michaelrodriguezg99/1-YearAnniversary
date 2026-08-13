@@ -2510,7 +2510,7 @@ const WRAPPED = [
 
   // 😴 caught-sleeping stat with the speed-run gif underneath.
   // ✏️ set num to the real count and gif to your compiled speed-run file.
-  { kind: "sleep",  accent: "coral",  num: 30,                    label: "times caught sleeping",
+  { kind: "sleep",  accent: "coral",  num: 47,                    label: "times caught sleeping",
     gif: "sleep_speedrun.gif",
     note: "Heavy sleeper of the year 😴 — and I caught every one. Roll the tape 🎬" },
 
