@@ -401,6 +401,8 @@ const COMBO_GIFTS = {
   "Feyre|Rhysand":    GIFT_MESSAGE,   // Feyre + Rhysand
   "Judy|Nick":        GIFT_MESSAGE,   // Judy + Nick (Zootopia)
   "Caitlyn|VI":       GIFT_MESSAGE,   // Caitlyn + VI (Arcane)
+  "Allie|Dean":       GIFT_MESSAGE,   // Allie + Dean
+  "SamsCookie":       GIFT_MESSAGE,   // Sam's Cookie (alone)
 };
 const RARITY = {
   1: { key: "common",    label: "Common" },
@@ -413,7 +415,7 @@ const RARITY = {
 // ✏️ Edit freely — `paragraphs` reveal one-by-one; `end` is the sign-off line.
 const HAWKS_EGG_EPISODE = {
   badge: "🔓 SECRET EPISODE UNLOCKED",
-  title: "Hawks Laid an Egg 🥚",
+  title: "Enter Alondra",
   sub: "MHA · Episode 7½ · never aired",
   paragraphs: [
     `COLD OPEN — 4 a.m., Hawks's apartment. The egg is gone. The baby is here.`,
@@ -477,7 +479,7 @@ const HAWKS_EGG_EPISODE = {
     `And that's it. No explanation. No lecture. She doesn't need one.`,
     `Because Hawks is already listing sideways against the wall, eyes fluttering, wrapped in lavender calm. And Dabi — Dabi, who has not slept properly in years — is out cold on the edge of the bed, ocean-wrapped, finally, finally at peace.`,
   ],
-  end: "🥚 THE END — brought to you by Michael's cologne 😌",
+  end: "🥚 THE END — brought to you by Michael 😌",
 };
 
 // ----- Chicas (friends) verified => a special invite to play your Kahoot -----
@@ -1716,9 +1718,9 @@ function initCaptcha() {
     { act: "love", x: 66.3, y: 79, label: "💖 Love" },   // right pink button
   ];
   const TAMA_REACT = {
-    feed: ["Yum yum 😋", "Quiero bibí 🍼", "Quiero más 🤤", "Gracias Mike 🥹"],
+    feed: ["Que rico 😋", "Sabe bueno hoyy 🍍", "Quiero más 🤤", "Gracias Mike 🥹"],
     play: ["Wiii! 🎉", "Otra vez! 🎮", "Jijiji 😄", "Gané esta ronda 😼"],
-    love: ["Te quiero 💕", "Mimitos 💖", "Awww 🥰", "Eres el mejor 😚"],
+    love: ["Te amoo 💕", "Mimitos 💖", "Awww 🥰", "Eres el mejor 😚"],
   };
   function launchTamagotchi() {
     const old = document.querySelector(".tama-overlay");
@@ -2043,7 +2045,7 @@ function initCaptcha() {
       triggerCharFx("blueflame");                 // Dabi's blue fire
       triggerCharFx("feathers");                  // Hawks's feathers, together
       showSecretEpisode();
-      fail("🥚 SECRET EPISODE UNLOCKED — Hawks laid an egg?!");
+      fail("🎬 SECRET EPISODE UNLOCKED — Enter Alondra");
       return;
     }
     // Dante + Lady (and ONLY those two) => their Devil May Cry gif
@@ -2152,8 +2154,30 @@ function initCaptcha() {
   const refreshBtn = document.getElementById("cap-refresh");
   if (refreshBtn) refreshBtn.addEventListener("click", () => render(selectedItems()));
 
+  // Pre-warm the image cache so gifs appear instantly instead of loading on first tap.
+  function warmCache() {
+    if (warmCache._done) return;
+    warmCache._done = true;
+    const files = new Set();
+    CAPTCHA_POOL.forEach(t => { if (t.gif) files.add(t.gif); if (t.src) files.add(t.src); });
+    ["AllieAndDean.gif", "AllieAndHannah.gif", "Danny.gif", "DanteAndLady.gif",
+     "VictorAndCorpseBride.gif", "JackAndSally.gif", "NickAndJudy.gif", "Cherry.gif",
+     "CherryConfetti.jpg", "MikoRauw.gif", "Avatar.gif", "AllMikes.gif", "MikeBefore.gif",
+     "CardTrick.gif", "MikeFine.gif", "AloStraws.jpg", "whawhawha.jpg", "Me1.gif", "DaddyMike.jpg"
+    ].forEach(f => files.add(f));
+    const list = [...files];
+    let i = 0;
+    (function next() {
+      if (i >= list.length) return;
+      const im = new Image();
+      im.src = list[i++];
+      setTimeout(next, 50);   // stagger so it doesn't fire every request at once
+    })();
+  }
+
   buildRarityBar();
   render();
+  setTimeout(warmCache, 1000);   // warm gifs in the background shortly after load
 }
 
 /* =====================================================================
