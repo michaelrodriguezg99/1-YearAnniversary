@@ -400,6 +400,7 @@ const COMBO_GIFTS = {
   "Cherry|Michael":   GIFT_MESSAGE,   // Cherry + Mike
   "Feyre|Rhysand":    GIFT_MESSAGE,   // Feyre + Rhysand
   "Judy|Nick":        GIFT_MESSAGE,   // Judy + Nick (Zootopia)
+  "Caitlyn|VI":       GIFT_MESSAGE,   // Caitlyn + VI (Arcane)
 };
 const RARITY = {
   1: { key: "common",    label: "Common" },
