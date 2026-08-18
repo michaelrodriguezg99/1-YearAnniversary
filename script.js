@@ -399,8 +399,6 @@ const COMBO_GIFTS = {
   "Allie|Hannah":     GIFT_MESSAGE,   // Hannah + Allie
   "Cherry|Michael":   GIFT_MESSAGE,   // Cherry + Mike
   "Feyre|Rhysand":    GIFT_MESSAGE,   // Feyre + Rhysand
-  "Victor|Victoria":  GIFT_MESSAGE,   // (kept as you named it)
-  "CorpseBride|Victor": GIFT_MESSAGE, // Victor + Corpse Bride (the actual tiles)
   "Judy|Nick":        GIFT_MESSAGE,   // Judy + Nick (Zootopia)
 };
 const RARITY = {
