@@ -2836,7 +2836,13 @@ const TERMS_OPTIONS = [
 ];
 
 // --- Where the signed agreement is emailed -----------------------------
-const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";   // where the signed agreement lands
+// ✏️ ALL emails from the site go to this ONE address.
+// Right now it's set to you for testing.
+// ⚠️ ON THE DAY OF THE EVENT: comment out the line below and uncomment
+//    Alondra's, so every email goes to her instead.
+const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";      // ← current: you (testing)
+// const RENEWAL_EMAIL_TO = "alondrapsanchez394@gmail.com";     // ← Alondra (use on the day)
+
 // Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
 const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93", finalTemplateId: "template_fmbfeh9" };
 
