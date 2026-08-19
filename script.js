@@ -2804,6 +2804,7 @@ function showScrapbook() { if (initScrapbook._reset) initScrapbook._reset(); }
 const TERMS = [
   "By signing, Subscriber (\"You\") agrees to renew the Boyfriend Subscription — Premium Tier — for a minimum of one (1) additional year.",
   "Subscriber shall accept all compliments without argument, including on days she insists she \"looks terrible.\" (She does not.)",
+  "Opening doors shall NOT be done by the subscriber under any circumstances — Provider (Michael) retains exclusive door-opening rights.",
   "Hand-holding shall be initiated whenever physically possible: walks, car rides, grocery aisles, and during scary movies.",
   "Good night kisses are a core feature and may not be disabled, paused, or downgraded.",
   "Cameo and Candy retains full executive authority over the household and must be consulted on all major decisions. 🐱🐶",
@@ -2820,12 +2821,11 @@ const TERMS_FINE = "By signing below, Subscriber acknowledges she is officially 
 // the signed agreement and emailed. Edit freely.
 const TERMS_OPTIONS = [
   "Boyfriend must always let me choose the movie 🎬",
-  "loquear una vez al año 🍍",
-  "Unlimited forehead kisses, available on demand 😚",
+  "Loquear una vez al año 🍍",
+  "Unlimited kisses, available on demand 😚",
   "I am entitled to the last bite of every dessert 🍰",
   "At home dinner night once a week 🍝",
   "He handles all bugs, spiders, and scary noises 🕷️",
-  "Do it at a random public place once a year 🚻",
   "I get to steal his hoodies indefinitely 🧥",
   "He must hype me up at least once a day 📣",
   "Cuddles are non-negotiable after a long day 🫂",
