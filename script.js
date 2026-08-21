@@ -346,6 +346,10 @@ const CAPTCHA_POOL = [
     caption: "Literal fox babe… no quieres ver los red flags" },
   { src: "SamsCookie.jpg", label: "SamsCookie", fx: "cookie",
     caption: "\"I would fuck that cookie 😤🫵\" — your exact words, caramelo. A COOKIE. I've been replaced by baked goods 😭🍪" },
+  { src: "Shadow.jpg", label: "Shadow", fx: "chaos",
+    caption: "A hedgehog?! Really?!" },
+  { src: "SpiderMan.jpg", label: "SpiderMan", gif: "SpiderMan.gif",
+    caption: "Same girl. Perooo, el protege a NY. MI UNICA responsabilidad eres tú" },
 ];
 
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
@@ -633,6 +637,7 @@ function initCaptcha() {
     carrot:    { emojis: ["🥕", "🐰", "✨"],                mode: "burst",     tint: "rgba(230,130,40,0.26)", count: 26 }, // Judy — carrots
     sly:       { emojis: ["🦊", "🕶️", "✨"],                mode: "drift",     tint: "rgba(200,110,40,0.22)", count: 24 }, // Nick — sly fox
     cookie:    { emojis: ["🍪", "😤", "✨"],                mode: "burst",     tint: "rgba(150,95,45,0.26)", count: 26 }, // Sam's Cookie
+    chaos:     { emojis: ["⚡", "💥", "🖤"],                mode: "burst",     tint: "rgba(180,20,30,0.30)", count: 30 }, // Shadow — chaos energy
     pumpkin:   { emojis: ["🎃", "💀", "🦇"],                mode: "rise",      tint: "rgba(90,30,120,0.32)", count: 28 }, // Jack — Halloween Town
     ragdoll:   { emojis: ["🍂", "🧵", "🍁"],                mode: "rain",      tint: "rgba(120,70,30,0.22)", count: 24 }, // Sally — stitched rag doll
   };
