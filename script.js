@@ -336,10 +336,6 @@ const CAPTCHA_POOL = [
     caption: "Victor?? Amor, ese se casó con una muerta por accidente 💀🎹. Yo te elegí a ti — bien viva y bien mía 😌" },
   { src: "CorpseBride.jpg", label: "CorpseBride", fx: "butterfly",
     caption: "La Novia Cadáver esperó una eternidad por su amor 🦋⚰️. Tú no tienes que esperar — aquí estoy yo 💙" },
-  { src: "JackSkellington.jpg", label: "JackSkellington", fx: "pumpkin",
-    caption: "Managed to fuck up Christmas… imagínate tu cumple o aniversario." },
-  { src: "Sally.jpg", label: "Sally", fx: "ragdoll",
-    caption: "Sally está cosida y perdidamente enamorada de Jack 🧵🍂." },
   { src: "Judy.jpg", label: "Judy", fx: "carrot",
     caption: "traumatic 😭 pero entiendo jajaja" },
   { src: "Nick.jpg", label: "Nick", fx: "sly",
@@ -378,7 +374,6 @@ const CAPTCHA_COMBOS = [
   ["Dante", "Lady"],                     // Devil May Cry duo
   ["Victor", "CorpseBride"],             // Corpse Bride duo
   ["Judy", "Nick"],                      // Zootopia duo
-  ["JackSkellington", "Sally"],          // Nightmare Before Christmas duo
   ["Michael", "Cherry"],                 // you + Cherry
   ["BabyMiko", "RauwAlejandro"],         // their crossover
   ["RauwAlejandro", "BadBunny"],         // the duet
@@ -638,8 +633,6 @@ function initCaptcha() {
     sly:       { emojis: ["🦊", "🕶️", "✨"],                mode: "drift",     tint: "rgba(200,110,40,0.22)", count: 24 }, // Nick — sly fox
     cookie:    { emojis: ["🍪", "😤", "✨"],                mode: "burst",     tint: "rgba(150,95,45,0.26)", count: 26 }, // Sam's Cookie
     chaos:     { emojis: ["⚡", "💥", "🖤"],                mode: "burst",     tint: "rgba(180,20,30,0.30)", count: 30 }, // Shadow — chaos energy
-    pumpkin:   { emojis: ["🎃", "💀", "🦇"],                mode: "rise",      tint: "rgba(90,30,120,0.32)", count: 28 }, // Jack — Halloween Town
-    ragdoll:   { emojis: ["🍂", "🧵", "🍁"],                mode: "rain",      tint: "rgba(120,70,30,0.22)", count: 24 }, // Sally — stitched rag doll
   };
 
   let charFx = document.querySelector(".char-fx");
@@ -2069,14 +2062,6 @@ function initCaptcha() {
       fail("Victor y la Novia Cadáver 💍🦋 — lindo, pero un poco muerto el romance 💀. El nuestro está bien vivo 😌");
       return;
     }
-    // Jack + Sally (and ONLY those two) => their Nightmare Before Christmas gif
-    if (picked.length === 2 && picked.includes("JackSkellington") && picked.includes("Sally")) {
-      triggerCharFx("pumpkin");                   // Jack's Halloween Town
-      triggerCharFx("ragdoll");                   // Sally's stitched autumn, together
-      showGif("JackAndSally.gif");
-      fail("Jack Y Sally?? La pareja más icónica de Halloween Town 💀🍂 — pero nosotros somos mejor pareja, y sin puntadas 😌🎃");
-      return;
-    }
     // Judy + Nick (and ONLY those two) => their Zootopia gif
     if (picked.length === 2 && picked.includes("Judy") && picked.includes("Nick")) {
       triggerCharFx("carrot");                    // Judy's carrots
@@ -2166,7 +2151,7 @@ function initCaptcha() {
     const files = new Set();
     CAPTCHA_POOL.forEach(t => { if (t.gif) files.add(t.gif); if (t.src) files.add(t.src); });
     ["AllieAndDean.gif", "AllieAndHannah.gif", "Danny.gif", "DanteAndLady.gif",
-     "VictorAndCorpseBride.gif", "JackAndSally.gif", "NickAndJudy.gif", "Cherry.gif",
+     "VictorAndCorpseBride.gif", "NickAndJudy.gif", "Cherry.gif",
      "CherryConfetti.jpg", "MikoRauw.gif", "Avatar.gif", "AllMikes.gif", "MikeBefore.gif",
      "CardTrick.gif", "MikeFine.gif", "AloStraws.jpg", "whawhawha.jpg", "Me1.gif", "DaddyMike.jpg"
     ].forEach(f => files.add(f));
