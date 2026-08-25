@@ -394,7 +394,10 @@ const GIFT_MESSAGE = {
 const COMBO_GIFTS = {
   "BadBunny":         GIFT_MESSAGE,   // Bad Bunny alone
   "TaylorSwift":      GIFT_MESSAGE,   // Taylor Swift alone
-  "Violet|Xaden":     GIFT_MESSAGE,   // Violet + Xaden
+  "Violet|Xaden":     {                // Violet + Xaden → custom (Threshing Day pre-order)
+    title: "🎁 This gift is on its way!",
+    message: "This one isn't in my hands yet, mi amor 📖✨ — I pre-ordered you Threshing Day, the newest book from the Fourth Wing / Empyrean world by Rebecca Yarros. It releases in October, so it can't be here in time… consider this your official IOU. Xaden & Violet vouched for it 🐉🖤",
+  },
   "Allie|Hannah":     GIFT_MESSAGE,   // Hannah + Allie
   "Cherry|Michael":   GIFT_MESSAGE,   // Cherry + Mike
   "Feyre|Rhysand":    GIFT_MESSAGE,   // Feyre + Rhysand
