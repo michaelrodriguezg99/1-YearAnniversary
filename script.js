@@ -520,7 +520,7 @@ const VOICE_QUOTES = {
       { label: "There you are…", src: "rhysand_2.mp3" },
       { label: "I would have waited…", src: "rhysand_3.mp3" },
       { label: "If you lay one hand…", src: "rhysand_4.mp3" },
-      { label: "How else would I know…", src: "rhysand_5.mp3" },
+      { label: "And I'll remember exactly…", src: "rhysand_5.mp3" },
       { label: "I'm annoyingly aware…", src: "rhysand_6.mp3" },
       { label: "I bow to no one…", src: "rhysand_7.mp3" },
     ]},
