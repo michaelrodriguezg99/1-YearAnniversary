@@ -379,6 +379,7 @@ const CAPTCHA_COMBOS = [
   ["RauwAlejandro", "BadBunny"],         // the duet
   ["Anthony", "Benedict", "Colin"],      // 3 Bridgerton brothers
   ["Neytiri", "JakeSully", "Varang"],    // all of Pandora
+  ["Cassian", "Rhysand", "Xaden"],       // book-boyfriend voice notes
   { Michael: 3, Mike: 1 },               // 4 → God Tier: all of me + the "before" Mike
 ];
 
@@ -494,6 +495,47 @@ const FRIENDS_INVITE = {
   prizeLabel: "🎁 See the winner's prize",
   prize: "🎟️ The winner earns a Golden Ticket: you get to choose — one player to do the strawberries game with the B-girl 🍓, one player to kiss her 💋, and one player to take a shot 🥃. Winner's orders 😈",
   url: "https://play.kahoot.it/v2/?quizId=9c0054e6-5f42-4160-a2f4-511c6875c843&hostId=1f15be47-aef2-4055-af7a-cf4b06d67065",
+};
+
+// ----- Cassian + Rhysand + Xaden verified together => voice-note quote library -----
+// ✏️ Fill in each `label` with your own short scene name, and drop the audio
+// files next to index.html (.mp3). Add/remove scenes freely — the counts and
+// list update automatically. Tabs show in `order`; first one opens by default.
+const VOICE_QUOTES = {
+  badge: "📖 Book Boyfriend Voice Notes",
+  title: "Your favorite scenes, out loud 😏",
+  sub: "Pick a boyfriend, pick a scene — I read them for you. (Yes, in the voice.)",
+  closeLabel: "Okay… swoon over 😌 →",
+  order: ["Cassian", "Rhysand", "Xaden"],
+  chars: {
+    Cassian: { emoji: "🗡️", scenes: [
+      { label: "Scene 1 ✏️", src: "cassian_1.mp3" },
+      { label: "Scene 2 ✏️", src: "cassian_2.mp3" },
+      { label: "Scene 3 ✏️", src: "cassian_3.mp3" },
+      { label: "Scene 4 ✏️", src: "cassian_4.mp3" },
+      { label: "Scene 5 ✏️", src: "cassian_5.mp3" },
+    ]},
+    Rhysand: { emoji: "🦇", scenes: [
+      { label: "Scene 1 ✏️", src: "rhysand_1.mp3" },
+      { label: "Scene 2 ✏️", src: "rhysand_2.mp3" },
+      { label: "Scene 3 ✏️", src: "rhysand_3.mp3" },
+      { label: "Scene 4 ✏️", src: "rhysand_4.mp3" },
+      { label: "Scene 5 ✏️", src: "rhysand_5.mp3" },
+      { label: "Scene 6 ✏️", src: "rhysand_6.mp3" },
+      { label: "Scene 7 ✏️", src: "rhysand_7.mp3" },
+    ]},
+    Xaden: { emoji: "⚡", scenes: [
+      { label: "Scene 1 ✏️", src: "xaden_1.mp3" },
+      { label: "Scene 2 ✏️", src: "xaden_2.mp3" },
+      { label: "Scene 3 ✏️", src: "xaden_3.mp3" },
+      { label: "Scene 4 ✏️", src: "xaden_4.mp3" },
+      { label: "Scene 5 ✏️", src: "xaden_5.mp3" },
+      { label: "Scene 6 ✏️", src: "xaden_6.mp3" },
+      { label: "Scene 7 ✏️", src: "xaden_7.mp3" },
+      { label: "Scene 8 ✏️", src: "xaden_8.mp3" },
+      { label: "Scene 9 ✏️", src: "xaden_9.mp3" },
+    ]},
+  },
 };
 
 function initCaptcha() {
@@ -1593,7 +1635,113 @@ function initCaptcha() {
     document.addEventListener("keydown", onKey);
   }
 
-  // ----- Reaction GIF popup (overlay created once, reused) -----
+  // ----- Cassian + Rhysand + Xaden: the tabbed voice-note quote library -----
+  function showVoiceQuotes() {
+    const cfg = VOICE_QUOTES;
+    const old = document.querySelector(".vq-modal");
+    if (old) old.remove();
+    const ov = document.createElement("div");
+    ov.className = "vq-modal";
+    ov.innerHTML =
+      '<div class="vq-card">' +
+        '<div class="vq-badge">' + cfg.badge + '</div>' +
+        '<div class="vq-title">' + cfg.title + '</div>' +
+        '<div class="vq-sub">' + cfg.sub + '</div>' +
+        '<div class="vq-tabs"></div>' +
+        '<div class="vq-list"></div>' +
+        '<button type="button" class="vq-close">' + (cfg.closeLabel || "Close") + '</button>' +
+      '</div>';
+    document.body.appendChild(ov);
+
+    const tabsEl = ov.querySelector(".vq-tabs");
+    const listEl = ov.querySelector(".vq-list");
+    const audioCache = {};      // src -> Audio (built lazily, reused across tab switches)
+    let current = null;         // { audio, row, bar, btn }
+
+    const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+
+    function stopCurrent() {
+      if (!current) return;
+      current.audio.pause();
+      try { current.audio.currentTime = 0; } catch (e) {}
+      current.row.classList.remove("playing");
+      current.btn.textContent = "▶";
+      if (current.bar) current.bar.style.width = "0%";
+      current = null;
+    }
+    function getAudio(src) {
+      if (!audioCache[src]) { const a = new Audio(); a.preload = "auto"; a.src = src; audioCache[src] = a; }
+      return audioCache[src];
+    }
+
+    function renderList(name) {
+      stopCurrent();
+      listEl.innerHTML = "";
+      (cfg.chars[name].scenes || []).forEach(sc => {
+        const row = document.createElement("div");
+        row.className = "vq-row";
+        row.innerHTML =
+          '<button type="button" class="vq-play">▶</button>' +
+          '<div class="vq-mid">' +
+            '<div class="vq-label">' + sc.label + '</div>' +
+            '<div class="vq-meta"></div>' +
+            '<div class="vq-bar"><i></i></div>' +
+          '</div>';
+        const btn  = row.querySelector(".vq-play");
+        const bar  = row.querySelector(".vq-bar > i");
+        const meta = row.querySelector(".vq-meta");
+        const audio = getAudio(sc.src);
+
+        if (audio.duration) meta.textContent = fmt(audio.duration);
+        audio.addEventListener("loadedmetadata", () => { if (!current || current.audio !== audio) meta.textContent = fmt(audio.duration); });
+        audio.addEventListener("timeupdate", () => {
+          if (current && current.audio === audio) {
+            bar.style.width = (audio.duration ? audio.currentTime / audio.duration * 100 : 0) + "%";
+            meta.textContent = fmt(audio.currentTime) + " / " + fmt(audio.duration);
+          }
+        });
+        audio.addEventListener("ended", () => { meta.textContent = fmt(audio.duration); stopCurrent(); }); // stop, no auto-advance
+
+        row.addEventListener("click", () => {
+          if (current && current.audio === audio) { stopCurrent(); return; }   // tap again = stop
+          stopCurrent();
+          current = { audio, row, bar, btn };
+          row.classList.add("playing");
+          btn.textContent = "⏸";
+          try { audio.currentTime = 0; } catch (e) {}
+          audio.play().catch(() => {});
+        });
+        listEl.appendChild(row);
+      });
+    }
+
+    cfg.order.forEach((name, i) => {
+      const c = cfg.chars[name];
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "vq-tab" + (i === 0 ? " active" : "");
+      tab.innerHTML = (c.emoji ? c.emoji + " " : "") + name +
+                      '<small>' + (c.scenes ? c.scenes.length : 0) + ' scenes</small>';
+      tab.addEventListener("click", () => {
+        tabsEl.querySelectorAll(".vq-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        renderList(name);
+      });
+      tabsEl.appendChild(tab);
+    });
+    renderList(cfg.order[0]);
+
+    function close() {
+      stopCurrent();
+      document.removeEventListener("keydown", onKey);
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), 200);
+    }
+    function onKey(e) { if (e.key === "Escape") { e.preventDefault(); close(); } }
+    ov.querySelector(".vq-close").addEventListener("click", close);
+    ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
+    document.addEventListener("keydown", onKey);
+  }
   let gifPop = document.querySelector(".gif-pop");
   if (!gifPop) {
     gifPop = document.createElement("div");
@@ -2077,6 +2225,12 @@ function initCaptcha() {
     if (picked.includes("Neytiri") && picked.includes("JakeSully") && picked.includes("Varang")) {
       showGif("Avatar.gif");
       fail("All of Pandora?? 🌌 Neytiri, Jake AND Varang — Ni el arbol aguanta esa presión 💀");
+      return;
+    }
+    // Cassian + Rhysand + Xaden (ONLY those three) => book-boyfriend voice notes
+    if (picked.length === 3 && picked.includes("Cassian") && picked.includes("Rhysand") && picked.includes("Xaden")) {
+      showVoiceQuotes();
+      fail("📖 Book boyfriends, assemble — tap a name, then a scene 😏");
       return;
     }
     // las Chicas submitted for verification => whawhawha confetti, then Kahoot invite
