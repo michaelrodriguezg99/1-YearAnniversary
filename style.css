@@ -1321,6 +1321,60 @@ body {
   border-radius: 10px; padding: 11px 16px;
 }
 .gift-close:hover { background: var(--frame-dark); }
+
+/* ---- Cassian + Rhysand + Xaden: voice-note quote library ---- */
+.vq-modal {
+  position: fixed; inset: 0; z-index: 10085;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; background: rgba(40, 10, 15, 0.72);
+  animation: daddy-in .2s ease;
+}
+.vq-modal.closing { opacity: 0; transition: opacity .2s ease; }
+.vq-card {
+  width: 100%; max-width: 390px; padding: 18px; font-family: var(--font);
+  background: var(--panel); border: 3px solid var(--frame); border-radius: 16px;
+  box-shadow: 0 16px 46px rgba(0,0,0,.45);
+}
+.vq-badge {
+  display: inline-block; margin-bottom: 8px; padding: 4px 12px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase;
+  color: #fff; background: var(--frame-dark); border-radius: 999px;
+}
+.vq-title { font-size: 20px; font-weight: 700; color: var(--ink); line-height: 1.15; }
+.vq-sub { font-size: 12.5px; color: var(--ink-soft); margin: 5px 0 14px; line-height: 1.4; }
+.vq-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.vq-tab {
+  flex: 1; text-align: center; padding: 9px 4px; border-radius: 10px; cursor: pointer;
+  font-family: var(--font); font-size: 13px; font-weight: 700;
+  border: 2px solid var(--panel-2); background: #fff; color: var(--ink-soft);
+}
+.vq-tab.active { background: var(--frame); color: #fff; border-color: var(--frame-dark); }
+.vq-tab small { display: block; font-size: 10px; font-weight: 400; opacity: .85; margin-top: 1px; }
+.vq-list { max-height: 46vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
+.vq-row {
+  display: flex; align-items: center; gap: 11px; cursor: pointer;
+  background: #fff; border: 2px solid var(--panel-2); border-radius: 11px; padding: 9px 11px;
+  transition: border-color .15s ease, background .15s ease;
+}
+.vq-row:hover { border-color: var(--frame); }
+.vq-row.playing { border-color: var(--good); background: #eef7f0; }
+.vq-play {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--frame); color: #fff; font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.vq-row.playing .vq-play { background: var(--good); }
+.vq-mid { flex: 1; min-width: 0; }
+.vq-label { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.vq-meta { font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; min-height: 12px; }
+.vq-bar { height: 4px; border-radius: 99px; background: var(--panel-2); margin-top: 6px; overflow: hidden; }
+.vq-bar > i { display: block; height: 100%; width: 0; background: var(--good); border-radius: 99px; }
+.vq-close {
+  margin-top: 12px; width: 100%; font-family: var(--font); font-weight: 700; font-size: 14px;
+  cursor: pointer; background: var(--frame); color: #fff;
+  border: 3px solid var(--frame-dark); border-radius: 10px; padding: 11px;
+}
+.vq-close:hover { background: var(--frame-dark); }
 .invite-close {
   margin-top: 10px; font-family: var(--font); font-size: 13px; cursor: pointer;
   background: transparent; color: var(--ink-soft); border: none;
