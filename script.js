@@ -340,7 +340,7 @@ const CAPTCHA_POOL = [
     caption: "traumatic 😭 pero entiendo jajaja" },
   { src: "Nick.jpg", label: "Nick", fx: "sly",
     caption: "Literal fox babe… no quieres ver los red flags" },
-  { src: "SamsCookie.jpg", label: "SamsCookie", fx: "cookie",
+  { src: "SamsCookie.jpg", label: "SamsCookie", gif: "SamsCookiePic.jpg", gifMs: 5000,
     caption: "\"I would fuck that cookie 😤🫵\" — your exact words, caramelo. A COOKIE. I've been replaced by baked goods 😭🍪" },
   { src: "Shadow.jpg", label: "Shadow", fx: "chaos",
     caption: "A hedgehog?! Really?!" },
@@ -1755,7 +1755,7 @@ function initCaptcha() {
     if (gifSound) { stopSound(gifSound); gifSound = null; }   // sound ends with the gif
     if (gifOnHide) { const f = gifOnHide; gifOnHide = null; f(); }  // notify companion fx
   }
-  function showGif(src, sound, loops, loopHintMs, onHide) {
+  function showGif(src, sound, loops, loopHintMs, onHide, holdMs) {
     const img = gifPop.querySelector("img");
     img.classList.remove("cropped-allie");
     if (src.includes("AllieAndDean.gif")) {
@@ -1773,10 +1773,11 @@ function initCaptcha() {
 
     function scheduleHide() {                  // (re)start the on-screen clock
       clearTimeout(gifTimer);
-      // if a loop count is given and we know one loop's length, hold for exactly
-      // that many loops (the gif loops on its own, so this stays seamless)
-      const dur = (loops && loops > 1 && loopMs > 0) ? loops * loopMs + 80
-                                                     : (measured || 2600);
+      // holdMs = show for exactly this long (used for static images);
+      // else if a loop count is given, hold for that many loops; else measured.
+      const dur = holdMs ? holdMs
+                : (loops && loops > 1 && loopMs > 0) ? loops * loopMs + 80
+                : (measured || 2600);
       gifTimer = setTimeout(hideGifPop, dur);
     }
     function reveal() {                        // the gif is actually on screen now
@@ -2067,6 +2068,7 @@ function initCaptcha() {
     if (item.effect)  tile.dataset.effect  = item.effect;
     if (item.label)   tile.dataset.label   = item.label;
     if (item.gif)     tile.dataset.gif      = item.gif;
+    if (item.gifMs)   tile.dataset.gifms    = item.gifMs;   // hold a still image this long (ms)
     if (item.swim)    tile.dataset.swim     = (item.swim === true ? item.src : item.swim);
     if (item.worm)    tile.dataset.worm     = (item.worm === true ? item.src : item.worm);
     if (item.fx)      tile.dataset.fx       = item.fx;
@@ -2096,7 +2098,8 @@ function initCaptcha() {
         if (tile.dataset.label === "Cherry") {
           rainImages(["CherryConfetti.jpg"]);   // she appears + rains down
         } else {
-          if (gif)               showGif(gif, snd);   // sound lasts as long as the gif
+          if (gif)               showGif(gif, snd, undefined, undefined, undefined,
+                                          tile.dataset.gifms ? +tile.dataset.gifms : undefined); // hold still image if gifMs set
           if (tile.dataset.swim) swimAcross(tile.dataset.swim);
           if (tile.dataset.worm) wormAcross(tile.dataset.worm);
         }
