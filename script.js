@@ -2990,8 +2990,8 @@ const TERMS_OPTIONS = [
 // Right now it's set to you for testing.
 // ⚠️ ON THE DAY OF THE EVENT: comment out the line below and uncomment
 //    Alondra's, so every email goes to her instead.
-const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";      // ← current: you (testing)
-// const RENEWAL_EMAIL_TO = "alondrapsanchez394@gmail.com";     // ← Alondra (use on the day)
+// const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";   // ← testing (you)
+const RENEWAL_EMAIL_TO = "alondrapsanchez394@gmail.com";        // ← LIVE: Alondra (event day)
 
 // Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
 const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93", finalTemplateId: "template_fmbfeh9" };
@@ -3563,32 +3563,3 @@ function initLetter() {
     if (phase === "runaway") { showFinal(); }
   });
 }
-
-/* =====================================================================
-   DEV SKIP — TESTING ONLY.  ⚠️ REMOVE BEFORE SENDING:
-   flip DEV_SKIP to false, or delete this whole block. Also delete the
-   matching "DEV SKIP" block in style.css. Nothing else references it.
-   ===================================================================== */
-const DEV_SKIP = true;                     // <-- set to false to hide the skip buttons
-function _devGoto(delta) {
-  const i = Math.min(SCREENS.length - 1, Math.max(0, _screen + delta));
-  if (i === _screen) return;
-  _screen = i;
-  showScreen(_screen);
-}
-document.addEventListener("DOMContentLoaded", () => {
-  if (!DEV_SKIP) return;
-  const bar = document.createElement("div");
-  bar.id = "dev-skip";
-  bar.innerHTML =
-    '<button type="button" id="dev-prev" title="Previous screen">◀ Back</button>' +
-    '<span id="dev-label"></span>' +
-    '<button type="button" id="dev-next" title="Next screen">Skip ▶</button>';
-  document.body.appendChild(bar);
-  const label = bar.querySelector("#dev-label");
-  const upd = () => { label.textContent = (_screen + 1) + " / " + SCREENS.length; };
-  bar.querySelector("#dev-prev").addEventListener("click", () => { _devGoto(-1); upd(); });
-  bar.querySelector("#dev-next").addEventListener("click", () => { _devGoto(1); upd(); });
-  setInterval(upd, 400);                    // keep the counter fresh when normal flow advances
-  upd();
-});
