@@ -1421,21 +1421,3 @@ body {
   70%  { transform: scale(.94); }
   100% { transform: scale(1); }
 }
-
-/* =====================================================================
-   DEV SKIP — TESTING ONLY.  ⚠️ delete this block when done (and the
-   matching "DEV SKIP" block in script.js).
-   ===================================================================== */
-#dev-skip {
-  position: fixed; left: 8px; bottom: 8px; z-index: 2147483000;
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(0, 0, 0, 0.72); color: #fff;
-  padding: 5px 8px; border-radius: 8px;
-  font-family: monospace; font-size: 12px;
-}
-#dev-skip button {
-  font-family: monospace; font-size: 12px; line-height: 1; cursor: pointer;
-  background: #fff; color: #111; border: none; border-radius: 6px; padding: 5px 9px;
-}
-#dev-skip button:active { transform: translateY(1px); }
-#dev-skip #dev-label { min-width: 34px; text-align: center; opacity: .9; }
