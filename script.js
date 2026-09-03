@@ -3143,17 +3143,16 @@ const TRIPS = [
   {
     id: "HHN", correct: true,
     name: "Halloween Horror Nights 🎃🔪",
-    place: "Universal Studios",                 // ✏️ Orlando or Hollywood?
+    place: "Universal Orlando Resort",
     img: "HalloweenHorrorNights.jpg",           // ✏️ drop this photo next to index.html
     tagline: "Haunted houses, scare zones & screaming all night 👻🔪",
     reveal: "Spooky season, let's GO! 🎉",
     dates: { year: 2026, month: 10, days: [23, 24, 25] },   // Oct 23–25, 2026 (month 1-indexed)
     rangeText: "October 23rd to 25th, 2026",
     details: [
-      "🗓️ October 23rd to 25th, 2026",
-      "🎃 Halloween Horror Nights — Universal Studios",   // ✏️ confirm the park
-      "🏨 [✏️ where we're staying]",
-      "🔪 Haunted houses, scare zones & rides",
+      "🎃 Halloween Horror Nights — Universal Orlando",
+      "🏡 A cozy local Airbnb",
+      "🔪 Haunted houses, scare zones & rides all night",
       "🍽️ …and all the food 😋",
     ],
   },
@@ -3167,7 +3166,6 @@ const TRIPS = [
     dates: { year: 2026, month: 11, days: [7, 8, 9] },      // Nov 7–9, 2026
     rangeText: "7th to 9th of November, 2026",
     details: [
-      "🗓️ 7th to 9th of November, 2026",
       "🏡 A cozy local vintage Airbnb",
       "🔮 All the witchy magic this haunted town offers in November",
       "🎭 Booked activities, guided tours & room to just explore",
@@ -3220,81 +3218,61 @@ function initTrip() {
     } catch (e) { /* ignore */ }
   }
 
-  // she guessed right → reveal the real itinerary + a Continue button
-  function reveal(trip) {
-    done = true;
-    SELECTED_TRIP = trip;
-    emailTripChoice(trip);
+  // one full card: photo + name + location + dates + tagline + itinerary
+  function makeTripCard(trip) {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "trip-card choose";
+    card.dataset.id = trip.id;
     const details = (trip.details || []).map(d => '<li>' + d + '</li>').join("");
-    listEl.innerHTML =
-      '<div class="trip-card revealed">' +
-        '<div class="trip-photo"><img alt=""><span class="trip-ph">✈️ ' + prettify(trip.name) + '</span></div>' +
-        '<div class="trip-info">' +
-          '<div class="trip-name">' + trip.name + '</div>' +
-          (trip.place ? '<div class="trip-place">📍 ' + trip.place + '</div>' : '') +
-          (trip.tagline ? '<div class="trip-tag">' + trip.tagline + '</div>' : '') +
-          (details ? '<ul class="trip-details">' + details + '</ul>' : '') +
-        '</div>' +
+    card.innerHTML =
+      '<div class="trip-pick">Chosen ✓</div>' +
+      '<div class="trip-photo"><img alt=""><span class="trip-ph">✈️ ' + prettify(trip.name) + '</span></div>' +
+      '<div class="trip-info">' +
+        '<div class="trip-name">' + trip.name + '</div>' +
+        (trip.place ? '<div class="trip-place">📍 ' + trip.place + '</div>' : '') +
+        (trip.rangeText ? '<div class="trip-dates">📅 ' + trip.rangeText + '</div>' : '') +
+        (trip.tagline ? '<div class="trip-tag">' + trip.tagline + '</div>' : '') +
+        (details ? '<ul class="trip-details">' + details + '</ul>' : '') +
       '</div>';
-    const img = listEl.querySelector("img");
-    img.onload = () => listEl.querySelector(".trip-card").classList.add("has-img");
+    const img = card.querySelector("img");
+    img.onload = () => card.classList.add("has-img");
     if (trip.img) img.src = trip.img;
-    if (titleEl) titleEl.textContent = trip.reveal || "You guessed it! 🎉";
-    if (subEl)   subEl.textContent   = "Here's where we're going 💕";
-    msgEl.textContent = ""; msgEl.className = "trip-msg";
-    confirmEl.style.display = "";
-    confirmEl.disabled = false;
-    confirmEl.textContent = "Reserve our trip →";
+    card.addEventListener("click", () => choose(trip, card));
+    return card;
   }
 
-  function guessWrong(card, trip) {
-    card.classList.remove("wrong"); void card.offsetWidth; card.classList.add("wrong");
-    setTimeout(() => card.classList.remove("wrong"), 500);
-    shake();
-    msgEl.textContent = trip.wrong || rand(TRIP_WRONG);
-    msgEl.className = "trip-msg bad";
+  // tap a card → mark it chosen (she can still switch), reveal the confirm
+  function choose(trip, card) {
+    if (done) return;
+    SELECTED_TRIP = trip;
+    [...listEl.querySelectorAll(".trip-card")].forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+    msgEl.textContent = "Great pick 💖 tap reserve below — or choose the other one ↓";
+    msgEl.className = "trip-msg ok";
+    confirmEl.style.display = "";
+    confirmEl.disabled = false;
+    confirmEl.textContent = "Reserve " + prettify(trip.name) + " →";
   }
 
   function render() {
     done = false;
+    SELECTED_TRIP = null;
     if (titleEl) titleEl.textContent = "Pick our trip ✈️";
-    if (subEl)   subEl.textContent   = "Two options — choose the one you want 💕";
+    if (subEl)   subEl.textContent   = "Here are both — compare the dates & plans, then choose 💕";
     msgEl.textContent = ""; msgEl.className = "trip-msg";
     confirmEl.style.display = "none";
     confirmEl.disabled = true;
 
     listEl.innerHTML = "";
-    shuffle(TRIPS).forEach(trip => {                 // random order each visit
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "trip-card guess";
-      card.dataset.id = trip.id;
-      card.innerHTML =
-        '<div class="trip-photo"><img alt=""><span class="trip-ph">✈️ ' + prettify(trip.name) + '</span></div>' +
-        '<div class="trip-info">' +
-          '<div class="trip-name">' + trip.name + '</div>' +
-          (trip.place ? '<div class="trip-place">📍 ' + trip.place + '</div>' : '') +
-        '</div>';
-      const img = card.querySelector("img");
-      img.onload = () => card.classList.add("has-img");
-      if (trip.img) img.src = trip.img;
-
-      card.addEventListener("click", () => {
-        if (done) return;
-        if (trip.correct) {
-          done = true;                               // lock further guesses
-          card.classList.add("correct");
-          setTimeout(() => reveal(trip), 550);       // brief green beat, then reveal
-        } else {
-          guessWrong(card, trip);
-        }
-      });
-      listEl.appendChild(card);
-    });
+    TRIPS.forEach(trip => listEl.appendChild(makeTripCard(trip)));   // both shown, full details
   }
 
   confirmEl.addEventListener("click", () => {
-    if (!done) return;
+    if (!SELECTED_TRIP || done) return;
+    done = true;
+    emailTripChoice(SELECTED_TRIP);                 // email the chosen trip (final template)
+    [...listEl.querySelectorAll(".trip-card")].forEach(c => c.disabled = true);
     confirmEl.disabled = true;
     confirmEl.textContent = "Reserved ✓ Now let's lock the dates →";
     setTimeout(nextScreen, 1100);
