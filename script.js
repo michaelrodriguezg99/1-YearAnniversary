@@ -2990,8 +2990,8 @@ const TERMS_OPTIONS = [
 // Right now it's set to you for testing.
 // ⚠️ ON THE DAY OF THE EVENT: comment out the line below and uncomment
 //    Alondra's, so every email goes to her instead.
-// const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";   // ← testing (you)
-const RENEWAL_EMAIL_TO = "alondrapsanchez394@gmail.com";        // ← LIVE: Alondra (event day)
+const RENEWAL_EMAIL_TO = "michael.rodriguezg99@gmail.com";      // ← current: you (testing)
+// const RENEWAL_EMAIL_TO = "alondrapsanchez394@gmail.com";     // ← Alondra (use on the day)
 
 // Truly-automatic silent send via EmailJS (SDK is loaded in index.html).
 const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", templateId: "template_tg9rx93", finalTemplateId: "template_fmbfeh9" };
@@ -3001,12 +3001,17 @@ const EMAILJS = { publicKey: "L0lukFdK-SFcSkWnm", serviceId: "service_ey35afh", 
 // {{message}} in the body (same as your working agreement template).
 const FINAL_EMAIL = {
   subject: "💖 Renewed! You picked YES (again) and your membership is locked in!",
-  message:
-    "Great news 🎉\n\n" +
-    "You just renewed your Girlfriend Membership — Premium Tier — for another year.\n\n" +
-    "✈️ Trip reserved: New Orleans — 7th to 9th of November, 2026.\n\n" +
-    "Status: Renewed successfully.\n" +
-    "Expiration date: Never. 💖🐱🐶",
+  // Body is built from whichever trip she chose (SELECTED_TRIP).
+  body(trip) {
+    const line = trip
+      ? "✈️ Trip reserved: " + trip.name + " — " + (trip.rangeText || "") + ".\n\n"
+      : "";
+    return "Great news 🎉\n\n" +
+      "You just renewed your Girlfriend Membership — Premium Tier — for another year.\n\n" +
+      line +
+      "Status: Renewed successfully.\n" +
+      "Expiration date: Never. 💖🐱🐶";
+  },
 };
 
 function initTerms() {
@@ -3126,22 +3131,41 @@ function initTerms() {
 function showTerms() { if (initTerms._reset) initTerms._reset(); }
 
 /* =====================================================================
-   SCREEN 8 — TRIP GUESS  ("guess where we're going" — one real, two decoys)
+   SCREEN 8 — TRIP CHOICE  ("pick our trip" — BOTH options are correct)
    ---------------------------------------------------------------------
-   ✏️  Exactly ONE entry has  correct: true  — that's the real destination,
-   and its `details` are revealed only after she guesses it. The others are
-   decoys: give each a `wrong` roast (or they fall back to TRIP_WRONG).
-   Drop photos next to index.html (trip1/2/3.jpg); until then a labeled
-   placeholder shows. Her correct guess is remembered in SELECTED_TRIP.
+   ✏️  Every entry has  correct: true  now — she just picks the one she wants.
+   Each trip carries its OWN `dates` (used by the date picker) and
+   `rangeText` (used in the emails + finale), so everything AFTER this
+   screen automatically matches whichever trip she chooses.
+   Drop each photo next to index.html. Her pick is remembered in SELECTED_TRIP.
    ===================================================================== */
 const TRIPS = [
+  {
+    id: "HHN", correct: true,
+    name: "Halloween Horror Nights 🎃🔪",
+    place: "Universal Studios",                 // ✏️ Orlando or Hollywood?
+    img: "HalloweenHorrorNights.jpg",           // ✏️ drop this photo next to index.html
+    tagline: "Haunted houses, scare zones & screaming all night 👻🔪",
+    reveal: "Spooky season, let's GO! 🎉",
+    dates: { year: 2026, month: 10, days: [23, 24, 25] },   // Oct 23–25, 2026 (month 1-indexed)
+    rangeText: "October 23rd to 25th, 2026",
+    details: [
+      "🗓️ October 23rd to 25th, 2026",
+      "🎃 Halloween Horror Nights — Universal Studios",   // ✏️ confirm the park
+      "🏨 [✏️ where we're staying]",
+      "🔪 Haunted houses, scare zones & rides",
+      "🍽️ …and all the food 😋",
+    ],
+  },
   {
     id: "NOLA", correct: true,
     name: "New Orleans, Louisiana 🎃",
     place: "New Orleans, Louisiana, USA",
     img: "trip1.jpg",
     tagline: "Spooky, witchy & dripping with Halloween-in-November magic 🖤",
-    reveal: "You guessed it! 🎉",
+    reveal: "New Orleans it is! 🎉",
+    dates: { year: 2026, month: 11, days: [7, 8, 9] },      // Nov 7–9, 2026
+    rangeText: "7th to 9th of November, 2026",
     details: [
       "🗓️ 7th to 9th of November, 2026",
       "🏡 A cozy local vintage Airbnb",
@@ -3149,14 +3173,6 @@ const TRIPS = [
       "🎭 Booked activities, guided tours & room to just explore",
       "🍽️ …and so much food 😋",
     ],
-  },
-  {
-    id: "PAR", name: "Paris, France 🗼", place: "Paris, France", img: "trip2.jpg",
-    wrong: "Paris? 🥖 Bonito intento… pero no. Sigue adivinando 👀",
-  },
-  {
-    id: "SAN", name: "Santorini, Greece 🏖️", place: "Santorini, Greece", img: "trip3.jpg",
-    wrong: "Santorini? 🏖️ PFF, you've been there done that!",
   },
 ];
 
@@ -3186,20 +3202,20 @@ function initTrip() {
   const rand     = a => a[Math.floor(Math.random() * a.length)];
   const shake    = () => { winEl.classList.remove("shake"); void winEl.offsetWidth; winEl.classList.add("shake"); };
 
-  // Best-effort silent email so you know she found it (reuses the terms template).
+  // Best-effort silent email so you know which trip she chose (uses the FINAL template).
   function emailTripChoice(trip) {
-    if (!(window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId)) return;
+    if (!(window.emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.finalTemplateId)) return;
     const message =
-      "She guessed the trip ✈️\n\n" +
+      "She chose the trip ✈️\n\n" +
       "Destination: " + trip.name + "\n" +
       (trip.place ? "Location: " + trip.place + "\n" : "") +
       "\nItinerary:\n" +
       (trip.details || []).map(d => "  • " + d).join("\n") +
-      "\n\nSee you the 7th–9th of November 💖";
+      "\n\nDates: " + (trip.rangeText || "") + " 💖";
     try {
       emailjs.init({ publicKey: EMAILJS.publicKey });
-      emailjs.send(EMAILJS.serviceId, EMAILJS.templateId,
-        { to_email: RENEWAL_EMAIL_TO, subject: "✈️ She guessed the trip: " + trip.name, message: message }
+      emailjs.send(EMAILJS.serviceId, EMAILJS.finalTemplateId,
+        { to_email: RENEWAL_EMAIL_TO, subject: "✈️ She chose the trip: " + trip.name, message: message }
       ).catch(() => {});
     } catch (e) { /* ignore */ }
   }
@@ -3241,8 +3257,8 @@ function initTrip() {
 
   function render() {
     done = false;
-    if (titleEl) titleEl.textContent = "Guess where we're going ✈️";
-    if (subEl)   subEl.textContent   = "Two are decoys — pick the real destination 👀";
+    if (titleEl) titleEl.textContent = "Pick our trip ✈️";
+    if (subEl)   subEl.textContent   = "Two options — choose the one you want 💕";
     msgEl.textContent = ""; msgEl.className = "trip-msg";
     confirmEl.style.display = "none";
     confirmEl.disabled = true;
@@ -3317,8 +3333,8 @@ const DATE_EXCUSES = [
 const DATE_HINTS = [
   "",
   "💡 It's a 3-day getaway — you'll need all three days 🧳",
-  "💡 Think anniversary weekend… the 7th, 8th and 9th 💕",
-  "💡 Tap the 7th, 8th AND 9th of November, 2026 😉",
+  "💡 Tap all three days of the trip 💕",
+  "💡 The whole range — every day of our trip 😉",
 ];
 
 function showDatePicker() { if (initDatePicker._reset) initDatePicker._reset(); }
@@ -3338,17 +3354,23 @@ function initDatePicker() {
   const MONTHS = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"];
 
-  const NEED = TRIP_DATES.days.slice();          // [7, 8, 9]
-  const needSet = new Set(NEED);
+  // Active dates come from the trip she picked (falls back to TRIP_DATES).
+  const tripDates = () => (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP && SELECTED_TRIP.dates) ? SELECTED_TRIP.dates : TRIP_DATES;
+  const tripRange = () => (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP && SELECTED_TRIP.rangeText)
+    ? SELECTED_TRIP.rangeText
+    : (MONTHS[tripDates().month - 1] + " " + tripDates().days.join(", ") + ", " + tripDates().year);
+  let activeDates = tripDates();
+  let NEED = activeDates.days.slice();           // e.g. [7, 8, 9] or [23, 24, 25]
+  let needSet = new Set(NEED);
   const picked = new Set();                       // required days she's turned green
-  let viewYear  = TRIP_DATES.year;
-  let viewMonth = TRIP_DATES.month - 1;           // 0-indexed for JS Date
+  let viewYear  = activeDates.year;
+  let viewMonth = activeDates.month - 1;          // 0-indexed for JS Date
   let wrong = 0;
   let done  = false;
 
   const rand  = a => a[Math.floor(Math.random() * a.length)];
   const shake = () => { win.classList.remove("shake"); void win.offsetWidth; win.classList.add("shake"); };
-  const onTripMonth = () => viewYear === TRIP_DATES.year && viewMonth === TRIP_DATES.month - 1;
+  const onTripMonth = () => viewYear === activeDates.year && viewMonth === activeDates.month - 1;
   const cellFor = d => [...grid.querySelectorAll(".date-cell:not(.empty)")].find(c => +c.textContent === d);
   const allPicked = () => NEED.every(d => picked.has(d));
 
@@ -3396,7 +3418,7 @@ function initDatePicker() {
     hintEl.textContent = "";
     confirmEl.disabled = true;
     const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " — " + SELECTED_TRIP.name : "";
-    msgEl.textContent = "Reserved ✈️ 7th to 9th of November, 2026" + dest + ". Pack your bags 💖";
+    msgEl.textContent = "Reserved ✈️ " + tripRange() + dest + ". Pack your bags 💖";
     msgEl.className = "date-msg ok";
     setTimeout(nextScreen, 1800);
   }
@@ -3404,7 +3426,7 @@ function initDatePicker() {
   function pick(d, cell) {
     if (done) return;
 
-    // an accepted trip day (7/8/9 on Nov 2026) → toggle it green
+    // an accepted trip day (on the trip's month/year) → toggle it green
     if (onTripMonth() && needSet.has(d)) {
       if (picked.has(d)) {                 // tap again to remove
         picked.delete(d);
@@ -3415,12 +3437,12 @@ function initDatePicker() {
       }
       updateConfirm();
       if (allPicked()) {
-        msgEl.textContent = "All three locked in 💚 hit reserve below ↓";
+        msgEl.textContent = "All " + NEED.length + " locked in 💚 hit reserve below ↓";
         msgEl.className = "date-msg ok";
         hintEl.textContent = "";
       } else {
         const left = NEED.filter(x => !picked.has(x));
-        msgEl.textContent = "Nice — " + picked.size + "/3 chosen. Still need the " +
+        msgEl.textContent = "Nice — " + picked.size + "/" + NEED.length + " chosen. Still need the " +
           left.map(x => x + "th").join(" & ") + " ✈️";
         msgEl.className = "date-msg";
       }
@@ -3442,8 +3464,11 @@ function initDatePicker() {
   confirmEl.addEventListener("click", () => { if (allPicked() && !done) finish(); });
 
   initDatePicker._reset = () => {
-    viewYear  = TRIP_DATES.year;
-    viewMonth = TRIP_DATES.month - 1;
+    activeDates = tripDates();
+    NEED = activeDates.days.slice();
+    needSet = new Set(NEED);
+    viewYear  = activeDates.year;
+    viewMonth = activeDates.month - 1;
     wrong = 0; done = false; picked.clear();
     msgEl.textContent = ""; msgEl.className = "date-msg";
     hintEl.textContent = "";
@@ -3451,7 +3476,7 @@ function initDatePicker() {
     if (titleEl) titleEl.textContent = "Reserve our trip 🧳";
     if (subEl) {
       const dest = (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) ? " to " + SELECTED_TRIP.name : "";
-      subEl.textContent = "Pick all three days — 7th to 9th of November" + dest + " 💕";
+      subEl.textContent = "Pick all " + NEED.length + " days — " + tripRange() + dest + " 💕";
     }
     build();
   };
@@ -3518,7 +3543,7 @@ function initLetter() {
       try {
         emailjs.init({ publicKey: EMAILJS.publicKey });
         emailjs.send(EMAILJS.serviceId, EMAILJS.finalTemplateId,
-          { to_email: RENEWAL_EMAIL_TO, subject: FINAL_EMAIL.subject, message: FINAL_EMAIL.message }
+          { to_email: RENEWAL_EMAIL_TO, subject: FINAL_EMAIL.subject, message: FINAL_EMAIL.body(typeof SELECTED_TRIP !== "undefined" ? SELECTED_TRIP : null) }
         ).catch(() => { /* send failed; stay silent */ });
       } catch (e) { /* ignore */ }
     }
@@ -3530,6 +3555,10 @@ function initLetter() {
     catImg.src = "cameo_and_candy_dancing.gif";
     screen.querySelector(".letter-window").classList.add("final");
     buttons.style.display = "none";
+    if (typeof SELECTED_TRIP !== "undefined" && SELECTED_TRIP) {   // reflect the trip she picked
+      finalText.innerHTML = "<strong>Our trip:</strong> " + SELECTED_TRIP.name +
+        " — reserved for " + (SELECTED_TRIP.rangeText || "") + ". Pack your bags! 💕";
+    }
     finalText.style.display = "block";
   }
 
@@ -3563,3 +3592,32 @@ function initLetter() {
     if (phase === "runaway") { showFinal(); }
   });
 }
+
+/* =====================================================================
+   DEV SKIP — TESTING ONLY.  ⚠️ REMOVE BEFORE SENDING:
+   flip DEV_SKIP to false, or delete this whole block. Also delete the
+   matching "DEV SKIP" block in style.css. Nothing else references it.
+   ===================================================================== */
+const DEV_SKIP = true;                     // <-- set to false to hide the skip buttons
+function _devGoto(delta) {
+  const i = Math.min(SCREENS.length - 1, Math.max(0, _screen + delta));
+  if (i === _screen) return;
+  _screen = i;
+  showScreen(_screen);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  if (!DEV_SKIP) return;
+  const bar = document.createElement("div");
+  bar.id = "dev-skip";
+  bar.innerHTML =
+    '<button type="button" id="dev-prev" title="Previous screen">◀ Back</button>' +
+    '<span id="dev-label"></span>' +
+    '<button type="button" id="dev-next" title="Next screen">Skip ▶</button>';
+  document.body.appendChild(bar);
+  const label = bar.querySelector("#dev-label");
+  const upd = () => { label.textContent = (_screen + 1) + " / " + SCREENS.length; };
+  bar.querySelector("#dev-prev").addEventListener("click", () => { _devGoto(-1); upd(); });
+  bar.querySelector("#dev-next").addEventListener("click", () => { _devGoto(1); upd(); });
+  setInterval(upd, 400);                    // keep the counter fresh when normal flow advances
+  upd();
+});
