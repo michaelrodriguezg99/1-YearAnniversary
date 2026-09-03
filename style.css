@@ -1149,6 +1149,7 @@ body {
 }
 .trip-name { font-weight: 700; font-size: 17px; color: var(--ink); line-height: 1.15; }
 .trip-place { font-size: 13px; color: var(--ink-soft); }
+.trip-dates { font-size: 13.5px; font-weight: 700; color: var(--frame-dark); }
 .trip-tag { font-size: 13px; color: var(--ink); font-style: italic; margin-top: 2px; }
 .trip-details {
   margin: 6px 0 0; padding: 0; list-style: none;
