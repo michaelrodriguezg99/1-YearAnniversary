@@ -346,7 +346,7 @@ const CAPTCHA_POOL = [
     caption: "A hedgehog?! Really?!" },
   { src: "SpiderMan.jpg", label: "SpiderMan", gif: "SpiderMan.gif",
     caption: "Same girl. Perooo, el protege a NY. MI UNICA responsabilidad eres tú" },
-  { src: "Feet.jpg", label: "Feet", gif: "Feet.gif", gifMs: 6000,
+  { src: "Feet.jpg", label: "Feet", gif: "Feet.gif", gifMs: 7000,
     caption: "Hear me out… 🦶 I said HEAR ME OUT 😭" },
 ];
 
