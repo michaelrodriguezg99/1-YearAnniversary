@@ -303,7 +303,7 @@ const CAPTCHA_POOL = [
   { src: "Varang.jpg", label: "Varang", fx: "fire",
     caption: "Bitch will literally burn you alive." },
   { src: "Lola.jpg", label: "Lola", swim: true,
-    caption: "Eso es una chapy y una pezca la colmo…" },
+    caption: "Eso es una chapy y una pezca pa colmo…" },
   { src: "LenaLuthor.jpg", label: "LenaLuthor", fx: "krypton",
     caption: "Con ese nombre es probable que tenga Daddy issues y que pierda TODO su pelo" },
   { src: "LoveQuinn.jpg", label: "LoveQuinn", fx: "knives", gif: "Love.gif",
