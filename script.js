@@ -346,6 +346,8 @@ const CAPTCHA_POOL = [
     caption: "A hedgehog?! Really?!" },
   { src: "SpiderMan.jpg", label: "SpiderMan", gif: "SpiderMan.gif",
     caption: "Same girl. Perooo, el protege a NY. MI UNICA responsabilidad eres tú" },
+  { src: "Feet.jpg", label: "Feet", gif: "Feet.gif", gifMs: 5000,
+    caption: "Hear me out… 🦶 I said HEAR ME OUT 😭" },
 ];
 
 const CAPTCHA_VISIBLE     = 9;     // tiles shown at once
